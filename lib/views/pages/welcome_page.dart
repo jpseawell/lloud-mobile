@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/views/templates/signup_flow_template.dart';
 
+import '../../util/auth.dart';
+
+import '../pages/nav_page.dart';
+import '../../models/user.dart';
 import '../_common/h1.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -14,11 +18,22 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   final Map<String, String> formData;
+  Future<bool> isLoggedIn;
 
   _WelcomePageState(this.formData);
 
-  void _submitUserFormData() {
-    // TODO: Submit formData to web API
+  Future<void> _registerUserAndLogin(BuildContext ctx) async {
+    // TODO: Try/catch this and update error state on err
+
+    await User.registerUser(formData);
+    await Auth.authenticateUser(formData['email'], formData['password']);
+    bool isLoggedIn = await Auth.loggedIn();
+
+    // TODO: Look into erasing history at this point so the user can't go backwards
+
+    if (isLoggedIn) {
+      Navigator.push(ctx, MaterialPageRoute(builder: (ctx) => NavPage()));
+    }
   }
 
   @override
@@ -30,7 +45,7 @@ class _WelcomePageState extends State<WelcomePage> {
           SizedBox(height: 80.0),
           Column(children: <Widget>[
             H1('Welcome to Lloud!'),
-            H1('@' + formData['username']),
+            H1('@' + formData['user_name']),
           ]),
           SizedBox(
             height: 120.0,
@@ -39,8 +54,8 @@ class _WelcomePageState extends State<WelcomePage> {
             children: <Widget>[
               RaisedButton(
                 child: Text('Get Started'),
-                onPressed: () {
-                  _submitUserFormData();
+                onPressed: () async {
+                  await _registerUserAndLogin(context);
                 },
               )
             ],

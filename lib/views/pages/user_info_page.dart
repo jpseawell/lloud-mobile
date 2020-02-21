@@ -22,7 +22,8 @@ class _UserInfoPageState extends State<UserInfoPage> {
   void _sendFormDataToPasswordPage(BuildContext ctx) {
     String inputUsername = usernameField.text;
 
-    formData['username'] = inputUsername;
+    formData['user_name'] = inputUsername;
+    formData['type'] = '2'; // 2 = Listener User Type
 
     Navigator.push(
         ctx, MaterialPageRoute(builder: (ctx) => PasswordPage(formData)));

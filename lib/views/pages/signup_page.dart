@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/views/pages/login_page.dart';
 import 'package:lloud_mobile/views/templates/signup_flow_template.dart';
 
 import './user_info_page.dart';
@@ -26,6 +27,10 @@ class _SignupPageState extends State<SignupPage> {
         ctx, MaterialPageRoute(builder: (ctx) => UserInfoPage(formData)));
   }
 
+  void _goToLoginPage(BuildContext ctx) {
+    Navigator.push(ctx, MaterialPageRoute(builder: (ctx) => LoginPage()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SignupTemplate(
@@ -50,6 +55,26 @@ class _SignupPageState extends State<SignupPage> {
               },
             )
           ],
+        ),
+        SizedBox(
+          height: 120.0,
+        ),
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Already have an account?',
+                style: TextStyle(fontSize: 16),
+              ),
+              FlatButton(
+                  onPressed: () => {_goToLoginPage(context)},
+                  child: Text(
+                    'Log in',
+                    style: TextStyle(fontSize: 18),
+                  ))
+            ],
+          ),
         )
       ],
     );
