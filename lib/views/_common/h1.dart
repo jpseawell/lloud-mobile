@@ -9,7 +9,8 @@ class H1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       this._text,
-      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+      style: TextStyle(
+          fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Raleway'),
     );
   }
 }

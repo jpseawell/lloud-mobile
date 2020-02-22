@@ -9,16 +9,16 @@ class NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       onTap: this.ontap,
-      backgroundColor: Theme.of(context).primaryColor,
+      selectedItemColor: Color.fromRGBO(255, 64, 64, 1.0),
+      unselectedItemColor: Color.fromRGBO(28, 28, 28, 1.0),
       items: [
         BottomNavigationBarItem(
             title: Text('Songs'), icon: Icon(Icons.queue_music)),
         BottomNavigationBarItem(
-            title: Text('Portfolio'), icon: Icon(Icons.graphic_eq)),
+            title: Text('Portfolio'), icon: Icon(Icons.assessment)),
+        BottomNavigationBarItem(title: Text('Store'), icon: Icon(Icons.store)),
         BottomNavigationBarItem(
-            title: Text('Store'), icon: Icon(Icons.queue_music)),
-        BottomNavigationBarItem(
-            title: Text('Account'), icon: Icon(Icons.queue_music)),
+            title: Text('Account'), icon: Icon(Icons.person)),
       ],
     );
   }

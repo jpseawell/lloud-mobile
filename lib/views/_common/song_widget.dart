@@ -22,7 +22,7 @@ class _SongWidgetState extends State<SongWidget> {
         aspectRatio: 1 / 1,
         child: Container(
           alignment: Alignment.bottomLeft,
-          padding: EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(16.0),
           color: Color.fromRGBO(122, 120, 111, .9),
           child: Column(
             children: <Widget>[
@@ -30,8 +30,17 @@ class _SongWidgetState extends State<SongWidget> {
                   flex: 3,
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[Text('Play')])),
+                      children: <Widget>[
+                        FlatButton(
+                            onPressed: null,
+                            child: Icon(
+                              Icons.play_arrow,
+                              size: 128,
+                              color: Color.fromRGBO(255, 255, 255, .5),
+                            ))
+                      ])),
               Expanded(
+                flex: 1,
                 child: Row(
                   children: <Widget>[
                     Expanded(
@@ -56,7 +65,6 @@ class _SongWidgetState extends State<SongWidget> {
                         ))
                   ],
                 ),
-                flex: 1,
               )
             ],
           ),
@@ -73,7 +81,11 @@ class SongTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       this._text,
-      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+      style: TextStyle(
+          color: Color.fromRGBO(255, 255, 255, 1.0),
+          fontSize: 32,
+          fontFamily: 'Raleway',
+          fontWeight: FontWeight.bold),
     );
   }
 }
@@ -93,9 +105,19 @@ class ArtistLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlatButton(
+        padding: EdgeInsets.all(0),
         onPressed: () {
           _goToArtistPage(context);
         },
-        child: Text(this._artistName));
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            this._artistName,
+            style: TextStyle(
+                fontSize: 20,
+                color: Color.fromRGBO(255, 255, 255, 1.0),
+                fontWeight: FontWeight.w300),
+          ),
+        ));
   }
 }
