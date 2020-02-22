@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/views/_common/song_widget.dart';
 
 import '../../models/song.dart';
 import '../../util/dal.dart';
@@ -13,29 +14,22 @@ class SongsPage extends StatefulWidget {
 }
 
 class _SongsPageState extends State<SongsPage> {
-  Future<List<Song>> songs;
+  Future<List<Song>> futureSongs;
 
-  // Future<List<Song>>
-  Future<void> fetchSongs() async {
+  Future<List<Song>> fetchSongs() async {
     final response = await DAL.instance().fetch('song/page/1');
     Map<String, dynamic> jsonObj = json.decode(response.body);
-    var rawSongs = jsonObj['items'][0];
-    debugPrint(rawSongs[0].toString());
+    List<dynamic> rawSongs = jsonObj['items'][0];
 
-    // if (response.statusCode == 200) {
-
-    // rawSongs.forEach((song) => {
-    //   // TODO: Build a list of songs
-    // });
-    // } else {
-    //   throw Exception('Failed to load album');
-    // }
+    List<Song> songsObj = [];
+    rawSongs.forEach((song) => songsObj.add(Song.fromJson(song)));
+    return songsObj;
   }
 
   @override
   void initState() {
     super.initState();
-    fetchSongs();
+    futureSongs = fetchSongs();
   }
 
   @override
@@ -44,7 +38,24 @@ class _SongsPageState extends State<SongsPage> {
       body: SafeArea(
           child: Center(
         child: ListView(
-          children: <Widget>[H1('Songs Page!!!')],
+          children: <Widget>[
+            FutureBuilder<List<Song>>(
+              future: futureSongs,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  // snapshot.data == our list of songs
+                  // TODO: Show song widgets
+                  // return Text(snapshot.data[0].title);
+                  return SongWidget(snapshot.data[0]);
+                } else if (snapshot.hasError) {
+                  return Text("Error: ${snapshot.error}");
+                }
+
+                // By default, show a loading spinner.
+                return CircularProgressIndicator();
+              },
+            )
+          ],
         ),
       )),
     );
