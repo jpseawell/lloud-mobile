@@ -8,6 +8,8 @@ class LloudTheme {
   static final Color _black = Color.fromRGBO(28, 28, 28, 1.0);
   static final Color _white = Color.fromRGBO(255, 255, 255, 1.0);
 
+  static get black => _black;
+
   static ThemeData getThemeData(BuildContext ctx) {
     return ThemeData(primaryColor: _red, textTheme: getTextTheme(ctx));
   }
