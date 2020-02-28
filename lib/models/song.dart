@@ -5,9 +5,9 @@ class Song {
   final String title;
   final int artistId;
   final String artistName;
-  // final int likesCount;
-  // final String imageUrl;
-  // final String audioUrl;
+  final int likesCount;
+  final String imageUrl;
+  final String audioUrl;
   // final bool isLiked;
 
   const Song({
@@ -15,9 +15,9 @@ class Song {
     @required this.title,
     @required this.artistId,
     @required this.artistName,
-    // @required this.likesCount,
-    // @required this.imageUrl,
-    // @required this.audioUrl,
+    @required this.likesCount,
+    @required this.imageUrl,
+    @required this.audioUrl,
     // @required this.isLiked,
   });
 
@@ -27,9 +27,9 @@ class Song {
       title: json['song_name'],
       artistId: json['artist_id'],
       artistName: json['artist_name'],
-      // likesCount: json['likesCount'],
-      // imageUrl: json['imageUrl'],
-      // audioUrl: json['location'],
+      likesCount: json['total_likes'],
+      imageUrl: json['img_location'],
+      audioUrl: json['audio_location'],
       // isLiked: json['isLiked'],
     );
   }

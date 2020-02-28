@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,8 +36,10 @@ class DAL {
     return http.get(this._apiUrl + route, headers: hdrs);
   }
 
-  Future<http.Response> post(String route, dynamic data) {
-    return http.post(this._apiUrl + route, body: data);
+  Future<http.Response> post(String route, dynamic data) async {
+    Map<String, String> hdrs = await headers;
+    return await http.post(this._apiUrl + route,
+        headers: hdrs, body: jsonEncode(data));
   }
 
   static instance() {
