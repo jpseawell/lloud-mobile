@@ -3,6 +3,8 @@ import 'package:lloud_mobile/config/lloud_theme.dart';
 
 import '../pages/songs_page.dart';
 import '../_common/nav_bar.dart';
+import '../_common/total_points.dart';
+import '../_common/remaining_likes.dart';
 
 ///
 /// The NavPage is the 'root' page of the application.
@@ -40,29 +42,11 @@ class _NavPageState extends State<NavPage> {
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
-                    child: Icon(Icons.favorite),
-                  ),
-                  Text('3/5', style: TextStyle(fontWeight: FontWeight.w300))
-                ],
-              ),
+              child: RemainingLikes(),
             ),
             Expanded(
               flex: 1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
-                    child: Icon(Icons.score),
-                  ),
-                  Text('2,356', style: TextStyle(fontWeight: FontWeight.w300))
-                ],
-              ),
+              child: TotalPoints(),
             ),
           ],
         ),
