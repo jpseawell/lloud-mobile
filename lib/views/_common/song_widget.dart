@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:lloud_mobile/config/lloud_theme.dart';
-
-import '../../util/dal.dart';
 
 import '../../models/song.dart';
+import '../_common/like_button.dart';
 
 class SongWidget extends StatefulWidget {
   final Song song;
@@ -23,33 +21,8 @@ class _SongWidgetState extends State<SongWidget> {
   final Song _song;
   final AudioPlayer _audioPlayer;
   bool _playingAudio = false;
-  bool _likedSong = false;
-  int _currentLikes;
 
   _SongWidgetState(this._song, this._audioPlayer);
-
-  @override
-  void initState() {
-    super.initState();
-    _currentLikes = this._song.likesCount;
-  }
-
-  Future<void> _likeSong() async {
-    if (_likedSong) {
-      return;
-    }
-
-    final response = await DAL
-        .instance()
-        .post('song/' + this._song.id.toString() + '/like', {});
-
-    if (response.statusCode == 201) {
-      setState(() {
-        _likedSong = true;
-        _currentLikes = _currentLikes + 1;
-      });
-    }
-  }
 
   Future<void> _togglePlayAudio() async {
     if (this._playingAudio) {
@@ -89,7 +62,7 @@ class _SongWidgetState extends State<SongWidget> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         FlatButton(
-                            onPressed: () async => {await _togglePlayAudio()},
+                            onPressed: () async => await _togglePlayAudio(),
                             child: Icon(
                               _playingAudio ? Icons.stop : Icons.play_arrow,
                               size: 128,
@@ -114,33 +87,7 @@ class _SongWidgetState extends State<SongWidget> {
                         flex: 1,
                         child: Column(
                           children: <Widget>[
-                            RaisedButton(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 12.0),
-                              textColor: LloudTheme.white,
-                              color: LloudTheme.red,
-                              onPressed: () async => {await _likeSong()},
-                              child: Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 1,
-                                    child: Icon(_likedSong
-                                        ? Icons.favorite
-                                        : Icons.favorite_border),
-                                  ),
-                                  Expanded(
-                                      flex: 2,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(_currentLikes.toString(),
-                                              style: TextStyle(fontSize: 20))
-                                        ],
-                                      ))
-                                ],
-                              ),
-                            )
+                            LikeButton(this._song.id, this._song.likesCount)
                           ],
                         ))
                   ],
