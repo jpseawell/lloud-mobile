@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../util/dal.dart';
 
 class Likes with ChangeNotifier {
+  // TODO: Load on init
   int _allowance = 5, _remaining = 5;
 
   int get allowance => _allowance;

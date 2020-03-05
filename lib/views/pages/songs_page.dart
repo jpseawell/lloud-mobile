@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/views/_common/song_widget.dart';
 
@@ -16,7 +15,6 @@ class SongsPage extends StatefulWidget {
 
 class _SongsPageState extends State<SongsPage> {
   Future<List<Song>> futureSongs;
-  AudioPlayer audioPlayer = AudioPlayer();
 
   /// TODO: Fix issues with songs loading
   int total = 17;
@@ -64,7 +62,7 @@ class _SongsPageState extends State<SongsPage> {
               );
             case ConnectionState.done:
               if (snapshot.hasData) {
-                return SongWidget(snapshot.data, this.audioPlayer);
+                return SongWidget(snapshot.data);
               } else if (snapshot.hasError) {
                 return new Text(
                   '${snapshot.error}',

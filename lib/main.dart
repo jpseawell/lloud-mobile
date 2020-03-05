@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/providers/song_player.dart';
 import 'package:provider/provider.dart';
 
 import './views/pages/signup_page.dart';
@@ -12,7 +13,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => Likes())],
+        providers: [
+          ChangeNotifierProvider(create: (_) => Likes()),
+          ChangeNotifierProvider(create: (_) => SongPlayer())
+        ],
         child: MaterialApp(
           title: 'Lloud',
           theme: LloudTheme.getThemeData(context),

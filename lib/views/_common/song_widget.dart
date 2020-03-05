@@ -1,47 +1,24 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/song.dart';
 import '../_common/like_button.dart';
+import '../_common/play_button.dart';
 
 class SongWidget extends StatefulWidget {
   final Song song;
-  final AudioPlayer audioPlayer;
 
-  SongWidget(this.song, this.audioPlayer);
+  SongWidget(this.song);
 
   @override
-  _SongWidgetState createState() =>
-      _SongWidgetState(this.song, this.audioPlayer);
+  _SongWidgetState createState() => _SongWidgetState(this.song);
 }
 
 class _SongWidgetState extends State<SongWidget> {
   final Song _song;
-  final AudioPlayer _audioPlayer;
-  bool _playingAudio = false;
 
-  _SongWidgetState(this._song, this._audioPlayer);
-
-  Future<void> _togglePlayAudio() async {
-    if (this._playingAudio) {
-      int result = await this._audioPlayer.stop();
-      if (result == 1) {
-        setState(() {
-          _playingAudio = false;
-        });
-      }
-      return;
-    }
-
-    int result = await this._audioPlayer.play(this._song.audioUrl);
-    if (result == 1) {
-      setState(() {
-        _playingAudio = true;
-      });
-    }
-  }
+  _SongWidgetState(this._song);
 
   @override
   Widget build(BuildContext context) {
@@ -61,13 +38,7 @@ class _SongWidgetState extends State<SongWidget> {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        FlatButton(
-                            onPressed: () async => await _togglePlayAudio(),
-                            child: Icon(
-                              _playingAudio ? Icons.stop : Icons.play_arrow,
-                              size: 128,
-                              color: Color.fromRGBO(255, 255, 255, .75),
-                            ))
+                        PlayButton(this._song.id, this._song.audioUrl)
                       ])),
               Expanded(
                 flex: 1,
