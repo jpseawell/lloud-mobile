@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 
+import '../../providers/likes.dart';
 import '../pages/songs_page.dart';
 import '../_common/nav_bar.dart';
 import '../_common/total_points.dart';
@@ -35,6 +37,7 @@ class _NavPageState extends State<NavPage> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<Likes>(context, listen: false).fetchLikes();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: LloudTheme.black,
