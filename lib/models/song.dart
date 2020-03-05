@@ -8,7 +8,7 @@ class Song {
   final int likesCount;
   final String imageUrl;
   final String audioUrl;
-  // final bool isLiked;
+  final bool isLiked;
 
   const Song({
     @required this.id,
@@ -18,7 +18,7 @@ class Song {
     @required this.likesCount,
     @required this.imageUrl,
     @required this.audioUrl,
-    // @required this.isLiked,
+    @required this.isLiked,
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
@@ -30,7 +30,7 @@ class Song {
       likesCount: json['total_likes'],
       imageUrl: json['img_location'],
       audioUrl: json['audio_location'],
-      // isLiked: json['isLiked'],
+      isLiked: json['likedByUser'],
     );
   }
 }

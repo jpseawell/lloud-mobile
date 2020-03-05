@@ -58,7 +58,8 @@ class _SongWidgetState extends State<SongWidget> {
                         flex: 1,
                         child: Column(
                           children: <Widget>[
-                            LikeButton(this._song.id, this._song.likesCount)
+                            LikeButton(this._song.id, this._song.likesCount,
+                                this._song.isLiked)
                           ],
                         ))
                   ],

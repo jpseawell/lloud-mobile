@@ -8,23 +8,24 @@ import '../../providers/likes.dart';
 class LikeButton extends StatefulWidget {
   final int _songId;
   final int _likesForThisSong;
+  bool _likedByUser;
 
-  LikeButton(this._songId, this._likesForThisSong);
+  LikeButton(this._songId, this._likesForThisSong, this._likedByUser);
 
   @override
   _LikeButtonState createState() =>
-      _LikeButtonState(this._songId, this._likesForThisSong);
+      _LikeButtonState(this._songId, this._likesForThisSong, this._likedByUser);
 }
 
 class _LikeButtonState extends State<LikeButton> {
   final int _songId;
   int _likesForThisSong;
-  bool _hasBeenLiked = false;
+  bool _likedByUser;
 
-  _LikeButtonState(this._songId, this._likesForThisSong);
+  _LikeButtonState(this._songId, this._likesForThisSong, this._likedByUser);
 
   Future<void> _likeSong(BuildContext ctx) async {
-    if (_hasBeenLiked) {
+    if (_likedByUser) {
       return;
     }
 
@@ -34,7 +35,7 @@ class _LikeButtonState extends State<LikeButton> {
 
     if (response.statusCode == 201) {
       setState(() {
-        _hasBeenLiked = true;
+        _likedByUser = true;
         _likesForThisSong = _likesForThisSong + 1;
       });
 
@@ -53,7 +54,7 @@ class _LikeButtonState extends State<LikeButton> {
         children: <Widget>[
           Expanded(
             flex: 1,
-            child: Icon(_hasBeenLiked ? Icons.favorite : Icons.favorite_border),
+            child: Icon(_likedByUser ? Icons.favorite : Icons.favorite_border),
           ),
           Expanded(
               flex: 2,
