@@ -56,10 +56,7 @@ class _SongsPageState extends State<SongsPage> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              return new Container(
-                padding: const EdgeInsets.all(8.0),
-                child: new Placeholder(fallbackHeight: 100.0),
-              );
+              return new Text('');
             case ConnectionState.done:
               if (snapshot.hasData) {
                 return SongWidget(snapshot.data);

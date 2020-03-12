@@ -1,10 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
 
 import '../../models/song.dart';
 import '../_common/like_button.dart';
 import '../_common/play_button.dart';
+import '../_common/artist_link.dart';
 
 class SongWidget extends StatefulWidget {
   final Song song;
@@ -51,7 +51,10 @@ class _SongWidgetState extends State<SongWidget> {
                           children: <Widget>[
                             SongTitle(this._song.title),
                             ArtistLink(
-                                this._song.artistId, this._song.artistName)
+                              this._song.artistId,
+                              this._song.artistName,
+                              txtColor: LloudTheme.white,
+                            )
                           ],
                         )),
                     Expanded(
@@ -86,37 +89,5 @@ class SongTitle extends StatelessWidget {
           fontFamily: 'Raleway',
           fontWeight: FontWeight.bold),
     );
-  }
-}
-
-class ArtistLink extends StatelessWidget {
-  final int _artistId;
-  final String _artistName;
-
-  ArtistLink(this._artistId, this._artistName);
-
-  void _goToArtistPage(BuildContext ctx) {
-    debugPrint('going to artist page...');
-    // Navigator.push(
-    //     ctx, MaterialPageRoute(builder: (ctx) => ArtistPage(this._artistId)));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FlatButton(
-        padding: EdgeInsets.all(0),
-        onPressed: () {
-          _goToArtistPage(context);
-        },
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            this._artistName,
-            style: TextStyle(
-                fontSize: 20,
-                color: Color.fromRGBO(255, 255, 255, 1.0),
-                fontWeight: FontWeight.w300),
-          ),
-        ));
   }
 }

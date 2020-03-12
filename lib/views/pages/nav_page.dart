@@ -4,6 +4,7 @@ import 'package:lloud_mobile/config/lloud_theme.dart';
 
 import '../../providers/likes.dart';
 import '../pages/songs_page.dart';
+import '../pages/portfolio_page.dart';
 import '../_common/nav_bar.dart';
 import '../_common/total_points.dart';
 import '../_common/remaining_likes.dart';
@@ -23,7 +24,7 @@ class NavPage extends StatefulWidget {
 class _NavPageState extends State<NavPage> {
   final List<Widget> _pages = [
     SongsPage(),
-    // PortfolioPage(),
+    PortfolioPage(),
     // StorePage(),
     // ListenerAccountPage(),
   ];
@@ -55,7 +56,7 @@ class _NavPageState extends State<NavPage> {
         ),
       ),
       body: _pages[_selectedPageIndex],
-      bottomNavigationBar: NavBar(_selectPage),
+      bottomNavigationBar: NavBar(_selectPage, _selectedPageIndex),
     );
   }
 }
