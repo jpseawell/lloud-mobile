@@ -5,6 +5,7 @@ import 'package:lloud_mobile/config/lloud_theme.dart';
 import '../../providers/likes.dart';
 import '../pages/songs_page.dart';
 import '../pages/portfolio_page.dart';
+import '../pages/listener_account_page.dart';
 import '../_common/nav_bar.dart';
 import '../_common/total_points.dart';
 import '../_common/remaining_likes.dart';
@@ -26,7 +27,7 @@ class _NavPageState extends State<NavPage> {
     SongsPage(),
     PortfolioPage(),
     // StorePage(),
-    // ListenerAccountPage(),
+    ListenerAccountPage(),
   ];
   int _selectedPageIndex = 0;
 
