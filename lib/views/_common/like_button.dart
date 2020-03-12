@@ -24,6 +24,73 @@ class _LikeButtonState extends State<LikeButton> {
 
   _LikeButtonState(this._songId, this._likesForThisSong, this._likedByUser);
 
+  void _showConfirmationDialog(BuildContext context) async {
+    final likes = Provider.of<Likes>(context, listen: false);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("Are you sure you want to like this song?"),
+            content: new Text(
+                "You only have ${likes.remaining} likes remaining for this week"),
+            actions: <Widget>[
+              new RaisedButton(
+                child: new Text("Yes"),
+                onPressed: () async {
+                  await _likeSong(context);
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: new Text("No"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void _showAlreadyLikedDialog(BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("You've already liked this song."),
+            content: new Text("You can only like each song one time."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Ok"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void _showNoLikesRemainingDialog(BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("You've used all of your likes for this week."),
+            content: new Text(
+                "Check back in a few days when your likes are replenished."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Ok"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   Future<void> _likeSong(BuildContext ctx) async {
     if (_likedByUser) {
       return;
@@ -49,7 +116,14 @@ class _LikeButtonState extends State<LikeButton> {
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       textColor: LloudTheme.white,
       color: LloudTheme.red,
-      onPressed: () async => await _likeSong(context),
+      onPressed: () async => {
+        if (Provider.of<Likes>(context, listen: false).remaining <= 0)
+          {_showNoLikesRemainingDialog(context)}
+        else if (_likedByUser)
+          {_showAlreadyLikedDialog(context)}
+        else
+          {await _showConfirmationDialog(context)}
+      },
       child: Row(
         children: <Widget>[
           Expanded(
