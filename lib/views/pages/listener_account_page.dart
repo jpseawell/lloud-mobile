@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/views/_common/listener_account_form.dart';
 
-import 'package:lloud_mobile/views/_common/h1.dart';
-import 'package:lloud_mobile/views/_common/h2.dart';
+import '../../util/dal.dart';
+import '../../models/user.dart';
 
 class ListenerAccountPage extends StatefulWidget {
   @override
@@ -9,69 +11,31 @@ class ListenerAccountPage extends StatefulWidget {
 }
 
 class _ListenerAccountPageState extends State<ListenerAccountPage> {
-  final _formKey = GlobalKey<FormState>();
+  Future<User> futureUser;
+
+  Future<User> fetchUser() async {
+    final response = await DAL.instance().fetch('user');
+    Map<String, dynamic> jsonObj = json.decode(response.body);
+
+    return User.fromJson(jsonObj['items'][0]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futureUser = fetchUser();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKey,
-        child: Container(
-          padding: EdgeInsets.all(16.0),
-          child: ListView(children: <Widget>[
-            H1("My Account"),
-            H2("Personal Info"),
-            TextFormField(
-                decoration: InputDecoration(labelText: 'First Name'),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                }),
-            TextFormField(
-                decoration: InputDecoration(labelText: 'Last Name'),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                }),
-            TextFormField(
-                decoration: InputDecoration(labelText: 'Username'),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                }),
-            TextFormField(
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                }),
-            H2("Shipping Info"),
-            Text(
-                "Your address is required for shipping purchased items from the store."),
-            TextFormField(decoration: InputDecoration(labelText: 'Address 1')),
-            TextFormField(decoration: InputDecoration(labelText: 'Address 2')),
-            TextFormField(decoration: InputDecoration(labelText: 'City')),
-            TextFormField(decoration: InputDecoration(labelText: 'State')),
-            TextFormField(decoration: InputDecoration(labelText: 'Zipcode')),
-            TextFormField(decoration: InputDecoration(labelText: 'Country')),
-            RaisedButton(
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  // If the form is valid, display a Snackbar.
-                  Scaffold.of(context)
-                      .showSnackBar(SnackBar(content: Text('Processing Data')));
-                }
-              },
-              child: Text('Submit'),
-            )
-          ]),
-        ));
+    return FutureBuilder(
+        future: futureUser,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListenerAccountForm(snapshot.data);
+          }
+
+          return Text('Loading...');
+        });
   }
 }

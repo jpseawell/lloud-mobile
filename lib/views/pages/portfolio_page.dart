@@ -74,7 +74,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
                 );
               } else if (snapshot.hasError) {
                 debugPrint("${snapshot.error}");
-                return Text('nope');
+                return Text('');
               }
 
               return new Text(''); // Loading bar
