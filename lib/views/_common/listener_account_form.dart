@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../util/dal.dart';
@@ -40,7 +39,8 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                     return 'Please enter some text';
                   }
                   return null;
-                }),
+                },
+                onSaved: (val) => this.user.firstName = val),
             TextFormField(
                 initialValue: user.lastName,
                 decoration: InputDecoration(labelText: 'Last Name'),
@@ -49,7 +49,8 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                     return 'Please enter some text';
                   }
                   return null;
-                }),
+                },
+                onSaved: (val) => this.user.lastName = val),
             TextFormField(
                 initialValue: user.userName,
                 decoration: InputDecoration(labelText: 'Username'),
@@ -58,7 +59,8 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                     return 'Please enter some text';
                   }
                   return null;
-                }),
+                },
+                onSaved: (val) => this.user.userName = val),
             TextFormField(
                 initialValue: user.email,
                 decoration: InputDecoration(labelText: 'Email'),
@@ -67,7 +69,8 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                     return 'Please enter some text';
                   }
                   return null;
-                }),
+                },
+                onSaved: (val) => this.user.email = val),
             SizedBox(height: 16.0),
             H2("Shipping Info"),
             SizedBox(height: 8.0),
@@ -82,14 +85,22 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
             TextFormField(decoration: InputDecoration(labelText: 'Zipcode')),
             TextFormField(decoration: InputDecoration(labelText: 'Country')),
             RaisedButton(
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  // If the form is valid, display a Snackbar.
-                  Scaffold.of(context)
-                      .showSnackBar(SnackBar(content: Text('Processing Data')));
+              onPressed: () async {
+                final FormState form = _formKey.currentState;
+                if (form.validate()) {
+                  try {
+                    form.save();
+                    await this.user.update(this.user);
+
+                    Scaffold.of(context).showSnackBar(
+                        SnackBar(content: Text('Account Info Updated')));
+                  } catch (e) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Account Info Could Not Be Updated')));
+                  }
                 }
               },
-              child: Text('Submit'),
+              child: Text('Update Info'),
             )
           ]),
         ));

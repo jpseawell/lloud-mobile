@@ -5,20 +5,20 @@ import 'package:http/http.dart';
 import '../util/dal.dart';
 
 class User {
-  final int id;
-  final String firstName;
-  final String lastName;
-  final String userName;
-  final String email;
-  final int type;
-  final String address1;
-  final String address2;
-  final String city;
-  final String state;
-  final String zipcode;
-  final String country;
+  int id;
+  String firstName;
+  String lastName;
+  String userName;
+  String email;
+  int type;
+  String address1;
+  String address2;
+  String city;
+  String state;
+  String zipcode;
+  String country;
 
-  const User({
+  User({
     @required this.id,
     @required this.firstName,
     @required this.lastName,
@@ -59,5 +59,32 @@ class User {
       zipcode: json['zipcode'],
       country: json['country'],
     );
+  }
+
+  Map _toMap(User user) {
+    var mapData = new Map();
+    mapData["first_name"] = user.firstName;
+    mapData["last_name"] = user.lastName;
+    mapData["user_name"] = user.userName;
+    mapData["email"] = user.email;
+    mapData["type"] = user.type;
+    mapData["address_1"] = user.address1;
+    mapData["address_2"] = user.address2;
+    mapData["city"] = user.city;
+    mapData["state"] = user.state;
+    mapData["zipcode"] = user.zipcode;
+    mapData["country"] = user.country;
+    return mapData;
+  }
+
+  Future<void> update(User user) async {
+    try {
+      dynamic dal = DAL.instance();
+      Response res = await dal.put('user', _toMap(user));
+    } catch (e) {
+      print('Error: Could not update user');
+      print(e);
+      return null;
+    }
   }
 }
