@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/templates/signup_flow_template.dart';
 
 import '../../util/auth.dart';
@@ -25,7 +26,14 @@ class _WelcomePageState extends State<WelcomePage> {
   Future<void> _registerUserAndLogin(BuildContext ctx) async {
     // TODO: Try/catch this and update error state on err
 
-    await User.registerUser(formData);
+    try {
+      await User.registerUser(formData);
+    } catch (err) {
+      Scaffold.of(ctx).showSnackBar(SnackBar(
+          backgroundColor: LloudTheme.red,
+          content: Text('Error: Something went wrong!')));
+    }
+
     await Auth.authenticateUser(formData['email'], formData['password']);
     bool isLoggedIn = await Auth.loggedIn();
 
@@ -52,11 +60,13 @@ class _WelcomePageState extends State<WelcomePage> {
           ),
           ButtonBar(
             children: <Widget>[
-              RaisedButton(
-                child: Text('Get Started'),
-                onPressed: () async {
-                  await _registerUserAndLogin(context);
-                },
+              Builder(
+                builder: (context2) => RaisedButton(
+                  child: Text('Get Started'),
+                  onPressed: () async {
+                    await _registerUserAndLogin(context2);
+                  },
+                ),
               )
             ],
           )
