@@ -38,6 +38,10 @@ class Auth {
   static Future<bool> loggedIn() async {
     String token = await getToken();
 
+    if (token == null) {
+      return false;
+    }
+
     if (token.isEmpty) {
       return false;
     }
