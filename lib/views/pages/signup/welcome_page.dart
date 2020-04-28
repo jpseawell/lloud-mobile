@@ -1,59 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/util/auth.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/templates/signup_flow_template.dart';
 
-import '../../util/auth.dart';
-
-import '../pages/nav_page.dart';
-import '../../models/user.dart';
-import '../_common/h1.dart';
+import 'package:lloud_mobile/views/pages/nav_page.dart';
+import 'package:lloud_mobile/models/user.dart';
+import 'package:lloud_mobile/views/_common/h1.dart';
 
 class WelcomePage extends StatefulWidget {
-  final Map<String, String> formData;
-
-  WelcomePage(this.formData);
+  WelcomePage();
 
   @override
-  _WelcomePageState createState() => _WelcomePageState(this.formData);
+  _WelcomePageState createState() => _WelcomePageState();
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  final Map<String, String> formData;
-  Future<bool> isLoggedIn;
-
-  _WelcomePageState(this.formData);
-
-  Future<void> _registerUserAndLogin(BuildContext ctx) async {
-    // TODO: Try/catch this and update error state on err
-
+  Future<void> _registerUserAndLogin(BuildContext context,
+      BuildContext snackCtx, Map<String, String> userData) async {
     try {
-      await User.registerUser(formData);
+      await User.registerUser(userData);
     } catch (err) {
-      Scaffold.of(ctx).showSnackBar(SnackBar(
+      Scaffold.of(snackCtx).showSnackBar(SnackBar(
           backgroundColor: LloudTheme.red,
           content: Text('Error: Something went wrong!')));
     }
 
-    await Auth.authenticateUser(formData['email'], formData['password']);
+    print(userData.toString());
+    await Auth.authenticateUser(userData['email'], userData['password']);
     bool isLoggedIn = await Auth.loggedIn();
 
     // TODO: Look into erasing history at this point so the user can't go backwards
-
     if (isLoggedIn) {
-      Navigator.push(ctx, MaterialPageRoute(builder: (ctx) => NavPage()));
+      return Navigator.pushNamed(context, '/nav');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    Map<String, String> userData = ModalRoute.of(context).settings.arguments;
     return SignupTemplate(
       <Widget>[
         SizedBox(height: 80.0),
         Column(children: <Widget>[
-          SizedBox(height: 80.0),
+          SizedBox(height: 40.0),
           Column(children: <Widget>[
             H1('Welcome to Lloud!'),
-            H1('@' + formData['user_name']),
+            H1('@' + userData['username']),
           ]),
           SizedBox(
             height: 120.0,
@@ -61,11 +53,15 @@ class _WelcomePageState extends State<WelcomePage> {
           ButtonBar(
             children: <Widget>[
               Builder(
-                builder: (context2) => RaisedButton(
+                builder: (snackCtx) => RaisedButton(
                   child: Text('Get Started'),
                   onPressed: () async {
-                    await _registerUserAndLogin(context2);
+                    // I have to create a second context in order to
+                    // render the snackBar
+                    await _registerUserAndLogin(context, snackCtx, userData);
                   },
+                  textColor: LloudTheme.white,
+                  color: LloudTheme.red,
                 ),
               )
             ],

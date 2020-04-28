@@ -35,7 +35,7 @@ class User {
 
   static Future<User> registerUser(Map<String, String> userData) async {
     dynamic dal = DAL.instance();
-    Response res = await dal.post('user', userData);
+    Response res = await dal.post('users', userData, useAuthHeader: false);
 
     if (res.statusCode == 201) {
       return User.fromJson(json.decode(res.body));

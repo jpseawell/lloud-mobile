@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:lloud_mobile/providers/song_player.dart';
 import 'package:provider/provider.dart';
 
-import './views/pages/signup_page.dart';
-import './config/lloud_theme.dart';
+import './views/pages/signup/signup_page.dart';
+import './views/pages/signup/username_page.dart';
+import './views/pages/signup/password_page.dart';
+import './views/pages/signup/welcome_page.dart';
+import './views/pages/nav_page.dart';
 import './providers/likes.dart';
 
 void main() => runApp(MyApp());
@@ -17,10 +20,12 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => Likes()),
           ChangeNotifierProvider(create: (_) => SongPlayer())
         ],
-        child: MaterialApp(
-          title: 'Lloud',
-          theme: LloudTheme.getThemeData(context),
-          home: SignupPage(),
-        ));
+        child: MaterialApp(title: 'Lloud', initialRoute: '/', routes: {
+          '/': (ctx) => SignupPage(),
+          '/username': (ctx) => UsernamePage(),
+          '/password': (ctx) => PasswordPage(),
+          '/welcome': (ctx) => WelcomePage(),
+          '/nav': (ctx) => NavPage(),
+        }));
   }
 }

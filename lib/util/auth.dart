@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 
@@ -17,6 +16,10 @@ class Auth {
     await storage.write(key: 'id_token', value: idToken);
   }
 
+  static Future<void> clearToken() async {
+    await storage.delete(key: 'id_token');
+  }
+
   static Future<String> getToken() async {
     return await storage.read(key: 'id_token');
   }
@@ -26,10 +29,10 @@ class Auth {
 
     Map<String, String> userData = {'email': email, 'password': passwd};
 
-    Response res = await dal.post('auth', userData);
+    Response res = await dal.post('login', userData, useAuthHeader: false);
 
     if (res.statusCode == 200) {
-      await setToken(json.decode(res.body)['data']);
+      await setToken(json.decode(res.body)['token']);
     } else {
       throw Exception('Failed to authenticate user');
     }
@@ -37,6 +40,7 @@ class Auth {
 
   static Future<bool> loggedIn() async {
     String token = await getToken();
+    Map<String, dynamic> parsedJwt;
 
     if (token == null) {
       return false;
@@ -46,16 +50,20 @@ class Auth {
       return false;
     }
 
-    if (isTokenExpired(token)) {
+    parsedJwt = parseJwt(token);
+    if (!parsedJwt.containsKey('exp')) {
+      await clearToken();
+      return false;
+    }
+
+    if (isTokenExpired(parsedJwt)) {
       return false;
     }
 
     return true;
   }
 
-  static bool isTokenExpired(token) {
-    Map<String, dynamic> parsedJwt = parseJwt(token);
-
+  static bool isTokenExpired(parsedJwt) {
     if (parsedJwt['exp'] < (new DateTime.now().millisecond) / 1000) {
       return true;
     } else {
