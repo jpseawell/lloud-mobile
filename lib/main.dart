@@ -6,6 +6,7 @@ import './views/pages/signup/signup_page.dart';
 import './views/pages/signup/username_page.dart';
 import './views/pages/signup/password_page.dart';
 import './views/pages/signup/welcome_page.dart';
+import './views/pages/login_page.dart';
 import './views/pages/nav_page.dart';
 import './providers/likes.dart';
 
@@ -20,12 +21,17 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => Likes()),
           ChangeNotifierProvider(create: (_) => SongPlayer())
         ],
-        child: MaterialApp(title: 'Lloud', initialRoute: '/', routes: {
-          '/': (ctx) => SignupPage(),
-          '/username': (ctx) => UsernamePage(),
-          '/password': (ctx) => PasswordPage(),
-          '/welcome': (ctx) => WelcomePage(),
-          '/nav': (ctx) => NavPage(),
-        }));
+        child: MaterialApp(
+            title: 'Lloud',
+            initialRoute: '/',
+            debugShowCheckedModeBanner: false,
+            routes: {
+              '/': (ctx) => SignupPage(),
+              '/username': (ctx) => UsernamePage(),
+              '/password': (ctx) => PasswordPage(),
+              '/welcome': (ctx) => WelcomePage(),
+              '/login': (ctx) => LoginPage(),
+              '/nav': (ctx) => NavPage(),
+            }));
   }
 }

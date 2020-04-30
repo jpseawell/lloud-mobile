@@ -30,7 +30,6 @@ class Auth {
     Map<String, String> userData = {'email': email, 'password': passwd};
 
     Response res = await dal.post('login', userData, useAuthHeader: false);
-
     if (res.statusCode == 200) {
       await setToken(json.decode(res.body)['token']);
     } else {

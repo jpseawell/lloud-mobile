@@ -14,73 +14,93 @@ class SongsPage extends StatefulWidget {
 }
 
 class _SongsPageState extends State<SongsPage> {
-  Future<List<Song>> futureSongs;
+  ScrollController controller;
+  final _songs = <Song>[];
+  bool isFetching = true;
+  int currentPage = 1;
 
-  /// TODO: Fix issues with songs loading
-  int total = 17;
-  int pageSize = 1;
-
-  Future<List<Song>> _fetchSongs(int offset, int limit) async {
-    String songUrl = 'song/' + offset.toString() + '/' + limit.toString();
-    final response = await DAL.instance().fetch(songUrl);
-    Map<String, dynamic> jsonObj = json.decode(response.body);
-    List<dynamic> rawSongs = jsonObj['items'][0];
-
-    List<Song> songsObj = [];
-    rawSongs.forEach((song) => songsObj.add(Song.fromJson(song)));
-    return songsObj;
+  @override
+  void initState() {
+    super.initState();
+    fetchSongs(currentPage).then((result) {
+      controller = new ScrollController()..addListener(_scrollListener);
+    });
   }
 
-  var completers = new List<Completer<Song>>();
-
-  Widget _loadSong(int itemIndex) {
-    if (itemIndex >= completers.length) {
-      int toLoad = min(total - itemIndex, pageSize);
-      completers.addAll(List.generate(toLoad, (index) {
-        return new Completer();
-      }));
-      _fetchSongs(itemIndex, toLoad).then((items) {
-        items.asMap().forEach((index, item) {
-          completers[itemIndex + index].complete(item);
-        });
-      }).catchError((error) {
-        completers.sublist(itemIndex, itemIndex + toLoad).forEach((completer) {
-          completer.completeError(error);
-        });
-      });
+  void _scrollListener() {
+    if (controller.position.pixels == controller.position.maxScrollExtent) {
+      startLoader();
     }
+  }
 
-    var future = completers[itemIndex].future;
-    return new FutureBuilder(
-        future: future,
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return new Text('');
-            case ConnectionState.done:
-              if (snapshot.hasData) {
-                return SongWidget(snapshot.data);
-              } else if (snapshot.hasError) {
-                return new Text(
-                  '${snapshot.error}',
-                  style: TextStyle(color: Colors.red),
-                );
-              }
-              return new Text('');
-            default:
-              return new Text('');
-          }
-        });
+  void startLoader() {
+    setState(() {
+      isFetching = !isFetching;
+      fetchSongs(currentPage);
+    });
+  }
+
+  Future<void> fetchSongs(int requestedPage) async {
+    String url = 'songs/' + requestedPage.toString();
+    final response = await DAL.instance().fetch(url);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> decodedResponse = json.decode(response.body);
+      List<Song> songs = [];
+      decodedResponse['data'].forEach((song) => songs.add(Song.fromJson(song)));
+
+      _songs.addAll(songs);
+
+      setState(() {
+        isFetching = !isFetching;
+        currentPage += 1;
+      });
+    } else {
+      // err
+      print('ERR:');
+      print(response.body.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: new ListView.builder(
-              itemCount: total,
-              itemBuilder: (BuildContext context, int index) =>
-                  _loadSong(index))),
+          child: new Stack(children: <Widget>[
+        _songWidgetBuilder(),
+        _loader(),
+      ])),
     );
+  }
+
+  Widget _songWidgetBuilder() {
+    return new ListView.builder(
+        controller: controller,
+        itemCount: _songs.length,
+        itemBuilder: (context, i) {
+          return _buildSongWidget(_songs[i]);
+        });
+  }
+
+  Widget _buildSongWidget(Song song) {
+    return SongWidget(song);
+  }
+
+  Widget _loader() {
+    return isFetching
+        ? new Align(
+            child: new Container(
+              width: 70.0,
+              height: 70.0,
+              child: new Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: new Center(child: new CircularProgressIndicator())),
+            ),
+            alignment: FractionalOffset.bottomCenter,
+          )
+        : new SizedBox(
+            width: 0.0,
+            height: 0.0,
+          );
   }
 }

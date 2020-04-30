@@ -89,7 +89,7 @@ class _SignupPageState extends State<SignupPage> {
                 style: TextStyle(fontSize: 16),
               ),
               FlatButton(
-                  onPressed: () => {},
+                  onPressed: () => {Navigator.pushNamed(context, '/login')},
                   child: Text(
                     'Log in',
                     style: TextStyle(fontSize: 18, color: LloudTheme.red),

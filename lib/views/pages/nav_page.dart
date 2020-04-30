@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 
+import 'package:lloud_mobile/views/_common/nav_logo.dart';
+
 import '../../providers/likes.dart';
 import '../pages/songs_page.dart';
 import '../pages/portfolio_page.dart';
@@ -42,12 +44,20 @@ class _NavPageState extends State<NavPage> {
     Provider.of<Likes>(context, listen: false).fetchLikes();
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: LloudTheme.black,
         title: Row(
           children: <Widget>[
             Expanded(
               flex: 1,
               child: RemainingLikes(),
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(
+                alignment: Alignment.center,
+                child: NavLogo(),
+              ),
             ),
             Expanded(
               flex: 1,

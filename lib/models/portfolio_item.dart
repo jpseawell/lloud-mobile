@@ -21,13 +21,13 @@ class PortfolioItem {
 
   factory PortfolioItem.fromJson(Map<String, dynamic> json) {
     return PortfolioItem(
-      songId: json['id'],
-      songTitle: json['name'],
-      points: json['report']['newLikes'],
-      imageUrl: json['img_file'],
-      audioUrl: json['audio_file'],
-      artistId: json['artist_id'],
-      artistName: json['artist'],
+      songId: json['song']['id'],
+      songTitle: json['song']['title'],
+      points: json['pointsEarned'],
+      imageUrl: json['song']['imageFile']['location'],
+      audioUrl: json['song']['audioFile']['location'],
+      artistId: json['song']['artists'][0]['id'],
+      artistName: json['song']['artists'][0]['name'],
     );
   }
 }

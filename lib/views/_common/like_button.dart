@@ -98,7 +98,7 @@ class _LikeButtonState extends State<LikeButton> {
 
     final response = await DAL
         .instance()
-        .post('song/' + this._songId.toString() + '/like', {});
+        .post('songs/' + this._songId.toString() + '/like', {});
 
     if (response.statusCode == 201) {
       setState(() {

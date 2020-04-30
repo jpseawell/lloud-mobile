@@ -14,10 +14,10 @@ class _ListenerAccountPageState extends State<ListenerAccountPage> {
   Future<User> futureUser;
 
   Future<User> fetchUser() async {
-    final response = await DAL.instance().fetch('user');
-    Map<String, dynamic> jsonObj = json.decode(response.body);
+    final response = await DAL.instance().fetch('me');
+    Map<String, dynamic> decodedResponse = json.decode(response.body);
 
-    return User.fromJson(jsonObj['items'][0]);
+    return User.fromJson(decodedResponse['data']);
   }
 
   @override
@@ -35,7 +35,7 @@ class _ListenerAccountPageState extends State<ListenerAccountPage> {
             return ListenerAccountForm(snapshot.data);
           }
 
-          return Text('Loading...');
+          return new CircularProgressIndicator();
         });
   }
 }

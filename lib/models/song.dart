@@ -23,13 +23,13 @@ class Song {
 
   factory Song.fromJson(Map<String, dynamic> json) {
     return Song(
-      id: json['song_id'],
-      title: json['song_name'],
-      artistId: json['artist_id'],
-      artistName: json['artist_name'],
-      likesCount: json['total_likes'],
-      imageUrl: json['img_location'],
-      audioUrl: json['audio_location'],
+      id: json['id'],
+      title: json['title'],
+      artistId: json['artists'][0]['id'],
+      artistName: json['artists'][0]['name'],
+      likesCount: json['likesCount'],
+      imageUrl: json['imageFile']['location'],
+      audioUrl: json['audioFile']['location'],
       isLiked: json['likedByUser'],
     );
   }

@@ -10,7 +10,6 @@ class User {
   String lastName;
   String userName;
   String email;
-  int type;
   String address1;
   String address2;
   String city;
@@ -24,7 +23,6 @@ class User {
     @required this.lastName,
     @required this.userName,
     @required this.email,
-    @required this.type,
     @required this.address1,
     @required this.address2,
     @required this.city,
@@ -47,13 +45,12 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
-      userName: json['user_name'],
+      firstName: json['firstname'],
+      lastName: json['lastname'],
+      userName: json['username'],
       email: json['email'],
-      type: json['type'],
-      address1: json['address_1'],
-      address2: json['address_2'],
+      address1: json['address1'],
+      address2: json['address2'],
       city: json['city'],
       state: json['state'],
       zipcode: json['zipcode'],
@@ -63,13 +60,12 @@ class User {
 
   Map _toMap(User user) {
     var mapData = new Map();
-    mapData["first_name"] = user.firstName;
-    mapData["last_name"] = user.lastName;
-    mapData["user_name"] = user.userName;
+    mapData["firstname"] = user.firstName;
+    mapData["lastname"] = user.lastName;
+    mapData["username"] = user.userName;
     mapData["email"] = user.email;
-    mapData["type"] = user.type;
-    mapData["address_1"] = user.address1;
-    mapData["address_2"] = user.address2;
+    mapData["address1"] = user.address1;
+    mapData["address2"] = user.address2;
     mapData["city"] = user.city;
     mapData["state"] = user.state;
     mapData["zipcode"] = user.zipcode;
@@ -78,13 +74,12 @@ class User {
   }
 
   Future<void> update(User user) async {
-    try {
-      dynamic dal = DAL.instance();
-      Response res = await dal.put('user', _toMap(user));
-    } catch (e) {
-      print('Error: Could not update user');
-      print(e);
-      return null;
+    dynamic dal = DAL.instance();
+    Response response = await dal.put('users', _toMap(user));
+    Map<String, dynamic> decodedResponse = json.decode(response.body);
+
+    if (!decodedResponse['success']) {
+      throw Exception(decodedResponse['message']);
     }
   }
 }

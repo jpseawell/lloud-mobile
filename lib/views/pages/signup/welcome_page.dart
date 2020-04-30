@@ -3,7 +3,6 @@ import 'package:lloud_mobile/util/auth.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/templates/signup_flow_template.dart';
 
-import 'package:lloud_mobile/views/pages/nav_page.dart';
 import 'package:lloud_mobile/models/user.dart';
 import 'package:lloud_mobile/views/_common/h1.dart';
 
@@ -25,13 +24,11 @@ class _WelcomePageState extends State<WelcomePage> {
           content: Text('Error: Something went wrong!')));
     }
 
-    print(userData.toString());
     await Auth.authenticateUser(userData['email'], userData['password']);
     bool isLoggedIn = await Auth.loggedIn();
 
-    // TODO: Look into erasing history at this point so the user can't go backwards
     if (isLoggedIn) {
-      return Navigator.pushNamed(context, '/nav');
+      return Navigator.pushReplacementNamed(context, '/nav');
     }
   }
 

@@ -11,12 +11,12 @@ class Likes with ChangeNotifier {
 
   Future<void> fetchLikes() async {
     // TODO: Add exception handling
-    final response = await DAL.instance().fetch('user/likes');
+    final response = await DAL.instance().fetch('users/likes-balance');
     Map<String, dynamic> jsonObj = json.decode(response.body);
-    var items = jsonObj['items'][0];
+    var data = jsonObj['data'];
 
-    this._allowance = items['weeklyAllowance'];
-    this._remaining = items['balance'];
+    this._allowance = data['allowance'];
+    this._remaining = data['remaining'];
     notifyListeners();
   }
 }

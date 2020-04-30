@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/_common/h1.dart';
 import 'package:lloud_mobile/views/templates/signup_flow_template.dart';
 
 import '../../util/auth.dart';
-
-import '../pages/nav_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -16,16 +15,14 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController password = TextEditingController();
 
   Future<void> _authenticateUserAndLogin(BuildContext ctx) async {
-    String inputEmail = email.text;
-    String inputPassword = password.text;
-
-    // TODO: trim un & pw
+    String inputEmail = email.text.trim();
+    String inputPassword = password.text.trim();
 
     await Auth.authenticateUser(inputEmail, inputPassword);
     bool isLoggedIn = await Auth.loggedIn();
 
     if (isLoggedIn) {
-      Navigator.push(ctx, MaterialPageRoute(builder: (ctx) => NavPage()));
+      return Navigator.pushReplacementNamed(context, '/nav');
     }
   }
 
@@ -41,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       TextField(
         controller: email,
-        decoration: InputDecoration(labelText: 'Username', filled: true),
+        decoration: InputDecoration(labelText: 'Email', filled: true),
       ),
       SizedBox(
         height: 12.0,
@@ -58,6 +55,8 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () async {
               await _authenticateUserAndLogin(context);
             },
+            textColor: LloudTheme.white,
+            color: LloudTheme.red,
           )
         ],
       )

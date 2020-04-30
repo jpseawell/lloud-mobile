@@ -12,10 +12,9 @@ class _TotalPointsState extends State<TotalPoints> {
   Future<Text> _futureTxtPoints;
 
   Future<Text> fetchTxtPoints() async {
-    final response = await DAL.instance().fetch('user/points');
+    final response = await DAL.instance().fetch('users/points');
     Map<String, dynamic> jsonObj = json.decode(response.body);
-    int points = int.parse(jsonObj['items'][0]['points']);
-    return Text(points.toString());
+    return Text(jsonObj['data']['points'].toString());
   }
 
   @override

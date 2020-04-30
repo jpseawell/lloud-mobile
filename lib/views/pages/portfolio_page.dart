@@ -16,17 +16,15 @@ class _PortfolioPageState extends State<PortfolioPage> {
   Future<List<PortfolioItem>> _portfolioItems;
 
   Future<List<PortfolioItem>> fetchPortfolioItems() async {
-    final response = await DAL.instance().fetch('user/portfolio');
-    Map<String, dynamic> jsonObj = json.decode(response.body);
-    List<dynamic> rawPortfolioItems = jsonObj['items'][0][0]['songReports'];
+    final response = await DAL.instance().fetch('likes');
+    Map<String, dynamic> decodedResponse = json.decode(response.body);
 
     List<PortfolioItem> portfolioItems = [];
-    rawPortfolioItems.forEach((portfolioItem) =>
+    decodedResponse['data'].forEach((portfolioItem) =>
         portfolioItems.add(PortfolioItem.fromJson(portfolioItem)));
+
     return portfolioItems;
   }
-
-  PortfolioItemWidget buildPortfolioItem(BuildContext ctx, int index) {}
 
   @override
   void initState() {

@@ -30,46 +30,62 @@ class _SongWidgetState extends State<SongWidget> {
                   image: new NetworkImage(this._song.imageUrl),
                   fit: BoxFit.cover)),
           alignment: Alignment.bottomLeft,
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                  flex: 3,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        PlayButton(this._song.id, this._song.audioUrl)
-                      ])),
-              Expanded(
-                flex: 1,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SongTitle(this._song.title),
-                            ArtistLink(
-                              this._song.artistId,
-                              this._song.artistName,
-                              txtColor: LloudTheme.white,
-                            )
-                          ],
-                        )),
-                    Expanded(
-                        flex: 1,
-                        child: Column(
-                          children: <Widget>[
-                            LikeButton(this._song.id, this._song.likesCount,
-                                this._song.isLiked)
-                          ],
-                        ))
+          child: Stack(children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(16.0),
+              alignment: Alignment.bottomCenter,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[
+                    Colors.black.withAlpha(0),
+                    Colors.black12,
+                    Colors.black
                   ],
                 ),
-              )
-            ],
-          ),
+              ),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                      flex: 4,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            PlayButton(this._song.id, this._song.audioUrl)
+                          ])),
+                  Expanded(
+                    flex: 2,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                SongTitle(this._song.title),
+                                ArtistLink(
+                                  this._song.artistId,
+                                  this._song.artistName,
+                                  txtColor: LloudTheme.white,
+                                )
+                              ],
+                            )),
+                        Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: <Widget>[
+                                LikeButton(this._song.id, this._song.likesCount,
+                                    this._song.isLiked)
+                              ],
+                            ))
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ]),
         ));
   }
 }

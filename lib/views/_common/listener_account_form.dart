@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lloud_mobile/config/lloud_theme.dart';
 
-import '../../util/dal.dart';
 import '../../models/user.dart';
 
+import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/_common/h1.dart';
 import 'package:lloud_mobile/views/_common/h2.dart';
 
@@ -64,6 +63,7 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                 onSaved: (val) => this.user.userName = val),
             TextFormField(
                 initialValue: user.email,
+                enabled: false,
                 decoration: InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value.isEmpty) {
@@ -79,12 +79,60 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
               "Your address is required for shipping purchased items from the store.",
               style: TextStyle(fontSize: 16.0),
             ),
-            TextFormField(decoration: InputDecoration(labelText: 'Address 1')),
-            TextFormField(decoration: InputDecoration(labelText: 'Address 2')),
-            TextFormField(decoration: InputDecoration(labelText: 'City')),
-            TextFormField(decoration: InputDecoration(labelText: 'State')),
-            TextFormField(decoration: InputDecoration(labelText: 'Zipcode')),
-            TextFormField(decoration: InputDecoration(labelText: 'Country')),
+            TextFormField(
+                initialValue: user.address1,
+                decoration: InputDecoration(labelText: 'Address 1'),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  return null;
+                },
+                onSaved: (val) => this.user.address1 = val),
+            TextFormField(
+                initialValue: user.address2,
+                decoration: InputDecoration(labelText: 'Address 2 (optional)'),
+                onSaved: (val) => this.user.address2 = val),
+            TextFormField(
+                initialValue: user.city,
+                decoration: InputDecoration(labelText: 'City'),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  return null;
+                },
+                onSaved: (val) => this.user.city = val),
+            TextFormField(
+                initialValue: user.state,
+                decoration: InputDecoration(labelText: 'State'),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  return null;
+                },
+                onSaved: (val) => this.user.state = val),
+            TextFormField(
+                initialValue: user.zipcode,
+                decoration: InputDecoration(labelText: 'Zipcode'),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  return null;
+                },
+                onSaved: (val) => this.user.zipcode = val),
+            TextFormField(
+                initialValue: user.country,
+                decoration: InputDecoration(labelText: 'Country'),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  return null;
+                },
+                onSaved: (val) => this.user.country = val),
             RaisedButton(
               onPressed: () async {
                 final FormState form = _formKey.currentState;
@@ -97,11 +145,14 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                         SnackBar(content: Text('Account Info Updated')));
                   } catch (e) {
                     Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text('Account Info Could Not Be Updated')));
+                        backgroundColor: LloudTheme.red,
+                        content: Text(e.toString())));
                   }
                 }
               },
               child: Text('Update Info'),
+              color: LloudTheme.red,
+              textColor: LloudTheme.white,
             )
           ]),
         ));
