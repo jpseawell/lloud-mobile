@@ -1,7 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../../util/dal.dart';
+import 'package:lloud_mobile/util/dal.dart';
+import 'package:lloud_mobile/providers/points.dart';
 
 class TotalPoints extends StatefulWidget {
   @override
@@ -9,39 +10,15 @@ class TotalPoints extends StatefulWidget {
 }
 
 class _TotalPointsState extends State<TotalPoints> {
-  Future<Text> _futureTxtPoints;
-
-  Future<Text> fetchTxtPoints() async {
-    final response = await DAL.instance().fetch('users/points');
-    Map<String, dynamic> jsonObj = json.decode(response.body);
-    return Text(jsonObj['data']['points'].toString());
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _futureTxtPoints = fetchTxtPoints();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final points = Provider.of<Points>(context).points;
     return Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Container(
         padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
         child: Icon(Icons.score),
       ),
-      FutureBuilder<Text>(
-        future: fetchTxtPoints(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return snapshot.data;
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-
-          return CircularProgressIndicator();
-        },
-      )
+      Text(points.toString())
     ]);
   }
 }

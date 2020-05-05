@@ -73,6 +73,21 @@ class User {
     return mapData;
   }
 
+  Map _properties() {
+    var mapData = new Map();
+    mapData["firstname"] = this.firstName;
+    mapData["lastname"] = this.lastName;
+    mapData["username"] = this.userName;
+    mapData["email"] = this.email;
+    mapData["address1"] = this.address1;
+    mapData["address2"] = this.address2;
+    mapData["city"] = this.city;
+    mapData["state"] = this.state;
+    mapData["zipcode"] = this.zipcode;
+    mapData["country"] = this.country;
+    return mapData;
+  }
+
   Future<void> update(User user) async {
     dynamic dal = DAL.instance();
     Response response = await dal.put('users', _toMap(user));
@@ -81,5 +96,18 @@ class User {
     if (!decodedResponse['success']) {
       throw Exception(decodedResponse['message']);
     }
+  }
+
+  bool addressComplete() {
+    Map thisUser = this._properties();
+    List<String> keys = ['address1', 'city', 'state', 'zipcode', 'country'];
+
+    for (var key in keys) {
+      if (thisUser[key] == null) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

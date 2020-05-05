@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../../models/user.dart';
-
+import 'package:lloud_mobile/providers/user.dart';
+import 'package:lloud_mobile/models/user.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/_common/h1.dart';
 import 'package:lloud_mobile/views/_common/h2.dart';
@@ -148,6 +149,8 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                         backgroundColor: LloudTheme.red,
                         content: Text(e.toString())));
                   }
+
+                  Provider.of<UserModel>(context, listen: false).fetchUser();
                 }
               },
               child: Text('Update Info'),

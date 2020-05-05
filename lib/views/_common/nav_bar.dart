@@ -18,7 +18,7 @@ class NavBar extends StatelessWidget {
             title: Text('Songs'), icon: Icon(Icons.queue_music)),
         BottomNavigationBarItem(
             title: Text('Portfolio'), icon: Icon(Icons.assessment)),
-        // BottomNavigationBarItem(title: Text('Store'), icon: Icon(Icons.store)),
+        BottomNavigationBarItem(title: Text('Store'), icon: Icon(Icons.store)),
         BottomNavigationBarItem(
             title: Text('Account'), icon: Icon(Icons.person)),
       ],
