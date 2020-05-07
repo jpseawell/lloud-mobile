@@ -78,7 +78,7 @@ class _StoreItemPageState extends State<StoreItemPage> {
                 color: LloudTheme.red,
                 child: Text("Cool!"),
                 onPressed: () async {
-                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, '/store');
                 },
               ),
             ],
@@ -170,7 +170,7 @@ class _StoreItemPageState extends State<StoreItemPage> {
                 color: LloudTheme.red,
                 child: Text("Go Enter My Address"),
                 onPressed: () async {
-                  Navigator.pushNamed(context, '/store');
+                  Navigator.pushNamed(context, '/account');
                 },
               ),
               FlatButton(

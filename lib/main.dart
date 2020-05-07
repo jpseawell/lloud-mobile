@@ -38,6 +38,9 @@ class MyApp extends StatelessWidget {
               '/login': (ctx) => LoginPage(),
               '/nav': (ctx) => NavPage.fromData(),
               '/store': (ctx) => NavPage.fromData(
+                    pageIndex: 2,
+                  ),
+              '/account': (ctx) => NavPage.fromData(
                     pageIndex: 3,
                   ),
               '/store-item': (ctx) => StoreItemPage(),
