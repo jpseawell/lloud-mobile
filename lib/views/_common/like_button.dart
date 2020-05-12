@@ -71,27 +71,6 @@ class _LikeButtonState extends State<LikeButton> {
         });
   }
 
-  void _showNoLikesRemainingDialog(BuildContext context) async {
-    // TODO: Sales pitch here!!
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text("You've used all of your likes for this week."),
-            content: new Text(
-                "Check back in a few days when your likes are replenished."),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("Ok"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-  }
-
   Future<void> _likeSong(BuildContext ctx) async {
     if (_likedByUser) {
       return;
@@ -119,7 +98,7 @@ class _LikeButtonState extends State<LikeButton> {
       color: LloudTheme.red,
       onPressed: () async => {
         if (Provider.of<Likes>(context, listen: false).remaining <= 0)
-          {_showNoLikesRemainingDialog(context)}
+          {Navigator.pushNamed(context, '/subscription')}
         else if (_likedByUser)
           {_showAlreadyLikedDialog(context)}
         else

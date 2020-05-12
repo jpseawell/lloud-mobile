@@ -11,6 +11,7 @@ import './views/pages/signup/welcome_page.dart';
 import './views/pages/login_page.dart';
 import './views/pages/nav_page.dart';
 import './views/pages/store_item_page.dart';
+import './views/pages/subscription_page.dart';
 import './providers/likes.dart';
 
 void main() => runApp(MyApp());
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
                     pageIndex: 3,
                   ),
               '/store-item': (ctx) => StoreItemPage(),
+              '/subscription': (ctx) => SubscriptionPage(),
             }));
   }
 }
