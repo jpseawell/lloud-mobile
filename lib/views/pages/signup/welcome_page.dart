@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:lloud_mobile/providers/user.dart';
 import 'package:lloud_mobile/util/auth.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/templates/signup_flow_template.dart';
@@ -28,6 +31,7 @@ class _WelcomePageState extends State<WelcomePage> {
     bool isLoggedIn = await Auth.loggedIn();
 
     if (isLoggedIn) {
+      Provider.of<UserModel>(context, listen: false).fetchUser();
       return Navigator.pushReplacementNamed(context, '/nav');
     }
   }
