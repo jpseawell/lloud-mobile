@@ -4,6 +4,7 @@ import 'package:lloud_mobile/providers/song_player.dart';
 import 'package:lloud_mobile/providers/points.dart';
 import 'package:lloud_mobile/providers/user.dart';
 
+import './views/pages/landing_page.dart';
 import './views/pages/signup/signup_page.dart';
 import './views/pages/signup/username_page.dart';
 import './views/pages/signup/password_page.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             debugShowCheckedModeBanner: false,
             routes: {
-              '/': (ctx) => SignupPage(),
+              '/': (ctx) => LandingPage(),
               '/username': (ctx) => UsernamePage(),
               '/password': (ctx) => PasswordPage(),
               '/welcome': (ctx) => WelcomePage(),
