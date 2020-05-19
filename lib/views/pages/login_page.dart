@@ -16,16 +16,23 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
 
-  Future<void> _authenticateUserAndLogin(BuildContext ctx) async {
+  Future<void> _authenticateUserAndLogin(
+      BuildContext ctx, BuildContext snackCtx) async {
     String inputEmail = email.text.trim();
     String inputPassword = password.text.trim();
 
-    await Auth.authenticateUser(inputEmail, inputPassword);
-    bool isLoggedIn = await Auth.loggedIn();
+    try {
+      await Auth.authenticateUser(inputEmail, inputPassword);
+      bool isLoggedIn = await Auth.loggedIn();
 
-    if (isLoggedIn) {
-      Provider.of<UserModel>(ctx, listen: false).fetchUser();
-      return Navigator.pushReplacementNamed(context, '/nav');
+      if (isLoggedIn) {
+        Provider.of<UserModel>(ctx, listen: false).fetchUser();
+        return Navigator.pushReplacementNamed(context, '/nav');
+      }
+    } catch (err) {
+      Scaffold.of(snackCtx).showSnackBar(SnackBar(
+          backgroundColor: LloudTheme.red,
+          content: Text('Incorrect email or password')));
     }
   }
 
@@ -53,14 +60,15 @@ class _LoginPageState extends State<LoginPage> {
       ),
       ButtonBar(
         children: <Widget>[
-          RaisedButton(
-            child: Text('Log in'),
-            onPressed: () async {
-              await _authenticateUserAndLogin(context);
-            },
-            textColor: LloudTheme.white,
-            color: LloudTheme.red,
-          )
+          Builder(
+              builder: (snackCtx) => RaisedButton(
+                    child: Text('Log in'),
+                    onPressed: () async {
+                      await _authenticateUserAndLogin(context, snackCtx);
+                    },
+                    textColor: LloudTheme.white,
+                    color: LloudTheme.red,
+                  ))
         ],
       )
     ]);
