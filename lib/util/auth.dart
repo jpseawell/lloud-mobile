@@ -63,11 +63,12 @@ class Auth {
   }
 
   static bool isTokenExpired(parsedJwt) {
-    if (parsedJwt['exp'] < (new DateTime.now().millisecond) / 1000) {
-      return true;
-    } else {
-      return false;
-    }
+    int millisecondsSinceEpoch = parsedJwt['exp'] * 1000;
+    DateTime expDate =
+        new DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
+    DateTime now = new DateTime.now();
+
+    return now.toUtc().isAfter(expDate);
   }
 
   // TODO: Could probably be broken out into a separate class
