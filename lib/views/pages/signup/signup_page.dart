@@ -21,7 +21,8 @@ class _SignupPageState extends State<SignupPage> {
     dynamic dal = DAL.instance();
     Response res =
         await dal.post('email', {'email': email}, useAuthHeader: false);
-
+    print('TEST...');
+    print(res.toString());
     return !json.decode(res.body)['success'];
   }
 

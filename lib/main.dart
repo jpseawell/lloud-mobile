@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+
 import 'package:lloud_mobile/providers/song_player.dart';
 import 'package:lloud_mobile/providers/points.dart';
 import 'package:lloud_mobile/providers/user.dart';
@@ -12,12 +14,20 @@ import './views/pages/login_page.dart';
 import './views/pages/nav_page.dart';
 import './views/pages/store_item_page.dart';
 import './views/pages/subscription_page.dart';
+import './views/pages/subscription_error_page.dart';
 import './providers/likes.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  InAppPurchaseConnection.enablePendingPurchases();
+  runApp(MyApp());
+}
 
-class MyApp extends StatelessWidget {
-  // TODO: Add providers for: auth, playing audio
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -46,6 +56,7 @@ class MyApp extends StatelessWidget {
                   ),
               '/store-item': (ctx) => StoreItemPage(),
               '/subscription': (ctx) => SubscriptionPage(),
+              '/subscription-error': (ctx) => SubscriptionErrorPage(),
             }));
   }
 }
