@@ -62,6 +62,26 @@ class _LoginPageState extends State<LoginPage> {
             color: LloudTheme.red,
           )
         ],
+      ),
+      SizedBox(
+        height: 120.0,
+      ),
+      Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Don\'t have an account?',
+              style: TextStyle(fontSize: 16),
+            ),
+            FlatButton(
+                onPressed: () => {Navigator.pushNamed(context, '/')},
+                child: Text(
+                  'Sign up',
+                  style: TextStyle(fontSize: 18, color: LloudTheme.red),
+                ))
+          ],
+        ),
       )
     ]);
   }

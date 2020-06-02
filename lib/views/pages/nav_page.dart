@@ -67,7 +67,7 @@ class _NavPageState extends State<NavPage> {
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: RemainingLikes(),
+              child: TotalPoints(),
             ),
             Expanded(
               flex: 1,
@@ -78,7 +78,7 @@ class _NavPageState extends State<NavPage> {
             ),
             Expanded(
               flex: 1,
-              child: TotalPoints(),
+              child: RemainingLikes(),
             ),
           ],
         ),
