@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:developer' as developer;
 
 import 'package:http/http.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';

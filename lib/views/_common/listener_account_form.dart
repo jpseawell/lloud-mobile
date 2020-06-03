@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/util/auth.dart';
+
 import 'package:lloud_mobile/providers/user.dart';
 import 'package:lloud_mobile/models/user.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -134,7 +136,9 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                   return null;
                 },
                 onSaved: (val) => this.user.country = val),
+            SizedBox(height: 16.0),
             RaisedButton(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               onPressed: () async {
                 final FormState form = _formKey.currentState;
                 if (form.validate()) {
@@ -153,10 +157,21 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                   Provider.of<UserModel>(context, listen: false).fetchUser();
                 }
               },
-              child: Text('Update Info'),
+              child: Text('Update Info', style: TextStyle(fontSize: 18)),
               color: LloudTheme.red,
               textColor: LloudTheme.white,
-            )
+            ),
+            SizedBox(height: 16.0),
+            // TODO: Move logout button out of account form
+            FlatButton(
+                onPressed: () async {
+                  await Auth.clearToken();
+                  return Navigator.pushNamed(context, '/login');
+                },
+                child: Text(
+                  'Log out',
+                  style: TextStyle(color: LloudTheme.red, fontSize: 18),
+                )),
           ]),
         ));
   }
