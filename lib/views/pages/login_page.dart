@@ -39,12 +39,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return SignupTemplate(<Widget>[
-      SizedBox(height: 80.0),
+      SizedBox(height: 100.0),
       Column(children: <Widget>[
         H1('Login!'),
       ]),
       SizedBox(
-        height: 120.0,
+        height: 100.0,
       ),
       TextField(
         controller: email,
@@ -59,6 +59,7 @@ class _LoginPageState extends State<LoginPage> {
         obscureText: true,
       ),
       ButtonBar(
+        alignment: MainAxisAlignment.end,
         children: <Widget>[
           Builder(
               builder: (snackCtx) => RaisedButton(
@@ -72,20 +73,30 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
       SizedBox(
-        height: 120.0,
+        height: 100.0,
       ),
       Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            FlatButton(
+                padding: EdgeInsets.all(6),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/forgot-password');
+                },
+                child: Text(
+                  'Forgot password?',
+                  style: TextStyle(fontSize: 18, color: LloudTheme.red),
+                )),
             Text(
-              'Don\'t have an account?',
-              style: TextStyle(fontSize: 16),
+              '·',
+              textAlign: TextAlign.end,
             ),
             FlatButton(
+                padding: EdgeInsets.all(6),
                 onPressed: () => {Navigator.pushNamed(context, '/')},
                 child: Text(
-                  'Sign up',
+                  'Sign up for Lloud',
                   style: TextStyle(fontSize: 18, color: LloudTheme.red),
                 ))
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/views/pages/forgot_password_page.dart';
 import 'package:provider/provider.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -7,7 +8,6 @@ import 'package:lloud_mobile/providers/points.dart';
 import 'package:lloud_mobile/providers/user.dart';
 
 import './views/pages/landing_page.dart';
-import './views/pages/signup/signup_page.dart';
 import './views/pages/signup/username_page.dart';
 import './views/pages/signup/password_page.dart';
 import './views/pages/signup/welcome_page.dart';
@@ -48,6 +48,7 @@ class _MyAppState extends State<MyApp> {
               '/password': (ctx) => PasswordPage(),
               '/welcome': (ctx) => WelcomePage(),
               '/login': (ctx) => LoginPage(),
+              '/forgot-password': (ctx) => ForgotPasswordPage(),
               '/nav': (ctx) => NavPage.fromData(),
               '/store': (ctx) => NavPage.fromData(
                     pageIndex: 2,
