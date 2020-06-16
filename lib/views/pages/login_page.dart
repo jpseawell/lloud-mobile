@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: Text(
                   'Forgot password?',
-                  style: TextStyle(fontSize: 18, color: LloudTheme.red),
+                  style: TextStyle(fontSize: 16, color: LloudTheme.red),
                 )),
             Text(
               '·',
@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () => {Navigator.pushNamed(context, '/')},
                 child: Text(
                   'Sign up for Lloud',
-                  style: TextStyle(fontSize: 18, color: LloudTheme.red),
+                  style: TextStyle(fontSize: 16, color: LloudTheme.red),
                 ))
           ],
         ),
