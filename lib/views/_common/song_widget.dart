@@ -48,7 +48,7 @@ class _SongWidgetState extends State<SongWidget> {
               child: Column(
                 children: <Widget>[
                   Expanded(
-                      flex: 4,
+                      flex: 5,
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -97,13 +97,19 @@ class SongTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      this._text,
-      style: TextStyle(
-          color: Color.fromRGBO(255, 255, 255, 1.0),
-          fontSize: 32,
-          fontFamily: 'Raleway',
-          fontWeight: FontWeight.bold),
+    return Container(
+      margin: EdgeInsets.only(right: 12),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Text(
+          this._text,
+          style: TextStyle(
+              color: Color.fromRGBO(255, 255, 255, 1.0),
+              fontSize: 32,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }
