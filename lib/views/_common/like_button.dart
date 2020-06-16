@@ -35,6 +35,7 @@ class _LikeButtonState extends State<LikeButton> {
                 "You only have ${likes.remaining} likes remaining for this week"),
             actions: <Widget>[
               new RaisedButton(
+                color: LloudTheme.red,
                 child: new Text("Yes"),
                 onPressed: () async {
                   await _likeSong(context);
