@@ -51,11 +51,14 @@ class _PortfolioItemWidgetState extends State<PortfolioItemWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("${this._portfolioItem.songTitle}",
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Raleway')),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Text("${this._portfolioItem.songTitle}",
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Raleway')),
+                  ),
                   ArtistLink(
                     this._portfolioItem.artistId,
                     this._portfolioItem.artistName,
