@@ -21,7 +21,7 @@ class ListenerAccountForm extends StatefulWidget {
 
 class _ListenerAccountFormState extends State<ListenerAccountForm> {
   final _formKey = GlobalKey<FormState>();
-  final User user;
+  User user;
 
   _ListenerAccountFormState(this.user);
 
@@ -155,6 +155,10 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                   }
 
                   Provider.of<UserModel>(context, listen: false).fetchUser();
+                  setState(() {
+                    user:
+                    Provider.of<UserModel>(context, listen: false).user;
+                  });
                 }
               },
               child: Text('Update Info', style: TextStyle(fontSize: 18)),
