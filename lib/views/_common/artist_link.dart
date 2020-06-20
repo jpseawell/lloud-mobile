@@ -7,26 +7,14 @@ class ArtistLink extends StatelessWidget {
 
   ArtistLink(this._artistId, this._artistName, {this.txtColor});
 
-  void _goToArtistPage(BuildContext ctx) {
-    debugPrint('going to artist page...');
-    // Navigator.push(
-    //     ctx, MaterialPageRoute(builder: (ctx) => ArtistPage(this._artistId)));
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-        padding: EdgeInsets.all(0),
-        onPressed: () {
-          _goToArtistPage(context);
-        },
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            this._artistName,
-            style: TextStyle(
-                fontSize: 20, color: txtColor, fontWeight: FontWeight.w300),
-          ),
+    return Container(
+        margin: EdgeInsets.only(top: 12),
+        child: Text(
+          this._artistName,
+          style: TextStyle(
+              fontSize: 20, color: txtColor, fontWeight: FontWeight.w300),
         ));
   }
 }
