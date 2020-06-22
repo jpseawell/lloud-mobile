@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/views/pages/edit_personal_info_page.dart';
 import 'package:lloud_mobile/views/pages/forgot_password_page.dart';
 import 'package:provider/provider.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -56,6 +57,7 @@ class _MyAppState extends State<MyApp> {
               '/account': (ctx) => NavPage.fromData(
                     pageIndex: 3,
                   ),
+              '/edit-personal-info': (ctx) => EditPersonalInfoPage(),
               '/store-item': (ctx) => StoreItemPage(),
               '/subscription': (ctx) => SubscriptionPage(),
               '/subscription-error': (ctx) => SubscriptionErrorPage(),

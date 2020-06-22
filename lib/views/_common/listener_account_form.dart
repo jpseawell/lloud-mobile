@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/views/_common/back_btn.dart';
 import 'package:provider/provider.dart';
-
-import 'package:lloud_mobile/util/auth.dart';
 
 import 'package:lloud_mobile/providers/user.dart';
 import 'package:lloud_mobile/models/user.dart';
@@ -32,8 +31,13 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
         child: Container(
           padding: EdgeInsets.all(16.0),
           child: ListView(children: <Widget>[
-            H1("My Account"),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[BackBtn()]),
+            H1("Edit Account"),
+            SizedBox(height: 32.0),
             H2("Personal Info"),
+            Divider(),
             TextFormField(
                 initialValue: user.firstName,
                 decoration: InputDecoration(labelText: 'First Name'),
@@ -75,13 +79,14 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                   return null;
                 },
                 onSaved: (val) => this.user.email = val),
-            SizedBox(height: 16.0),
+            SizedBox(height: 32.0),
             H2("Shipping Info"),
-            SizedBox(height: 8.0),
+            Divider(),
             Text(
               "Your address is required for shipping purchased items from the store.",
               style: TextStyle(fontSize: 16.0),
             ),
+            SizedBox(height: 8.0),
             TextFormField(
                 initialValue: user.address1,
                 decoration: InputDecoration(labelText: 'Address 1'),
@@ -145,37 +150,22 @@ class _ListenerAccountFormState extends State<ListenerAccountForm> {
                   try {
                     form.save();
                     await this.user.update(this.user);
-
+                    Provider.of<UserModel>(context, listen: false).fetchUser();
                     Scaffold.of(context).showSnackBar(
                         SnackBar(content: Text('Account Info Updated')));
+                    Navigator.pushNamed(context, '/account');
                   } catch (e) {
                     Scaffold.of(context).showSnackBar(SnackBar(
                         backgroundColor: LloudTheme.red,
                         content: Text(e.toString())));
                   }
-
-                  Provider.of<UserModel>(context, listen: false).fetchUser();
-                  setState(() {
-                    user:
-                    Provider.of<UserModel>(context, listen: false).user;
-                  });
                 }
               },
               child: Text('Update Info', style: TextStyle(fontSize: 18)),
               color: LloudTheme.red,
               textColor: LloudTheme.white,
             ),
-            SizedBox(height: 16.0),
-            // TODO: Move logout button out of account form
-            FlatButton(
-                onPressed: () async {
-                  await Auth.clearToken();
-                  return Navigator.pushNamed(context, '/login');
-                },
-                child: Text(
-                  'Log out',
-                  style: TextStyle(color: LloudTheme.red, fontSize: 18),
-                )),
+            SizedBox(height: 8.0),
           ]),
         ));
   }
