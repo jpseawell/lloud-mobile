@@ -10,11 +10,14 @@ class ArtistLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(top: 12),
-        child: Text(
-          this._artistName,
-          style: TextStyle(
-              fontSize: 20, color: txtColor, fontWeight: FontWeight.w300),
+        margin: EdgeInsets.only(top: 12, right: 12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Text(
+            this._artistName,
+            style: TextStyle(
+                fontSize: 20, color: txtColor, fontWeight: FontWeight.w300),
+          ),
         ));
   }
 }
