@@ -71,14 +71,15 @@ class _SongWidgetState extends State<SongWidget> {
                                 )
                               ],
                             )),
-                        Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: <Widget>[
-                                LikeButton(this._song.id, this._song.likesCount,
-                                    this._song.isLiked)
-                              ],
-                            ))
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 130),
+                          child: Column(
+                            children: <Widget>[
+                              LikeButton(this._song.id, this._song.likesCount,
+                                  this._song.isLiked)
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   )
