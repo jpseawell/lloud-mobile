@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 
@@ -19,6 +20,46 @@ class _SongWidgetState extends State<SongWidget> {
   final Song _song;
 
   _SongWidgetState(this._song);
+
+  void _showSongMenuDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(children: <Widget>[
+                  Expanded(
+                      child: FlatButton(
+                    child: Text("Report as Offensive"),
+                    textColor: LloudTheme.red,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )),
+                ]),
+                Divider(
+                  height: 1,
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                        child: FlatButton(
+                      child: Text("Cancel"),
+                      textColor: LloudTheme.black,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ))
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,11 +134,9 @@ class _SongWidgetState extends State<SongWidget> {
                         SizedBox(
                           width: 40,
                           child: FlatButton(
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
                               padding: EdgeInsets.zero,
                               onPressed: () {
-                                print('clicked');
+                                _showSongMenuDialog(context);
                               },
                               child: Text(
                                 "...",
