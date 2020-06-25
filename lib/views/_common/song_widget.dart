@@ -48,15 +48,14 @@ class _SongWidgetState extends State<SongWidget> {
               child: Column(
                 children: <Widget>[
                   Expanded(
-                      flex: 5,
+                      flex: 3,
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             PlayButton(this._song.id, this._song.audioUrl)
                           ])),
-                  Expanded(
-                    flex: 2,
-                    child: Row(
+                  Column(children: <Widget>[
+                    Row(
                       children: <Widget>[
                         Expanded(
                             flex: 2,
@@ -64,6 +63,26 @@ class _SongWidgetState extends State<SongWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 SongTitle(this._song.title),
+                              ],
+                            )),
+                        Container(
+                            constraints: BoxConstraints(maxWidth: 130),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                LikeButton(this._song.id, this._song.likesCount,
+                                    this._song.isLiked),
+                              ],
+                            ))
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
                                 ArtistLink(
                                   this._song.artistId,
                                   this._song.artistName,
@@ -71,18 +90,27 @@ class _SongWidgetState extends State<SongWidget> {
                                 )
                               ],
                             )),
-                        Container(
-                          constraints: BoxConstraints(maxWidth: 130),
-                          child: Column(
-                            children: <Widget>[
-                              LikeButton(this._song.id, this._song.likesCount,
-                                  this._song.isLiked)
-                            ],
-                          ),
+                        SizedBox(
+                          width: 40,
+                          child: FlatButton(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                print('clicked');
+                              },
+                              child: Text(
+                                "...",
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                    color: Color.fromRGBO(255, 255, 255, 1.0),
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold),
+                              )),
                         )
                       ],
-                    ),
-                  )
+                    )
+                  ]),
                 ],
               ),
             ),
