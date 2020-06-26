@@ -67,6 +67,7 @@ class _SongWidgetState extends State<SongWidget> {
         aspectRatio: 1 / 1,
         child: Container(
           decoration: new BoxDecoration(
+              color: LloudTheme.black,
               image: new DecorationImage(
                   image: new NetworkImage(this._song.imageUrl),
                   fit: BoxFit.cover)),
