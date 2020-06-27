@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
 
 import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/models/store_item.dart';
@@ -59,7 +60,9 @@ class _StorePageState extends State<StorePage> {
                         children: storeItemWidgets);
                   }
 
-                  return CircularProgressIndicator();
+                  return CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(LloudTheme.red));
                 })
           ],
         ),

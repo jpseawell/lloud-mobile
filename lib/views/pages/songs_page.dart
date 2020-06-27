@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/_common/song_widget.dart';
 
 import '../../models/song.dart';
@@ -14,7 +15,7 @@ class SongsPage extends StatefulWidget {
 
 class _SongsPageState extends State<SongsPage> {
   ScrollController controller;
-  final _songs = <Song>[];
+  List<Song> _songs = <Song>[];
   bool isFetching = true;
   int currentPage = 1;
 
@@ -61,14 +62,25 @@ class _SongsPageState extends State<SongsPage> {
     }
   }
 
+  Future<void> _refresh() async {
+    setState(() {
+      _songs = <Song>[];
+      currentPage = 1;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: new Stack(children: <Widget>[
-        _songWidgetBuilder(),
-        _loader(),
-      ])),
+          child: RefreshIndicator(
+              color: LloudTheme.red,
+              backgroundColor: LloudTheme.black,
+              child: Stack(children: <Widget>[
+                _songWidgetBuilder(),
+                _loader(),
+              ]),
+              onRefresh: _refresh)),
     );
   }
 
@@ -93,7 +105,10 @@ class _SongsPageState extends State<SongsPage> {
               height: 70.0,
               child: new Padding(
                   padding: const EdgeInsets.all(5.0),
-                  child: new Center(child: new CircularProgressIndicator())),
+                  child: new Center(
+                      child: new CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.red),
+                  ))),
             ),
             alignment: FractionalOffset.bottomCenter,
           )

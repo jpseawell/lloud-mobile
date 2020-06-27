@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/providers/user.dart';
@@ -22,7 +23,8 @@ class LandingPage extends StatelessWidget {
           } else {
             return Scaffold(
               body: Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.red)),
               ),
             );
           }
