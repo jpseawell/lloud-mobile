@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
+import 'package:lloud_mobile/util/dal.dart';
 
 import '../../models/song.dart';
 import '../_common/like_button.dart';
@@ -21,6 +22,32 @@ class _SongWidgetState extends State<SongWidget> {
 
   _SongWidgetState(this._song);
 
+  Future<void> _reportSong() async {
+    await DAL
+        .instance()
+        .post('songs/' + this._song.id.toString() + '/offensive-report', {});
+  }
+
+  void _showReportConfirmedDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Thanks for letting us know"),
+            content: Text(
+                "Your feedback is important in helping us keep the Lloud community safe."),
+            actions: <Widget>[
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Close"),
+              )
+            ],
+          );
+        });
+  }
+
   void _showSongMenuDialog(BuildContext context) {
     showDialog(
         context: context,
@@ -35,8 +62,10 @@ class _SongWidgetState extends State<SongWidget> {
                       child: FlatButton(
                     child: Text("Report as Offensive"),
                     textColor: LloudTheme.red,
-                    onPressed: () {
+                    onPressed: () async {
+                      await _reportSong();
                       Navigator.of(context).pop();
+                      _showReportConfirmedDialog(context);
                     },
                   )),
                 ]),
