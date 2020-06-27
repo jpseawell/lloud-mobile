@@ -5,9 +5,11 @@ import '../util/dal.dart';
 
 class Likes with ChangeNotifier {
   int _allowance, _remaining;
+  String _refilledAt;
 
   int get allowance => _allowance;
   int get remaining => _remaining;
+  String get refilledAt => _refilledAt;
 
   Future<void> fetchLikes() async {
     // TODO: Add exception handling
@@ -17,6 +19,7 @@ class Likes with ChangeNotifier {
 
     this._allowance = data['allowance'];
     this._remaining = data['remaining'];
+    this._refilledAt = data['refilledAt'];
     notifyListeners();
   }
 }

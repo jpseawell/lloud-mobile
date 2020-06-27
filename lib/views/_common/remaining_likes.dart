@@ -15,8 +15,7 @@ class _RemainingLikesState extends State<RemainingLikes> {
     return FlatButton(
         padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0.0),
         onPressed: () {
-          // TODO: Don't show sub page if already subscribed
-          Navigator.pushNamed(context, '/subscription');
+          Navigator.pushNamed(context, '/likes');
         },
         textColor: LloudTheme.white,
         child: Row(
@@ -28,8 +27,6 @@ class _RemainingLikesState extends State<RemainingLikes> {
                 size: 22,
               ),
             ),
-            // Text('${likes.remaining} / ${likes.allowance}',
-            //     style: TextStyle(fontWeight: FontWeight.w300))
           ],
         ));
   }

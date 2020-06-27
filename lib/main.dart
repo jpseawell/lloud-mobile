@@ -17,6 +17,7 @@ import './views/pages/nav_page.dart';
 import './views/pages/store_item_page.dart';
 import './views/pages/subscription_page.dart';
 import './views/pages/subscription_error_page.dart';
+import './views/pages/likes_page.dart';
 import './providers/likes.dart';
 
 void main() {
@@ -59,6 +60,7 @@ class _MyAppState extends State<MyApp> {
                   ),
               '/edit-personal-info': (ctx) => EditPersonalInfoPage(),
               '/store-item': (ctx) => StoreItemPage(),
+              '/likes': (ctx) => LikesPage(),
               '/subscription': (ctx) => SubscriptionPage(),
               '/subscription-error': (ctx) => SubscriptionErrorPage(),
             }));

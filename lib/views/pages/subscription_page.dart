@@ -140,7 +140,7 @@ class SubscriptionPurchase extends StatelessWidget {
                   child: FlatButton(
                     padding: EdgeInsets.symmetric(vertical: 12.0),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, '/');
                     },
                     textColor: LloudTheme.red,
                     child: Text(
