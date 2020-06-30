@@ -59,6 +59,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             H1("Portfolio"),
+                            SizedBox(height: 8.0),
                             Text(
                                 "You've liked ${snapshot.data.length} songs and earned a total of ${pointsSum} points!",
                                 style: TextStyle(fontSize: 21)),

@@ -60,7 +60,10 @@ class _SongWidgetState extends State<SongWidget> {
                 Row(children: <Widget>[
                   Expanded(
                       child: FlatButton(
-                    child: Text("Report as Offensive"),
+                    child: Text(
+                      "Report as Offensive",
+                      style: TextStyle(fontSize: 16),
+                    ),
                     textColor: LloudTheme.red,
                     onPressed: () async {
                       await _reportSong();
@@ -76,7 +79,10 @@ class _SongWidgetState extends State<SongWidget> {
                   children: <Widget>[
                     Expanded(
                         child: FlatButton(
-                      child: Text("Cancel"),
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(fontSize: 16),
+                      ),
                       textColor: LloudTheme.black,
                       onPressed: () {
                         Navigator.of(context).pop();

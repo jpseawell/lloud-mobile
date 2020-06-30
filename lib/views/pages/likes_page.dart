@@ -51,26 +51,27 @@ class _LikesBalancePageState extends State<LikesBalancePage> {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             (likes.remaining > 1) ? H1("Likes Left...") : H1("Like Left...")
           ]),
-          SizedBox(height: 25.0),
+          SizedBox(height: 40.0),
           Text(
             "Your next like refill is scheduled for:",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16),
           ),
-          SizedBox(height: 25.0),
+          SizedBox(height: 8.0),
           Text(
             likes.refilledAt,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20),
           ),
-          SizedBox(height: 50.0),
+          SizedBox(height: 40.0),
           Row(children: <Widget>[
             Expanded(
                 flex: 1,
                 child: RaisedButton(
                   padding: EdgeInsets.symmetric(vertical: 14.0),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/subscription');
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/subscription', ModalRoute.withName('/'));
                   },
                   color: LloudTheme.red,
                   textColor: LloudTheme.white,

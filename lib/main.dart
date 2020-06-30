@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/views/pages/edit_personal_info_page.dart';
 import 'package:lloud_mobile/views/pages/forgot_password_page.dart';
+import 'package:lloud_mobile/views/pages/subscription_success_page.dart';
 import 'package:provider/provider.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -63,6 +64,7 @@ class _MyAppState extends State<MyApp> {
               '/likes': (ctx) => LikesPage(),
               '/subscription': (ctx) => SubscriptionPage(),
               '/subscription-error': (ctx) => SubscriptionErrorPage(),
+              '/subscription-success': (ctx) => SubscriptionSuccessPage(),
             }));
   }
 }

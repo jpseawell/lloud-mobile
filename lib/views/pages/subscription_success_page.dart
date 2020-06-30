@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
 
-import 'package:lloud_mobile/views/_common/h1.dart';
-
-class SubscriptionErrorPage extends StatelessWidget {
+class SubscriptionSuccessPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +14,7 @@ class SubscriptionErrorPage extends StatelessWidget {
           Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text("Oh No!",
+                Text("Sweeet!",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 40,
@@ -24,7 +22,7 @@ class SubscriptionErrorPage extends StatelessWidget {
                         fontFamily: 'Raleway')),
                 SizedBox(height: 20.0),
                 Text(
-                    'Something went wrong when attempting to purchase your subscription. Please try again later.',
+                    "You are now a Llouder: 20 likes a month subscriber. Get out there and use those likes.",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16, height: 1.5)),
                 SizedBox(height: 40.0),
@@ -40,7 +38,7 @@ class SubscriptionErrorPage extends StatelessWidget {
                           color: LloudTheme.red,
                           textColor: LloudTheme.white,
                           child: Text(
-                            'Return to Songs Page',
+                            'Go Use My Likes!',
                             style: TextStyle(fontSize: 20),
                           ),
                         ))

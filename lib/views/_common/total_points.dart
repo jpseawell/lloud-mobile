@@ -13,7 +13,7 @@ class _TotalPointsState extends State<TotalPoints> {
   Widget build(BuildContext context) {
     final points = Provider.of<Points>(context).points;
     return Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-      (points != null) ? Text(points.toString()) : Text("")
+      (points != null) ? Text(points.toString()) : Text("0")
     ]);
   }
 }

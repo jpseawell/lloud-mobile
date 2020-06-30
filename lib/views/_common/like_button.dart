@@ -31,8 +31,8 @@ class _LikeButtonState extends State<LikeButton> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: new Text("Are you sure you want to like this song?"),
-            content: new Text(
-                "You only have ${likes.remaining} likes remaining for this week"),
+            content:
+                new Text("You only have ${likes.remaining} likes remaining."),
             actions: <Widget>[
               new RaisedButton(
                 color: LloudTheme.red,
@@ -43,6 +43,7 @@ class _LikeButtonState extends State<LikeButton> {
                 },
               ),
               new FlatButton(
+                textColor: LloudTheme.black,
                 child: new Text("No"),
                 onPressed: () {
                   Navigator.of(context).pop();

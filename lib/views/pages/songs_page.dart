@@ -72,6 +72,7 @@ class _SongsPageState extends State<SongsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: LloudTheme.black,
       body: SafeArea(
           child: RefreshIndicator(
               color: LloudTheme.red,

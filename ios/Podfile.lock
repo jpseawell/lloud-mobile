@@ -8,6 +8,10 @@ PODS:
     - Flutter
   - path_provider (0.0.1):
     - Flutter
+  - Purchases (3.2.2)
+  - purchases_flutter (1.1.1):
+    - Flutter
+    - Purchases (~> 3.2.2)
   - url_launcher (0.0.1):
     - Flutter
   - url_launcher_macos (0.0.1):
@@ -21,9 +25,14 @@ DEPENDENCIES:
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - in_app_purchase (from `.symlinks/plugins/in_app_purchase/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
   - url_launcher_web (from `.symlinks/plugins/url_launcher_web/ios`)
+
+SPEC REPOS:
+  trunk:
+    - Purchases
 
 EXTERNAL SOURCES:
   audioplayers:
@@ -36,6 +45,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/in_app_purchase/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  purchases_flutter:
+    :path: ".symlinks/plugins/purchases_flutter/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
   url_launcher_macos:
@@ -49,10 +60,12 @@ SPEC CHECKSUMS:
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
   in_app_purchase: 3e2155afa9d03d4fa32d9e62d567885080ce97d6
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
+  Purchases: 392c729893c011c7d4d37d7f7c9f863e597d4a9b
+  purchases_flutter: b18d344e105cfd494ed286f8bb280a6a4b4622a8
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
   url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
 
-PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
+PODFILE CHECKSUM: e45c292f618eeca3034958d33b444b6e1249b55f
 
 COCOAPODS: 1.9.1

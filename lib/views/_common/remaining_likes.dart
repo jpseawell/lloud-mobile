@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
-import 'package:provider/provider.dart';
-import '../../providers/likes.dart';
 
 class RemainingLikes extends StatefulWidget {
   @override
@@ -11,7 +9,6 @@ class RemainingLikes extends StatefulWidget {
 class _RemainingLikesState extends State<RemainingLikes> {
   @override
   Widget build(BuildContext context) {
-    final likes = Provider.of<Likes>(context);
     return FlatButton(
         padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0.0),
         onPressed: () {
