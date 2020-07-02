@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/providers/song_player.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -16,6 +18,23 @@ class ListenerAccountPage extends StatefulWidget {
 }
 
 class _ListenerAccountPageState extends State<ListenerAccountPage> {
+  bool _isPremium = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkSubscriberStatus();
+  }
+
+  Future<void> checkSubscriberStatus() async {
+    PurchaserInfo purchaserInfo = await Purchases.getPurchaserInfo();
+    var isPremium = purchaserInfo.entitlements.all["Llouder"].isActive;
+
+    setState(() {
+      _isPremium = isPremium;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserModel>(context, listen: false).user;
@@ -70,6 +89,15 @@ class _ListenerAccountPageState extends State<ListenerAccountPage> {
                     Text("Edit Personal Info", style: TextStyle(fontSize: 16))),
           ]),
           SizedBox(height: 32.0),
+          H2("Subscription"),
+          Divider(),
+          Text(
+            (_isPremium)
+                ? "Llouder: Premium Subscriber"
+                : "Lloud Free: Subscriber",
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 32.0),
           H2("Support"),
           Divider(),
           ButtonBar(
@@ -119,11 +147,33 @@ class _ListenerAccountPageState extends State<ListenerAccountPage> {
                   child: Text("Privacy Policy", style: TextStyle(fontSize: 16)))
             ],
           ),
+          SizedBox(height: 32.0),
+          H2("Artists"),
+          Divider(),
+          ButtonBar(
+            alignment: MainAxisAlignment.start,
+            buttonTextTheme: ButtonTextTheme.normal,
+            children: <Widget>[
+              OutlineButton(
+                  onPressed: () async {
+                    const url = 'https://lloudapp.com/artists/apply';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                  },
+                  child: Text("Upload Music", style: TextStyle(fontSize: 16))),
+            ],
+          ),
           SizedBox(height: 40.0),
           FlatButton(
               textColor: LloudTheme.red,
               onPressed: () async {
                 await Auth.clearToken();
+                await Purchases.reset();
+                await Provider.of<SongPlayer>(context, listen: false)
+                    .stopPlaying();
                 return Navigator.pushNamed(context, '/login');
               },
               child: Text("Log Out", style: TextStyle(fontSize: 16))),

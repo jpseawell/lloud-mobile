@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
-import 'package:lloud_mobile/views/_common/back_btn.dart';
 import 'package:lloud_mobile/views/_common/h1.dart';
-import 'package:lloud_mobile/views/templates/backpage_template.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/views/pages/subscription_page.dart';

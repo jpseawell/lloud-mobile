@@ -20,17 +20,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   PurchaserInfo _purchaserInfo;
   Offerings _offerings;
   bool _pendingPurchase = false;
+  bool _isSubscriber = false;
   static String _rev_cat_api_key = 'XstlTtxLyLvhognmeAZyaVDIDSLQCFMy';
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    User user = Provider.of<UserModel>(context, listen: false).user;
+    initPlatformState(user);
   }
 
-  Future<void> initPlatformState() async {
-    await Purchases.setDebugLogsEnabled(true);
-    await Purchases.setup(_rev_cat_api_key);
+  Future<void> initPlatformState(User user) async {
+    await Purchases.identify(user.id.toString());
     PurchaserInfo purchaserInfo = await Purchases.getPurchaserInfo();
     Offerings offerings = await Purchases.getOfferings();
 
@@ -49,16 +50,19 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
     try {
       PurchaserInfo purchaserInfo = await Purchases.purchasePackage(package);
-      var newSubscriber = purchaserInfo.entitlements.all["Llouder"].isActive;
+
+      // IMPORTANT!!
+      setState(() {
+        _purchaserInfo = purchaserInfo;
+      });
+
+      var newSubscriber = _purchaserInfo.entitlements.all["Llouder"].isActive;
       if (newSubscriber) {
         final Response response =
             await DAL.instance().post('subscriptions/upgrade', {});
         if (response.statusCode != 200) {
           throw Exception("Subscription delivery failed");
         }
-
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/subscription-success', ModalRoute.withName('/'));
       }
     } on PlatformException catch (e) {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);
@@ -74,18 +78,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           context, '/subscription-error', ModalRoute.withName('/'));
     }
 
-    setState(() {
-      _pendingPurchase = false;
-    });
-
+    /// NOTE:
+    /// Yes, we are testing for active subscription again. Hoping this will fix
+    /// issues with apple Sign-In Required pop-up leading to the incorrect f* cking page.
+    String nextPage = (_purchaserInfo.entitlements.all["Llouder"].isActive)
+        ? 'success'
+        : 'error';
     Navigator.pushNamedAndRemoveUntil(
-        context, '/subscription-error', ModalRoute.withName('/'));
+        context, '/subscription-success', ModalRoute.withName('/'));
   }
 
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<UserModel>(context).user;
-
     List<Widget> stack = [];
 
     final likes = Provider.of<Likes>(context);
@@ -94,9 +98,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     if (_purchaserInfo == null || _pendingPurchase) {
       stack.add(LoadingScreen());
     } else {
-      bool isSubscriber =
-          _purchaserInfo.entitlements.all.containsKey('Llouder');
-      if (isSubscriber) {
+      if (_isSubscriber) {
         stack.add(ListView(
           padding: EdgeInsets.symmetric(horizontal: 36.0),
           children: <Widget>[
@@ -173,8 +175,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                               child: RaisedButton(
                                 padding: EdgeInsets.symmetric(vertical: 14.0),
                                 onPressed: () async {
-                                  PurchaserInfo purchaserInfo =
-                                      await Purchases.identify("${user.id}");
                                   await buySubscription(context, monthly);
                                 },
                                 color: LloudTheme.red,

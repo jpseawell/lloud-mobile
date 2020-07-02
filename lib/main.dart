@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+
 import 'package:lloud_mobile/views/pages/edit_personal_info_page.dart';
 import 'package:lloud_mobile/views/pages/forgot_password_page.dart';
 import 'package:lloud_mobile/views/pages/subscription_success_page.dart';
-import 'package:provider/provider.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-
 import 'package:lloud_mobile/providers/song_player.dart';
 import 'package:lloud_mobile/providers/points.dart';
 import 'package:lloud_mobile/providers/user.dart';
@@ -22,7 +22,6 @@ import './views/pages/likes_page.dart';
 import './providers/likes.dart';
 
 void main() {
-  InAppPurchaseConnection.enablePendingPurchases();
   runApp(MyApp());
 }
 
@@ -32,6 +31,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    initPaymentPlatform();
+  }
+
+  Future<void> initPaymentPlatform() async {
+    await Purchases.setDebugLogsEnabled(true);
+    await Purchases.setup("XstlTtxLyLvhognmeAZyaVDIDSLQCFMy");
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
