@@ -63,6 +63,7 @@ class _LikeButtonState extends State<LikeButton> {
             content: new Text("You can only like each song one time."),
             actions: <Widget>[
               new FlatButton(
+                textColor: LloudTheme.black,
                 child: new Text("Ok"),
                 onPressed: () {
                   Navigator.of(context).pop();

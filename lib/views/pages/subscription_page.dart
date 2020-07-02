@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
+import 'package:lloud_mobile/models/user.dart';
+import 'package:lloud_mobile/providers/user.dart';
 import 'package:lloud_mobile/util/dal.dart';
 import 'package:provider/provider.dart';
 
@@ -54,6 +56,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         if (response.statusCode != 200) {
           throw Exception("Subscription delivery failed");
         }
+
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/subscription-success', ModalRoute.withName('/'));
       }
     } on PlatformException catch (e) {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);
@@ -74,11 +79,13 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     });
 
     Navigator.pushNamedAndRemoveUntil(
-        context, '/subscription-success', ModalRoute.withName('/'));
+        context, '/subscription-error', ModalRoute.withName('/'));
   }
 
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<UserModel>(context).user;
+
     List<Widget> stack = [];
 
     final likes = Provider.of<Likes>(context);
@@ -88,7 +95,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       stack.add(LoadingScreen());
     } else {
       bool isSubscriber =
-          _purchaserInfo.entitlements.active.containsKey('Llouder');
+          _purchaserInfo.entitlements.all.containsKey('Llouder');
       if (isSubscriber) {
         stack.add(ListView(
           padding: EdgeInsets.symmetric(horizontal: 36.0),
@@ -166,6 +173,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                               child: RaisedButton(
                                 padding: EdgeInsets.symmetric(vertical: 14.0),
                                 onPressed: () async {
+                                  PurchaserInfo purchaserInfo =
+                                      await Purchases.identify("${user.id}");
                                   await buySubscription(context, monthly);
                                 },
                                 color: LloudTheme.red,

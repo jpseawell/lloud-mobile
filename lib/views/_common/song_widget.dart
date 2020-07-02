@@ -140,6 +140,14 @@ class _SongWidgetState extends State<SongWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 SongTitle(this._song.title),
+                                ArtistLink(
+                                  this._song.artistId,
+                                  this._song.artistName,
+                                  txtColor: LloudTheme.white,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
                               ],
                             )),
                         Container(
@@ -149,42 +157,29 @@ class _SongWidgetState extends State<SongWidget> {
                               children: <Widget>[
                                 LikeButton(this._song.id, this._song.likesCount,
                                     this._song.isLiked),
+                                SizedBox(
+                                  width: 40,
+                                  child: FlatButton(
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {
+                                        _showSongMenuDialog(context);
+                                      },
+                                      child: Text(
+                                        "...",
+                                        textAlign: TextAlign.end,
+                                        style: TextStyle(
+                                            color: Color.fromRGBO(
+                                                255, 255, 255, 1.0),
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                )
                               ],
                             ))
                       ],
                     ),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                ArtistLink(
-                                  this._song.artistId,
-                                  this._song.artistName,
-                                  txtColor: LloudTheme.white,
-                                )
-                              ],
-                            )),
-                        SizedBox(
-                          width: 40,
-                          child: FlatButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                _showSongMenuDialog(context);
-                              },
-                              child: Text(
-                                "...",
-                                textAlign: TextAlign.end,
-                                style: TextStyle(
-                                    color: Color.fromRGBO(255, 255, 255, 1.0),
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                        )
-                      ],
-                    )
                   ]),
                 ],
               ),
