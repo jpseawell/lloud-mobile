@@ -142,75 +142,78 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           if (offering != null) {
             final monthly = offering.monthly;
             if (monthly != null) {
-              stack.add(ListView(
-                padding: EdgeInsets.symmetric(horizontal: 36.0),
-                children: <Widget>[
-                  SizedBox(height: 104.0),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                          _hasLikes
-                              ? "Don't Run Out of Likes!"
-                              : "You're Out of Likes!",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 40,
+              stack.add(Center(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.symmetric(horizontal: 36.0),
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                            _hasLikes
+                                ? "Don't Run Out of Likes!"
+                                : "You're Out of Likes!",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Raleway')),
+                        Divider(),
+                        SizedBox(height: 24.0),
+                        Text("Llouder: 20 likes a month",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Raleway')),
-                      Divider(),
-                      SizedBox(height: 24.0),
-                      Text("Llouder: 20 likes a month",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      SizedBox(height: 24.0),
-                      Text(
-                          'A Lloud monthly subscription provides you with 20 likes per month. Likes can earn you points. Points can be redeemed for exclusive merch from the Lloud store.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, height: 1.5)),
-                      SizedBox(height: 40.0),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                              flex: 1,
-                              child: RaisedButton(
-                                padding: EdgeInsets.symmetric(vertical: 14.0),
-                                onPressed: () async {
-                                  await buySubscription(context, monthly);
-                                },
-                                color: LloudTheme.red,
-                                textColor: LloudTheme.white,
-                                child: Text(
-                                  'Subscribe Now - ${monthly.product.priceString}/mo',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ))
-                        ],
-                      ),
-                      SizedBox(height: 8.0),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                              flex: 1,
-                              child: FlatButton(
-                                padding: EdgeInsets.symmetric(vertical: 12.0),
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/nav');
-                                },
-                                textColor: LloudTheme.red,
-                                child: Text(
-                                  'Maybe Later',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ))
-                        ],
-                      ),
-                    ],
-                  )
-                ],
+                            )),
+                        SizedBox(height: 24.0),
+                        Text(
+                            'A Lloud monthly subscription provides you with 20 likes per month.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16, height: 1.5)),
+                        SizedBox(height: 40.0),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                                flex: 1,
+                                child: RaisedButton(
+                                  padding: EdgeInsets.symmetric(vertical: 14.0),
+                                  onPressed: () async {
+                                    await buySubscription(context, monthly);
+                                  },
+                                  color: LloudTheme.red,
+                                  textColor: LloudTheme.white,
+                                  child: Text(
+                                    'Subscribe Now - ${monthly.product.priceString}/mo',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ))
+                          ],
+                        ),
+                        SizedBox(height: 8.0),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                                flex: 1,
+                                child: FlatButton(
+                                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/nav');
+                                  },
+                                  textColor: LloudTheme.red,
+                                  child: Text(
+                                    'Maybe Later',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ))
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ));
             }
           }
