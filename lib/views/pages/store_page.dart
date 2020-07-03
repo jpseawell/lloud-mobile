@@ -24,10 +24,7 @@ class _StorePageState extends State<StorePage> {
     try {
       decodedResponse['data'].forEach(
           (storeItem) => storeItems.add(StoreItem.fromJson(storeItem)));
-    } catch (err) {
-      print('TEST:');
-      print(err);
-    }
+    } catch (err) {}
 
     return storeItems;
   }

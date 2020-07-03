@@ -57,8 +57,6 @@ class _SongsPageState extends State<SongsPage> {
       });
     } else {
       // err
-      print('ERR:');
-      print(response.body.toString());
     }
   }
 

@@ -145,7 +145,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               stack.add(ListView(
                 padding: EdgeInsets.symmetric(horizontal: 36.0),
                 children: <Widget>[
-                  SizedBox(height: 200.0),
+                  SizedBox(height: 104.0),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -158,6 +158,14 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                               fontSize: 40,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Raleway')),
+                      Divider(),
+                      SizedBox(height: 24.0),
+                      Text("Llouder: 20 likes a month",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          )),
                       SizedBox(height: 24.0),
                       Text(
                           'A Lloud monthly subscription provides you with 20 likes per month. Likes can earn you points. Points can be redeemed for exclusive merch from the Lloud store.',
