@@ -271,13 +271,9 @@ class _StoreItemPageState extends State<StoreItemPage> {
                           items: this._storeItem.getSizes().map((String size) {
                             return DropdownMenuItem<String>(
                                 value: size,
-                                child: Column(
-                                  children: <Widget>[
-                                    Text(
-                                      size,
-                                      style: TextStyle(color: LloudTheme.black),
-                                    )
-                                  ],
+                                child: Text(
+                                  size,
+                                  style: TextStyle(color: LloudTheme.black),
                                 ));
                           }).toList(),
                           onChanged: (String size) {

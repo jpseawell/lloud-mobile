@@ -28,7 +28,10 @@ class _ListenerAccountPageState extends State<ListenerAccountPage> {
 
   Future<void> checkSubscriberStatus() async {
     PurchaserInfo purchaserInfo = await Purchases.getPurchaserInfo();
-    var isPremium = purchaserInfo.entitlements.all["Llouder"].isActive;
+    bool isPremium = false;
+    if (purchaserInfo.entitlements.all.containsKey("Llouder")) {
+      isPremium = purchaserInfo.entitlements.all["Llouder"].isActive;
+    }
 
     setState(() {
       _isPremium = isPremium;
