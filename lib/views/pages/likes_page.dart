@@ -68,8 +68,7 @@ class _LikesBalancePageState extends State<LikesBalancePage> {
                 child: RaisedButton(
                   padding: EdgeInsets.symmetric(vertical: 14.0),
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, '/subscription', ModalRoute.withName('/'));
+                    Navigator.pushNamed(context, '/subscription');
                   },
                   color: LloudTheme.red,
                   textColor: LloudTheme.white,

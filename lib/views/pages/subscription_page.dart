@@ -67,15 +67,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     } on PlatformException catch (e) {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);
       if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/subscription-error', ModalRoute.withName('/'));
+        Navigator.pushNamed(context, '/subscription-error');
       } else if (errorCode == PurchasesErrorCode.purchaseNotAllowedError) {
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/subscription-error', ModalRoute.withName('/'));
+        Navigator.pushNamed(context, '/subscription-error');
       }
     } on Exception catch (e) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/subscription-error', ModalRoute.withName('/'));
+      Navigator.pushNamed(context, '/subscription-error');
     }
 
     /// NOTE:
@@ -84,8 +81,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     String nextPage = (_purchaserInfo.entitlements.all["Llouder"].isActive)
         ? 'success'
         : 'error';
-    Navigator.pushNamedAndRemoveUntil(
-        context, '/subscription-success', ModalRoute.withName('/'));
+    Navigator.pushNamed(context, '/subscription-${nextPage}');
   }
 
   @override
@@ -194,7 +190,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                               child: FlatButton(
                                 padding: EdgeInsets.symmetric(vertical: 12.0),
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                  Navigator.pushNamed(context, '/nav');
                                 },
                                 textColor: LloudTheme.red,
                                 child: Text(
