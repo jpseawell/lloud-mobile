@@ -38,15 +38,19 @@ class _PlayButtonState extends State<PlayButton> {
         (roSongPlayer.currentSongId == this._songId && roSongPlayer.isPlaying);
 
     return FlatButton(
-        onPressed: () async => {
-              thisSongIsBeingPlayed
-                  ? await _pauseThisSong(context)
-                  : await _playThisSong(context)
-            },
-        child: Icon(
-          thisSongIsBeingPlayed ? Icons.pause : Icons.play_arrow,
-          size: 128,
-          color: Color.fromRGBO(255, 255, 255, .75),
-        ));
+      onPressed: () async => {
+        thisSongIsBeingPlayed
+            ? await _pauseThisSong(context)
+            : await _playThisSong(context)
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          thisSongIsBeingPlayed
+              ? Image.asset('assets/pause.png')
+              : Image.asset('assets/play.png')
+        ],
+      ),
+    );
   }
 }

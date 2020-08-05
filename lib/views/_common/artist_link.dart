@@ -10,7 +10,7 @@ class ArtistLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(top: 12, right: 12),
+        margin: EdgeInsets.only(right: 12),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Text(

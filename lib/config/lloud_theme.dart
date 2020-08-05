@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 class LloudTheme {
   static final Color _red = Color.fromRGBO(255, 64, 64, 1.0);
   static final Color _black = Color.fromRGBO(28, 28, 28, 1.0);
+  static final Color _blackLight = Color.fromRGBO(31, 31, 31, 1.0);
   static final Color _white = Color.fromRGBO(255, 255, 255, 1.0);
 
   static get black => _black;
+  static get blackLight => _blackLight;
   static get red => _red;
   static get white => _white;
 

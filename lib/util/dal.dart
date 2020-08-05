@@ -15,10 +15,10 @@ class DAL {
   // final String _apiUrl =
   //     'http://ec2-18-191-169-184.us-east-2.compute.amazonaws.com:3000/api/v1/';
 
-  final String _apiUrl = 'https://www.lloudapp.com/api/v1/';
+  //final String _apiUrl = 'https://www.lloudapp.com/api/v1/';
 
   // DEV - windows
-  // final String _apiUrl = 'http://10.0.2.2:3333/api/v1/';
+  final String _apiUrl = 'http://10.0.2.2:3333/api/v1/';
 
   // DEV - mac
   // final String _apiUrl = 'http://davids-mac.local:3333/api/v1/';
