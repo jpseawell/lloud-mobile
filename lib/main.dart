@@ -55,6 +55,7 @@ class _MyAppState extends State<MyApp> {
             title: 'Lloud',
             initialRoute: '/',
             debugShowCheckedModeBanner: false,
+            theme: ThemeData(fontFamily: 'Lato'),
             routes: {
               '/': (ctx) => LandingPage(),
               '/username': (ctx) => UsernamePage(),
