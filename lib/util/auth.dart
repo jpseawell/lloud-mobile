@@ -1,9 +1,10 @@
 import 'dart:convert';
 
+import './dal.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 
-import './dal.dart';
+import 'package:lloud_mobile/models/user.dart';
 
 // The authorization class is
 // used for managing user authentication
@@ -32,6 +33,21 @@ class Auth {
     Response res = await dal.post('login', userData, useAuthHeader: false);
     if (res.statusCode == 200) {
       await setToken(json.decode(res.body)['token']);
+    } else {
+      throw Exception('Failed to authenticate user');
+    }
+  }
+
+  static Future<User> authenticateAndFetchUser(
+      String email, String password) async {
+    await authenticateUser(email, password);
+    bool isLoggedIn = await loggedIn();
+
+    if (isLoggedIn) {
+      final response = await DAL.instance().fetch('me');
+      Map<String, dynamic> decodedResponse = json.decode(response.body);
+
+      return User.fromJson(decodedResponse['data']);
     } else {
       throw Exception('Failed to authenticate user');
     }

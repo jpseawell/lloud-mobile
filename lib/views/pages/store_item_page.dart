@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'package:http/http.dart';
 
 import 'package:lloud_mobile/util/dal.dart';
@@ -8,7 +8,7 @@ import 'package:lloud_mobile/providers/points.dart';
 import 'package:lloud_mobile/providers/user.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/store_item.dart';
-import 'package:lloud_mobile/views/_common/cost_badge.dart';
+// import 'package:lloud_mobile/views/_common/cost_badge.dart';
 import 'package:lloud_mobile/views/templates/backpage_template.dart';
 
 class StoreItemPage extends StatefulWidget {
@@ -186,8 +186,8 @@ class _StoreItemPageState extends State<StoreItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    final points = Provider.of<Points>(context, listen: false).points;
-    final user = Provider.of<UserModel>(context, listen: false).user;
+    // final points = Provider.of<Points>(context, listen: false).points;
+    // final user = Provider.of<UserModel>(context, listen: false).user;
     this._storeItem = ModalRoute.of(context).settings.arguments;
 
     return BackpageTemplate(<Widget>[
@@ -218,17 +218,17 @@ class _StoreItemPageState extends State<StoreItemPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            color: LloudTheme.red,
-                            shape: BoxShape.rectangle,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(4.0))),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 4.0, horizontal: 16.0),
-                        child: CostBadge(
-                            this._storeItem.cost, this._storeItem.qty),
-                      )
+                      // Container(
+                      //   decoration: BoxDecoration(
+                      //       color: LloudTheme.red,
+                      //       shape: BoxShape.rectangle,
+                      //       borderRadius:
+                      //           BorderRadius.all(Radius.circular(4.0))),
+                      //   padding: EdgeInsets.symmetric(
+                      //       vertical: 4.0, horizontal: 16.0),
+                      //   child: CostBadge(
+                      //       this._storeItem.cost, this._storeItem.qty),
+                      // )
                     ],
                   )),
             ],
@@ -301,23 +301,23 @@ class _StoreItemPageState extends State<StoreItemPage> {
                         return _showSoldOutDialog(context);
                       }
 
-                      if (points < this._storeItem.cost) {
-                        return _showNotEnoughPointsDialog(context);
-                      }
+                      // if (points < this._storeItem.cost) {
+                      //   return _showNotEnoughPointsDialog(context);
+                      // }
 
-                      if (!user.addressComplete()) {
-                        return _showIncompleteAddressDialog(context);
-                      }
+                      // if (!user.addressComplete()) {
+                      //   return _showIncompleteAddressDialog(context);
+                      // }
 
-                      if (_shirtSizeKey.currentState == null) {
-                        return _confirmPurchase(context, points);
-                      }
+                      // if (_shirtSizeKey.currentState == null) {
+                      //   return _confirmPurchase(context, points);
+                      // }
 
-                      if (!_shirtSizeKey.currentState.validate()) {
-                        return;
-                      }
+                      // if (!_shirtSizeKey.currentState.validate()) {
+                      //   return;
+                      // }
 
-                      _confirmPurchase(context, points);
+                      // _confirmPurchase(context, points);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

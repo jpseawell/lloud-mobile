@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import '../util/dal.dart';
+
+import 'package:lloud_mobile/util/dal.dart';
 
 class User {
   int id;

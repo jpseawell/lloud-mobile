@@ -1,41 +1,51 @@
 import 'package:flutter/cupertino.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
+
+import 'package:lloud_mobile/models/song.dart';
 
 class SongPlayer with ChangeNotifier {
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final _audioPlayer = AssetsAudioPlayer();
+
   bool _isPlaying = false;
-  int _currentSongId = 0;
+  Song _currentSong;
+  Playlist _playList;
 
   bool get isPlaying => _isPlaying;
-  int get currentSongId => _currentSongId;
+  Song get currentSong => _currentSong;
 
-  Future<void> playSong(int songId, String songUrl) async {
-    if (this._currentSongId != songId) {
-      await stopPlaying();
+  Playlist get playlist => _playList;
+  void set playlist(Playlist playlist) => _playList = playlist;
+
+  Future<void> playSong(Song song) async {
+    if (_currentSong.id != song.id) {
+      await stopSong();
     }
 
-    int result = await this._audioPlayer.play(songUrl);
-    if (result == 1) {
-      this._currentSongId = songId;
-      _isPlaying = true;
-      notifyListeners();
+    try {
+      // await _audioPlayer.open(song.toAudio(), showNotification: true);
+    } catch (err) {
+      // Throw err
+      // Stop the audio
     }
+
+    _currentSong = song;
+    _isPlaying = true;
+    notifyListeners();
   }
 
-  Future<void> stopPlaying() async {
-    int result = await this._audioPlayer.stop();
-    if (result == 1) {
-      this._currentSongId = 0;
-      _isPlaying = false;
-    }
+  Future<void> stopSong() async {
+    _audioPlayer.stop();
+    _currentSong = null;
+    _isPlaying = false;
+
+    // TODO: Post duration
+
     notifyListeners();
   }
 
   Future<void> pauseSong() async {
-    int result = await this._audioPlayer.pause();
-    if (result == 1) {
-      _isPlaying = false;
-      notifyListeners();
-    }
+    _audioPlayer.pause();
+    _isPlaying = false;
+    notifyListeners();
   }
 }

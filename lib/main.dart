@@ -2,24 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
-import 'package:lloud_mobile/views/pages/edit_personal_info_page.dart';
-import 'package:lloud_mobile/views/pages/forgot_password_page.dart';
-import 'package:lloud_mobile/views/pages/subscription_success_page.dart';
-import 'package:lloud_mobile/providers/song_player.dart';
-import 'package:lloud_mobile/providers/points.dart';
+import 'package:lloud_mobile/views/pages/artist.dart';
+import 'package:lloud_mobile/views/pages/landing.dart';
+import 'package:lloud_mobile/routes.dart';
+import 'package:lloud_mobile/keys.dart';
+import 'package:lloud_mobile/providers/audio.dart';
 import 'package:lloud_mobile/providers/user.dart';
-
-import './views/pages/landing_page.dart';
-import './views/pages/signup/username_page.dart';
-import './views/pages/signup/password_page.dart';
-import './views/pages/signup/welcome_page.dart';
-import './views/pages/login_page.dart';
-import './views/pages/nav_page.dart';
-import './views/pages/store_item_page.dart';
-import './views/pages/subscription_page.dart';
-import './views/pages/subscription_error_page.dart';
-import './views/pages/likes_page.dart';
-import './providers/likes.dart';
+import 'package:lloud_mobile/providers/account.dart';
+import 'package:lloud_mobile/views/pages/audio_player.dart';
+import 'package:lloud_mobile/views/pages/signup/username.dart';
+import 'package:lloud_mobile/views/pages/signup/password.dart';
+import 'package:lloud_mobile/views/pages/signup/welcome.dart';
+import 'package:lloud_mobile/views/pages/nav.dart';
 
 void main() {
   runApp(MyApp());
@@ -45,37 +39,49 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => Likes()),
-          ChangeNotifierProvider(create: (_) => SongPlayer()),
-          ChangeNotifierProvider(create: (_) => Points()),
-          ChangeNotifierProvider(create: (_) => UserModel())
-        ],
-        child: MaterialApp(
-            title: 'Lloud',
-            initialRoute: '/',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(fontFamily: 'Lato'),
-            routes: {
-              '/': (ctx) => LandingPage(),
-              '/username': (ctx) => UsernamePage(),
-              '/password': (ctx) => PasswordPage(),
-              '/welcome': (ctx) => WelcomePage(),
-              '/login': (ctx) => LoginPage(),
-              '/forgot-password': (ctx) => ForgotPasswordPage(),
-              '/nav': (ctx) => NavPage.fromData(),
-              '/store': (ctx) => NavPage.fromData(
-                    pageIndex: 2,
-                  ),
-              '/account': (ctx) => NavPage.fromData(
-                    pageIndex: 3,
-                  ),
-              '/edit-personal-info': (ctx) => EditPersonalInfoPage(),
-              '/store-item': (ctx) => StoreItemPage(),
-              '/likes': (ctx) => LikesPage(),
-              '/subscription': (ctx) => SubscriptionPage(),
-              '/subscription-error': (ctx) => SubscriptionErrorPage(),
-              '/subscription-success': (ctx) => SubscriptionSuccessPage(),
-            }));
+      providers: [
+        ChangeNotifierProvider(create: (_) => AudioProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => AccountProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Lloud',
+        initialRoute: Routes.home,
+        debugShowCheckedModeBanner: false,
+        navigatorKey: Keys.navKey,
+        theme: ThemeData(
+            fontFamily: 'Lato'), // TODO: Correctly implement custom theme
+        routes: {
+          Routes.signup_username: (ctx) => UsernamePage(),
+          Routes.signup_password: (ctx) => PasswordPage(),
+          Routes.signup_welcome: (ctx) => WelcomePage(),
+          Routes.home: (ctx) => LandingPage(),
+          Routes.audio_player: (ctx) => AudioPlayerPage(),
+          Routes.songs: (ctx) => NavPage.fromData(),
+        },
+        onGenerateRoute: (RouteSettings settings) {
+          var routes = <String, WidgetBuilder>{
+            // '/login': (ctx) => LoginPage(),
+            // '/forgot-password': (ctx) => ForgotPasswordPage(),
+            Routes.artist: (ctx) => ArtistPage(settings.arguments),
+            // '/store': (ctx) => NavPage.fromData(
+            //       pageIndex: 2,
+            //     ),
+            // '/account': (ctx) => NavPage.fromData(
+            //       pageIndex: 3,
+            //     ),
+            // '/edit-personal-info': (ctx) => EditPersonalInfoPage(),
+            // '/store-item': (ctx) => StoreItemPage(),
+            // '/likes': (ctx) => LikesPage(),
+            // '/subscription': (ctx) => SubscriptionPage(),
+            // '/subscription-error': (ctx) => SubscriptionErrorPage(),
+            // '/subscription-success': (ctx) => SubscriptionSuccessPage(),
+          };
+
+          WidgetBuilder builder = routes[settings.name];
+          return MaterialPageRoute(builder: (ctx) => builder(ctx));
+        },
+      ),
+    );
   }
 }

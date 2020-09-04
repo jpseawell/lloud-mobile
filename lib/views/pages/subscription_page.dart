@@ -2,14 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
-import 'package:lloud_mobile/models/user.dart';
-import 'package:lloud_mobile/providers/user.dart';
-import 'package:lloud_mobile/util/dal.dart';
-import 'package:provider/provider.dart';
-
-import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:lloud_mobile/providers/likes.dart';
+
+import 'package:lloud_mobile/models/user.dart';
+import 'package:lloud_mobile/util/dal.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
+import 'package:lloud_mobile/views/components/loading_screen.dart';
 
 class SubscriptionPage extends StatefulWidget {
   @override
@@ -26,8 +24,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   @override
   void initState() {
     super.initState();
-    User user = Provider.of<UserModel>(context, listen: false).user;
-    initPlatformState(user);
+    // User user = Provider.of<UserModel>(context, listen: false).user;
+    // initPlatformState(user);
   }
 
   Future<void> initPlatformState(User user) async {
@@ -88,8 +86,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   Widget build(BuildContext context) {
     List<Widget> stack = [];
 
-    final likes = Provider.of<Likes>(context);
-    bool _hasLikes = (likes.remaining > 0);
+    // final likes = Provider.of<Likes>(context);
+    // bool _hasLikes = (likes.remaining > 0);
 
     if (_purchaserInfo == null || _pendingPurchase) {
       stack.add(LoadingScreen());
@@ -151,15 +149,15 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text(
-                            _hasLikes
-                                ? "Don't Run Out of Likes!"
-                                : "You're Out of Likes!",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Raleway')),
+                        // Text(
+                        //     _hasLikes
+                        //         ? "Don't Run Out of Likes!"
+                        //         : "You're Out of Likes!",
+                        //     textAlign: TextAlign.center,
+                        //     style: TextStyle(
+                        //         fontSize: 40,
+                        //         fontWeight: FontWeight.bold,
+                        //         fontFamily: 'Raleway')),
                         Divider(),
                         SizedBox(height: 24.0),
                         Text("Llouder: 20 likes a month",
@@ -225,24 +223,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       body: Stack(
         children: stack,
       ),
-    );
-  }
-}
-
-class LoadingScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Opacity(
-          opacity: 0.3,
-          child: const ModalBarrier(dismissible: false, color: Colors.grey),
-        ),
-        Center(
-          child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.red)),
-        ),
-      ],
     );
   }
 }

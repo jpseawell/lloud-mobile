@@ -4,8 +4,8 @@ import 'package:lloud_mobile/config/lloud_theme.dart';
 
 import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/models/store_item.dart';
-import 'package:lloud_mobile/views/_common/h1.dart';
-import 'package:lloud_mobile/views/_common/store_item_widget.dart';
+// import 'package:lloud_mobile/views/_common/h1.dart';
+// import 'package:lloud_mobile/views/_common/store_item_widget.dart';
 
 class StorePage extends StatefulWidget {
   @override
@@ -42,19 +42,19 @@ class _StorePageState extends State<StorePage> {
         child: ListView(
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
-            H1('Store'),
+            // H1('Store'),
             SizedBox(height: 8.0),
             FutureBuilder<List<StoreItem>>(
                 future: _storeItems,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    List<StoreItemWidget> storeItemWidgets = [];
-                    snapshot.data.forEach((item) =>
-                        storeItemWidgets.add(new StoreItemWidget(item)));
-
-                    return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: storeItemWidgets);
+                    // List<StoreItemWidget> storeItemWidgets = [];
+                    // snapshot.data.forEach((item) =>
+                    //     storeItemWidgets.add(new StoreItemWidget(item)));
+                    return Text('test');
+                    // return Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.center,
+                    //     children: storeItemWidgets);
                   }
 
                   return CircularProgressIndicator(

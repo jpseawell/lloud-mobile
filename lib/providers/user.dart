@@ -1,20 +1,26 @@
-import 'package:flutter/cupertino.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 
-import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/models/user.dart';
+import 'package:lloud_mobile/util/dal.dart';
 
-class UserModel with ChangeNotifier {
-  User _user;
+class UserProvider with ChangeNotifier {
+  User user;
 
-  User get user => _user;
+  void setAndNotify(User user) {
+    this.user = user;
+    notifyListeners();
+  }
 
-  Future<User> fetchUser() async {
-    // TODO: Add exception handling
+  Future<void> fetchAndNotify() async {
     final response = await DAL.instance().fetch('me');
     Map<String, dynamic> decodedResponse = json.decode(response.body);
 
-    this._user = User.fromJson(decodedResponse['data']);
+    if (response.statusCode != 200) {
+      throw Exception('Could not retrieve user.');
+    }
+
+    this.user = User.fromJson(decodedResponse['data']);
     notifyListeners();
   }
 }

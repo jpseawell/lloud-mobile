@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
 
-import 'package:lloud_mobile/views/_common/h1.dart';
+// import 'package:lloud_mobile/views/_common/h1.dart';
 
 class SubscriptionErrorPage extends StatelessWidget {
   @override
