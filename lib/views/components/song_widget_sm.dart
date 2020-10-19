@@ -30,21 +30,10 @@ class _SongWidgetSmallState extends State<SongWidgetSmall> {
 
   _SongWidgetSmallState(this._index, this._song, {this.onTapCB});
 
-  bool isBeingPlayed(AudioProvider ap) {
-    if (ap.currentSong == null) {
-      return false;
-    }
-
-    bool thisSongIsActive = ap.currentSong.id == _song.id;
-    bool result = ap.isPlaying && thisSongIsActive;
-
-    return result;
-  }
-
   @override
   Widget build(BuildContext context) {
     AudioProvider ap = Provider.of<AudioProvider>(context);
-    _thisSongIsBeingPlayed = isBeingPlayed(ap);
+    _thisSongIsBeingPlayed = ap.isBeingPlayed(_song);
 
     return Container(
       height: 88,

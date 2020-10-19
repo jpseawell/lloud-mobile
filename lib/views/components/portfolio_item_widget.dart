@@ -1,110 +1,152 @@
-// import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-// import 'package:lloud_mobile/config/lloud_theme.dart';
-// import 'package:lloud_mobile/providers/song_player.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
+import 'package:lloud_mobile/models/portfolio_item.dart';
+import 'package:lloud_mobile/models/song.dart';
+import 'package:lloud_mobile/providers/audio.dart';
+import 'package:lloud_mobile/views/components/artist_link.dart';
+import 'package:lloud_mobile/views/components/song_title.dart';
 
-// import '../../models/portfolio_item.dart';
+class PortfolioItemWidget extends StatefulWidget {
+  final int index;
+  final PortfolioItem portfolioItem;
+  final Function(BuildContext ctx, int index, Song song) onTapCB;
 
-// import '../_common/artist_link.dart';
+  PortfolioItemWidget({this.index, this.portfolioItem, this.onTapCB});
 
-// class PortfolioItemWidget extends StatefulWidget {
-//   final PortfolioItem _portfolioItem;
+  @override
+  _PortfolioItemWidgetState createState() => _PortfolioItemWidgetState(
+      index: this.index,
+      portfolioItem: this.portfolioItem,
+      onTapCB: this.onTapCB);
+}
 
-//   PortfolioItemWidget(this._portfolioItem);
+class _PortfolioItemWidgetState extends State<PortfolioItemWidget> {
+  final PortfolioItem portfolioItem;
+  final int index;
+  final Function(BuildContext ctx, int index, Song song) onTapCB;
+  bool _thisSongIsBeingPlayed = false;
 
-//   @override
-//   _PortfolioItemWidgetState createState() =>
-//       _PortfolioItemWidgetState(this._portfolioItem);
-// }
+  _PortfolioItemWidgetState({this.index, this.portfolioItem, this.onTapCB});
 
-// class _PortfolioItemWidgetState extends State<PortfolioItemWidget> {
-//   final PortfolioItem _portfolioItem;
+  @override
+  Widget build(BuildContext context) {
+    AudioProvider ap = Provider.of<AudioProvider>(context);
+    _thisSongIsBeingPlayed = ap.isBeingPlayed(portfolioItem.song);
 
-//   _PortfolioItemWidgetState(this._portfolioItem);
+    return Container(
+      height: 88,
+      child: Card(
+        semanticContainer: true,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        elevation: 3,
+        shadowColor: LloudTheme.black.withOpacity(.25),
+        color: (_thisSongIsBeingPlayed) ? LloudTheme.black : LloudTheme.white,
+        child: InkWell(
+          splashColor: LloudTheme.black.withAlpha(30),
+          onTap: () {
+            onTapCB(context, index, portfolioItem.song);
+          },
+          child: Container(
+            padding: EdgeInsets.all(4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                albumArt(),
+                Expanded(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SongTitle(
+                      portfolioItem.song.title,
+                      color: (_thisSongIsBeingPlayed)
+                          ? LloudTheme.white
+                          : LloudTheme.black,
+                      size: 22,
+                    ),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    ArtistLink(
+                      portfolioItem.song.artistId,
+                      portfolioItem.song.artistName,
+                      txtSize: 18,
+                      txtColor: (_thisSongIsBeingPlayed)
+                          ? LloudTheme.white
+                          : LloudTheme.black,
+                    ),
+                  ],
+                )),
+                points()
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-//   Future<void> _playThisSong(BuildContext ctx) async {
-//     final songPlayer = Provider.of<SongPlayer>(ctx, listen: false);
-//     await songPlayer.playSong(
-//         this._portfolioItem, this._portfolioItem.audioUrl);
-//   }
+  Widget albumArt() {
+    return Container(
+      padding: EdgeInsets.only(right: 8),
+      child: AspectRatio(
+        aspectRatio: 1 / 1,
+        child: Card(
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Stack(
+            children: [
+              Image.network(
+                portfolioItem.song.imageUrl,
+                fit: BoxFit.fill,
+              ),
+              Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(16),
+                child: _thisSongIsBeingPlayed
+                    ? Image.asset('assets/pause.png')
+                    : Image.asset('assets/play.png'),
+                // child: Image.asset('assets/play.png'),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-//   Future<void> _pauseThisSong(BuildContext ctx) async {
-//     final songPlayer = Provider.of<SongPlayer>(ctx, listen: false);
-//     await songPlayer.pauseSong();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final roSongPlayer =
-//         Provider.of<SongPlayer>(context); // Read Only song player
-//     bool thisSongIsBeingPlayed =
-//         (roSongPlayer.currentSong.id == this._portfolioItem.songId &&
-//             roSongPlayer.isPlaying);
-
-//     return FlatButton(
-//         color: (thisSongIsBeingPlayed) ? LloudTheme.black : Color(0x00000000),
-//         textColor:
-//             (thisSongIsBeingPlayed) ? LloudTheme.white : LloudTheme.black,
-//         padding: EdgeInsets.zero,
-//         onPressed: () async {
-//           thisSongIsBeingPlayed
-//               ? await _pauseThisSong(context)
-//               : await _playThisSong(context);
-//         },
-//         child: Container(
-//           child: Row(children: <Widget>[
-//             Expanded(
-//                 flex: 1,
-//                 child: AspectRatio(
-//                   aspectRatio: 1 / 1,
-//                   child: Container(
-//                       decoration: new BoxDecoration(
-//                           image: new DecorationImage(
-//                               image: new NetworkImage(
-//                                   this._portfolioItem.imageUrl),
-//                               fit: BoxFit.cover)),
-//                       alignment: Alignment.bottomLeft,
-//                       padding: EdgeInsets.all(16.0)),
-//                 )), // Album art/audio url/song id
-//             Expanded(
-//                 flex: 2,
-//                 child: Container(
-//                   padding: EdgeInsets.all(16.0),
-//                   child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: <Widget>[
-//                       SingleChildScrollView(
-//                         scrollDirection: Axis.horizontal,
-//                         child: Text("${this._portfolioItem.songTitle}",
-//                             style: TextStyle(
-//                                 fontSize: 24,
-//                                 fontWeight: FontWeight.bold,
-//                                 fontFamily: 'Raleway')),
-//                       ),
-//                       ArtistLink(
-//                         this._portfolioItem.artistId,
-//                         this._portfolioItem.artistName,
-//                         txtColor: (thisSongIsBeingPlayed)
-//                             ? LloudTheme.white
-//                             : LloudTheme.black,
-//                       )
-//                     ],
-//                   ),
-//                 )),
-//             Expanded(
-//                 flex: 1,
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.center,
-//                   children: <Widget>[
-//                     Text('Points:'),
-//                     Text(
-//                       "${this._portfolioItem.points}",
-//                       style: TextStyle(fontSize: 20),
-//                     )
-//                   ],
-//                 )), // Song title, artist name/link, points scored so far
-//           ]),
-//         ));
-//   }
-// }
+  Widget points() {
+    return Container(
+      padding: EdgeInsets.only(
+        right: 10,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Points:',
+            style: TextStyle(
+              color: (_thisSongIsBeingPlayed)
+                  ? LloudTheme.white
+                  : LloudTheme.black,
+            ),
+          ),
+          Text(
+            "${portfolioItem.points_earned}",
+            style: TextStyle(
+              fontSize: 20,
+              color: (_thisSongIsBeingPlayed)
+                  ? LloudTheme.white
+                  : LloudTheme.black,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

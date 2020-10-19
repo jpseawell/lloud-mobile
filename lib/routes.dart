@@ -3,6 +3,15 @@ class Routes {
   static final songs = "/songs";
   static final artist = "/artist";
   static final audio_player = "/audio-player";
+  static final explore = "/explore";
+  static final profile = "/profile";
+  static final my_profile = "/my-profile";
+  static final edit_profile = "/profile/edit";
+  static final shipping_info = "/profile/shipping_info";
+  static final options = "/options";
+
+  static final store = "/store";
+  static final store_item = "/store-item";
 
   static final login = "/login";
   static final forgot_password = "/forgot-password";

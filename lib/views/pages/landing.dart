@@ -9,18 +9,28 @@ import 'package:lloud_mobile/views/pages/nav.dart';
 import 'package:lloud_mobile/views/pages/signup/email.dart';
 
 class LandingPage extends StatelessWidget {
+  Future<bool> hasAccess(BuildContext context) async {
+    bool isLoggedIn = await Auth.loggedIn();
+    if (!isLoggedIn) {
+      return false;
+    }
+
+    await Provider.of<UserProvider>(context, listen: false).fetchAndNotify();
+    await Provider.of<UserProvider>(context, listen: false)
+        .fetchProfileImgAndNotify();
+    await Provider.of<AccountProvider>(context, listen: false).fetchAndNotify();
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-        future: Auth.loggedIn(),
+        future: hasAccess(context),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             bool isLoggedIn = snapshot.data;
             if (isLoggedIn) {
-              Provider.of<UserProvider>(context, listen: false)
-                  .fetchAndNotify();
-              Provider.of<AccountProvider>(context, listen: false)
-                  .fetchAndNotify();
               return NavPage.fromData();
             }
             return EmailPage();

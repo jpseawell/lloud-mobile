@@ -1,34 +1,41 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
-import 'package:lloud_mobile/util/dal.dart';
-import 'package:lloud_mobile/providers/points.dart';
+import 'package:lloud_mobile/providers/account.dart';
 import 'package:lloud_mobile/providers/user.dart';
+import 'package:lloud_mobile/routes.dart';
+import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/store_item.dart';
-// import 'package:lloud_mobile/views/_common/cost_badge.dart';
+import 'package:lloud_mobile/views/components/cost_badge.dart';
 import 'package:lloud_mobile/views/templates/backpage_template.dart';
 
 class StoreItemPage extends StatefulWidget {
+  final StoreItem storeItem;
+
+  StoreItemPage(this.storeItem);
+
   @override
-  _StoreItemPageState createState() => _StoreItemPageState();
+  _StoreItemPageState createState() => _StoreItemPageState(this.storeItem);
 }
 
 class _StoreItemPageState extends State<StoreItemPage> {
+  final StoreItem storeItem;
   final GlobalKey<FormFieldState> _shirtSizeKey = GlobalKey<FormFieldState>();
-  StoreItem _storeItem;
   bool _isPurchased = false;
   String _shirtSize;
+
+  _StoreItemPageState(this.storeItem);
 
   Future<void> _purchaseItem(BuildContext context) async {
     dynamic dal = DAL.instance();
     String shirtSize = (_shirtSizeKey.currentState == null)
         ? null
         : _shirtSizeKey.currentState.value;
-    Response res = await dal.post('store-items/purchase',
-        {'store_item_id': this._storeItem.id, 'size': shirtSize});
+    Response res = await dal.post('store-purchases',
+        {'store_item_id': this.storeItem.id, 'size': shirtSize});
 
     Map<String, dynamic> decodedResponse = json.decode(res.body);
 
@@ -52,7 +59,7 @@ class _StoreItemPageState extends State<StoreItemPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Oh No!"),
-            content: Text("Something went wrong. Error Message: ${message}"),
+            content: Text("Something went wrong. Error Message: $message"),
             actions: <Widget>[
               RaisedButton(
                 color: LloudTheme.red,
@@ -72,7 +79,7 @@ class _StoreItemPageState extends State<StoreItemPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Congratulations!"),
-            content: Text("Your ${this._storeItem.name} is on the way!!"),
+            content: Text("Your ${this.storeItem.name} is on the way!!"),
             actions: <Widget>[
               RaisedButton(
                 color: LloudTheme.red,
@@ -87,16 +94,16 @@ class _StoreItemPageState extends State<StoreItemPage> {
   }
 
   void _confirmPurchase(BuildContext context, int currentPoints) {
-    int remainingPoints = currentPoints - this._storeItem.cost;
+    int remainingPoints = currentPoints - this.storeItem.cost;
 
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(
-                "Are you sure you want to purchase a ${this._storeItem.name}?"),
+                "Are you sure you want to purchase a ${this.storeItem.name}?"),
             content: Text(
-                "You will have ${remainingPoints.toString()} points left after this purchase."),
+                "You will have $remainingPoints points left after this purchase."),
             actions: <Widget>[
               RaisedButton(
                 color: LloudTheme.red,
@@ -170,7 +177,7 @@ class _StoreItemPageState extends State<StoreItemPage> {
                 color: LloudTheme.red,
                 child: Text("Go Enter My Address"),
                 onPressed: () async {
-                  Navigator.pushNamed(context, '/account');
+                  Navigator.pushNamed(context, Routes.shipping_info);
                 },
               ),
               FlatButton(
@@ -186,9 +193,10 @@ class _StoreItemPageState extends State<StoreItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final points = Provider.of<Points>(context, listen: false).points;
-    // final user = Provider.of<UserModel>(context, listen: false).user;
-    this._storeItem = ModalRoute.of(context).settings.arguments;
+    final points = Provider.of<AccountProvider>(context, listen: false)
+        .account
+        .pointsBalance;
+    final user = Provider.of<UserProvider>(context, listen: false).user;
 
     return BackpageTemplate(<Widget>[
       Container(
@@ -201,14 +209,14 @@ class _StoreItemPageState extends State<StoreItemPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        this._storeItem.name,
+                        this.storeItem.name,
                         style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Raleway'),
                       ),
                       Text(
-                        this._storeItem.type,
+                        this.storeItem.type,
                         style: TextStyle(fontSize: 20),
                       ),
                     ],
@@ -218,17 +226,17 @@ class _StoreItemPageState extends State<StoreItemPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //       color: LloudTheme.red,
-                      //       shape: BoxShape.rectangle,
-                      //       borderRadius:
-                      //           BorderRadius.all(Radius.circular(4.0))),
-                      //   padding: EdgeInsets.symmetric(
-                      //       vertical: 4.0, horizontal: 16.0),
-                      //   child: CostBadge(
-                      //       this._storeItem.cost, this._storeItem.qty),
-                      // )
+                      Container(
+                        decoration: BoxDecoration(
+                            color: LloudTheme.red,
+                            shape: BoxShape.rectangle,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(4.0))),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 16.0),
+                        child:
+                            CostBadge(this.storeItem.cost, this.storeItem.qty),
+                      )
                     ],
                   )),
             ],
@@ -236,19 +244,19 @@ class _StoreItemPageState extends State<StoreItemPage> {
       SizedBox(height: 16.0),
       AspectRatio(
           aspectRatio: 1 / 1,
-          child: Image.network(this._storeItem.imageUrl, fit: BoxFit.cover)),
+          child: Image.network(this.storeItem.imageUrl, fit: BoxFit.cover)),
       SizedBox(height: 16.0),
       Container(
         padding: EdgeInsets.symmetric(horizontal: 16.0),
         child: Text(
-          this._storeItem.description,
+          this.storeItem.description,
           style: TextStyle(fontSize: 20),
         ),
       ),
       Container(
         margin: EdgeInsets.only(top: 8.0),
         padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: this._storeItem.sizes.isEmpty
+        child: this.storeItem.sizes.isEmpty
             ? null
             : Row(
                 children: <Widget>[
@@ -257,7 +265,7 @@ class _StoreItemPageState extends State<StoreItemPage> {
                       child: DropdownButtonFormField<String>(
                           validator: (String value) {
                             return (value == null)
-                                ? 'Please select a ${this._storeItem.type} size.'
+                                ? 'Please select a ${this.storeItem.type} size.'
                                 : null;
                           },
                           decoration: InputDecoration(
@@ -268,7 +276,7 @@ class _StoreItemPageState extends State<StoreItemPage> {
                           value: _shirtSize,
                           isExpanded: true,
                           style: TextStyle(fontSize: 22),
-                          items: this._storeItem.getSizes().map((String size) {
+                          items: this.storeItem.getSizes().map((String size) {
                             return DropdownMenuItem<String>(
                                 value: size,
                                 child: Text(
@@ -297,27 +305,27 @@ class _StoreItemPageState extends State<StoreItemPage> {
                     color: LloudTheme.red,
                     textColor: LloudTheme.white,
                     onPressed: () {
-                      if (this._storeItem.qty <= 0) {
+                      if (this.storeItem.qty <= 0) {
                         return _showSoldOutDialog(context);
                       }
 
-                      // if (points < this._storeItem.cost) {
-                      //   return _showNotEnoughPointsDialog(context);
-                      // }
+                      if (points < this.storeItem.cost) {
+                        return _showNotEnoughPointsDialog(context);
+                      }
 
-                      // if (!user.addressComplete()) {
-                      //   return _showIncompleteAddressDialog(context);
-                      // }
+                      if (!user.addressComplete()) {
+                        return _showIncompleteAddressDialog(context);
+                      }
 
-                      // if (_shirtSizeKey.currentState == null) {
-                      //   return _confirmPurchase(context, points);
-                      // }
+                      if (_shirtSizeKey.currentState == null) {
+                        return _confirmPurchase(context, points);
+                      }
 
-                      // if (!_shirtSizeKey.currentState.validate()) {
-                      //   return;
-                      // }
+                      if (!_shirtSizeKey.currentState.validate()) {
+                        return;
+                      }
 
-                      // _confirmPurchase(context, points);
+                      _confirmPurchase(context, points);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

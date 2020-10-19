@@ -4,12 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:lloud_mobile/providers/audio.dart';
 import 'package:lloud_mobile/views/components/top_nav.dart';
 import 'package:lloud_mobile/views/components/nav_bar.dart';
-import 'package:lloud_mobile/views/pages/songs.dart';
 import 'package:lloud_mobile/views/components/audio_bar.dart';
-
-// import '../pages/portfolio_page.dart';
-// import 'package:lloud_mobile/views/pages/store_page.dart';
-// import '../pages/listener_account_page.dart';
+import 'package:lloud_mobile/views/pages/songs.dart';
+import 'package:lloud_mobile/views/pages/explore.dart';
+import 'package:lloud_mobile/views/pages/my_profile.dart';
+import 'package:lloud_mobile/views/pages/store_page.dart';
 
 ///
 /// The NavPage is the 'root' page of the application.
@@ -33,9 +32,9 @@ class _NavPageState extends State<NavPage> {
 
   final List<Widget> _pages = [
     SongsPage(),
-    // PortfolioPage(),
-    // StorePage(),
-    // ListenerAccountPage(),
+    ExplorePage(),
+    StorePage(),
+    MyProfilePage()
   ];
   int _selectedPageIndex = 0;
 

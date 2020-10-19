@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:lloud_mobile/views/_common/back_btn.dart';
+import 'package:lloud_mobile/views/components/back_btn.dart';
 
 class BackpageTemplate extends StatelessWidget {
   final List<Widget> content;
@@ -12,9 +12,9 @@ class BackpageTemplate extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: <Widget>[
-            // Row(
-            //     mainAxisAlignment: MainAxisAlignment.start,
-            //     children: <Widget>[BackBtn()]),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[BackBtn()]),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: content,

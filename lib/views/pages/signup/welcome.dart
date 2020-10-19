@@ -47,7 +47,6 @@ class _WelcomePageState extends State<WelcomePage> {
                   try {
                     await _registerUserAndLogin(ctx, userData);
                   } catch (err) {
-                    print(err.toString());
                     Scaffold.of(snackCtx).showSnackBar(SnackBar(
                         backgroundColor: LloudTheme.red,
                         content: Text('Error: User creation failed')));

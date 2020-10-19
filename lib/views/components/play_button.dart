@@ -7,42 +7,33 @@ import 'package:lloud_mobile/providers/audio.dart';
 class PlayButton extends StatefulWidget {
   final int index;
   final Song song;
+  final Function(BuildContext ctx, int index, Song song) onTapCB;
 
-  PlayButton(this.index, this.song);
+  PlayButton(this.index, this.song, {this.onTapCB});
 
   @override
-  _PlayButtonState createState() => _PlayButtonState(this.index, this.song);
+  _PlayButtonState createState() =>
+      _PlayButtonState(this.index, this.song, onTapCB: this.onTapCB);
 }
 
 class _PlayButtonState extends State<PlayButton> {
   final int index;
   final Song song;
+  final Function(BuildContext ctx, int index, Song song) onTapCB;
+
   bool thisSongIsActive = false;
   bool thisSongIsBeingPlayed = false;
 
-  _PlayButtonState(this.index, this.song);
-
-  void play(BuildContext ctx) {
-    Provider.of<AudioProvider>(ctx, listen: false).findAndPlay(index);
-  }
-
-  void pause(BuildContext ctx) {
-    Provider.of<AudioProvider>(ctx, listen: false).pause();
-  }
+  _PlayButtonState(this.index, this.song, {this.onTapCB});
 
   @override
   Widget build(BuildContext context) {
     AudioProvider ap = Provider.of<AudioProvider>(context);
-    thisSongIsActive =
-        (ap.currentSong == null) ? false : (ap.currentSong.id == song.id);
-    thisSongIsBeingPlayed = ap.isPlaying && thisSongIsActive;
+    bool thisSongIsBeingPlayed = ap.isBeingPlayed(song);
 
     return FlatButton(
-      onPressed: () => {
-        if (thisSongIsBeingPlayed)
-          {pause(context)}
-        else
-          {thisSongIsActive ? ap.resume() : play(context)}
+      onPressed: () {
+        onTapCB(context, index, song);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

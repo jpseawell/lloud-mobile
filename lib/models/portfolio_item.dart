@@ -1,33 +1,30 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:lloud_mobile/models/song.dart';
+
 class PortfolioItem {
-  final int songId;
-  final String songTitle;
-  final String imageUrl;
-  final String audioUrl;
-  final int points;
-  final int artistId;
-  final String artistName;
+  final int id;
+  final int points_earned;
+  final Song song;
 
   const PortfolioItem({
-    @required this.songId,
-    @required this.songTitle,
-    @required this.imageUrl,
-    @required this.audioUrl,
-    @required this.points,
-    @required this.artistId,
-    @required this.artistName,
+    @required this.id,
+    @required this.points_earned,
+    @required this.song,
   });
 
   factory PortfolioItem.fromJson(Map<String, dynamic> json) {
     return PortfolioItem(
-      songId: json['song']['id'],
-      songTitle: json['song']['title'],
-      points: json['pointsEarned'],
-      imageUrl: json['song']['imageFile']['location'],
-      audioUrl: json['song']['audioFile']['location'],
-      artistId: json['song']['artists'][0]['id'],
-      artistName: json['song']['artists'][0]['name'],
-    );
+        id: json['id'],
+        points_earned: json['points_earned'],
+        song: Song.fromJson(json["song"]));
+  }
+
+  static List<PortfolioItem> fromJsonList(List<dynamic> jsonList) {
+    List<PortfolioItem> states = [];
+    jsonList.forEach((json) {
+      states.add(PortfolioItem.fromJson(json));
+    });
+    return states;
   }
 }

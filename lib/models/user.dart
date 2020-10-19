@@ -13,7 +13,7 @@ class User {
   String address1;
   String address2;
   String city;
-  String state;
+  int state;
   String zipcode;
   String country;
 
@@ -33,7 +33,7 @@ class User {
 
   static Future<User> registerUser(Map<String, String> userData) async {
     dynamic dal = DAL.instance();
-    Response res = await dal.post('users', userData, useAuthHeader: false);
+    Response res = await dal.post('register', userData, useAuthHeader: false);
 
     if (res.statusCode == 201) {
       return User.fromJson(json.decode(res.body));
@@ -43,19 +43,20 @@ class User {
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      firstName: json['firstname'],
-      lastName: json['lastname'],
-      userName: json['username'],
-      email: json['email'],
-      address1: json['address1'],
-      address2: json['address2'],
-      city: json['city'],
-      state: json['state'],
-      zipcode: json['zipcode'],
-      country: json['country'],
-    );
+    User user = User(
+        id: json['id'],
+        firstName: json['firstname'],
+        lastName: json['lastname'],
+        userName: json['username'],
+        email: json['email'],
+        address1: json['address1'],
+        address2: json['address2'],
+        city: json['city'],
+        state: json['state'],
+        zipcode: json['zipcode'],
+        country: json['country']);
+
+    return user;
   }
 
   Map _toMap(User user) {
@@ -88,14 +89,16 @@ class User {
     return mapData;
   }
 
-  Future<void> update(User user) async {
+  Future<Map<String, dynamic>> update(User user) async {
     dynamic dal = DAL.instance();
-    Response response = await dal.put('users', _toMap(user));
-    Map<String, dynamic> decodedResponse = json.decode(response.body);
+    Response response = await dal.put('users/${user.id}', _toMap(user));
 
-    if (!decodedResponse['success']) {
-      throw Exception(decodedResponse['message']);
+    Map<String, dynamic> decodedResponse = json.decode(response.body);
+    if (decodedResponse['status'] == "fail") {
+      throw Exception('Failed to update user');
     }
+
+    return decodedResponse;
   }
 
   bool addressComplete() {

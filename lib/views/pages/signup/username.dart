@@ -39,7 +39,6 @@ class _UsernamePageState extends State<UsernamePage> {
             onSaved: (String value) {
               Map<String, String> args =
                   ModalRoute.of(context).settings.arguments;
-              print(args);
               args['username'] = value;
 
               return Navigator.pushNamed(context, Routes.signup_password,

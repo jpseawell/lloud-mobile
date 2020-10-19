@@ -11,9 +11,7 @@ class MoreButton extends StatelessWidget {
   MoreButton(this._song, {this.color});
 
   Future<void> _reportSong() async {
-    await DAL
-        .instance()
-        .post('songs/' + this._song.id.toString() + '/offensive-report', {});
+    await DAL.instance().post('offensive-report', {'song_id': _song.id});
   }
 
   void _showReportConfirmedDialog(BuildContext context) {
@@ -40,6 +38,7 @@ class MoreButton extends StatelessWidget {
     showDialog(
         context: context,
         builder: (BuildContext context) {
+          // TODO: Replace with LloudDialog
           return AlertDialog(
             contentPadding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(

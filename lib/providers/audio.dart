@@ -44,7 +44,7 @@ class AudioProvider with ChangeNotifier {
     });
 
     _audioPlayer.playlistAudioFinished.listen((Playing playing) {
-      reportPlay(_audioPlayer.currentPosition.value);
+      reportPlay(playing.index, _audioPlayer.currentPosition.value);
     });
   }
 
@@ -99,13 +99,23 @@ class AudioProvider with ChangeNotifier {
     clearPlaylist();
   }
 
+  void setPlaylist(String newPlaylistKey, List<Song> songs) {
+    if (currentIndex != null) {
+      reportPlay(_currentIndex, _audioPlayer.currentPosition.value);
+    }
+
+    stopAndClearPlaylist();
+    playlistKey = newPlaylistKey;
+    addSongsToPlaylist(songs);
+  }
+
   void findAndPlay(int index) {
     if (!_isOpened) {
       openPlayer();
     }
 
     if (_currentIndex != null) {
-      reportPlay(_audioPlayer.currentPosition.value);
+      reportPlay(_currentIndex, _audioPlayer.currentPosition.value);
     }
 
     _currentIndex = index;
@@ -116,12 +126,17 @@ class AudioProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> reportPlay(Duration playedDuration) async {
-    int playedSongId = _songs[_currentIndex].id;
+  Future<void> reportPlay(int playedIndex, Duration playedDuration) async {
+    Song playedSong = _songs[playedIndex];
+    if (playedSong == null) {
+      return;
+    }
 
     dynamic dal = DAL.instance();
-    Response res = await dal.post('songs/${playedSongId.toString()}/play',
-        {'duration': playedDuration.toString().substring(0, 8)});
+    Response res = await dal.post('plays', {
+      'song_id': playedSong.id,
+      'duration': playedDuration.toString().substring(0, 8)
+    });
   }
 
   void resume() {
@@ -148,5 +163,23 @@ class AudioProvider with ChangeNotifier {
       newAudio.add(song.toAudio());
     });
     return newAudio;
+  }
+
+  bool isBeingPlayed(Song song) {
+    bool thisSongIsActive = isActive(song);
+    bool result = _isPlaying && thisSongIsActive;
+
+    return result;
+  }
+
+  bool isActive(Song song) {
+    if (_currentIndex == null) {
+      return false;
+    }
+
+    Song currentSong = _songs[_currentIndex];
+    bool result = currentSong.id == song.id;
+
+    return result;
   }
 }

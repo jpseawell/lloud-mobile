@@ -19,6 +19,8 @@ class SongInfoBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      // mainAxisAlignment: MainAxisAlignment.start,
+      // mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
             flex: 1,
@@ -26,12 +28,17 @@ class SongInfoBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SongTitle(song.title),
-                ArtistLink(
-                  song.artistId,
-                  song.artistName,
-                  txtColor: LloudTheme.white,
-                  preLinkCB: artistLinkCB,
-                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ArtistLink(
+                      song.artistId,
+                      song.artistName,
+                      txtColor: LloudTheme.white,
+                      preLinkCB: artistLinkCB,
+                    )
+                  ],
+                )
               ],
             )),
         Column(

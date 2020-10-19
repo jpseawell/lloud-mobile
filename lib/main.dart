@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import 'package:lloud_mobile/views/pages/store_item_page.dart';
+import 'package:lloud_mobile/views/pages/login.dart';
+import 'package:lloud_mobile/views/pages/edit_profile.dart';
+import 'package:lloud_mobile/views/pages/shipping_info.dart';
+import 'package:lloud_mobile/views/pages/options.dart';
+import 'package:lloud_mobile/views/pages/profile.dart';
 import 'package:lloud_mobile/views/pages/artist.dart';
 import 'package:lloud_mobile/views/pages/landing.dart';
 import 'package:lloud_mobile/routes.dart';
@@ -58,12 +64,22 @@ class _MyAppState extends State<MyApp> {
           Routes.home: (ctx) => LandingPage(),
           Routes.audio_player: (ctx) => AudioPlayerPage(),
           Routes.songs: (ctx) => NavPage.fromData(),
+          Routes.options: (ctx) => OptionsPage(),
+          Routes.my_profile: (ctx) => NavPage.fromData(
+                pageIndex: 3,
+              ),
+          Routes.store: (ctx) => NavPage.fromData(
+                pageIndex: 2,
+              ),
+          Routes.edit_profile: (ctx) => EditProfile(),
+          Routes.shipping_info: (ctx) => ShippingInfo(),
         },
         onGenerateRoute: (RouteSettings settings) {
           var routes = <String, WidgetBuilder>{
-            // '/login': (ctx) => LoginPage(),
+            Routes.login: (ctx) => LoginPage(), // TODO: Change back to login
             // '/forgot-password': (ctx) => ForgotPasswordPage(),
             Routes.artist: (ctx) => ArtistPage(settings.arguments),
+            Routes.profile: (ctx) => ProfilePage(settings.arguments),
             // '/store': (ctx) => NavPage.fromData(
             //       pageIndex: 2,
             //     ),
@@ -71,7 +87,7 @@ class _MyAppState extends State<MyApp> {
             //       pageIndex: 3,
             //     ),
             // '/edit-personal-info': (ctx) => EditPersonalInfoPage(),
-            // '/store-item': (ctx) => StoreItemPage(),
+            Routes.store_item: (ctx) => StoreItemPage(settings.arguments),
             // '/likes': (ctx) => LikesPage(),
             // '/subscription': (ctx) => SubscriptionPage(),
             // '/subscription-error': (ctx) => SubscriptionErrorPage(),

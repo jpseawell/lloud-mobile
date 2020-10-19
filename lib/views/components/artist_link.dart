@@ -13,32 +13,28 @@ class ArtistLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ButtonTheme(
-      padding: EdgeInsets.zero,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      height: 16,
-      child: FlatButton(
-          onPressed: () {
-            if (preLinkCB != null) {
-              preLinkCB(context);
-            }
+    return InkWell(
+      onTap: () {
+        if (preLinkCB != null) {
+          preLinkCB(context);
+        }
 
-            Navigator.of(context)
-                .pushNamed(Routes.artist, arguments: this._artistId);
-          },
-          child: Container(
-              alignment: Alignment.centerLeft,
-              margin: EdgeInsets.only(right: 12),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Text(
-                  this._artistName,
-                  style: TextStyle(
-                      fontSize: txtSize,
-                      color: txtColor,
-                      fontWeight: FontWeight.w300),
-                ),
-              ))),
+        Navigator.of(context)
+            .pushNamed(Routes.artist, arguments: this._artistId);
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Text(
+            this._artistName,
+            style: TextStyle(
+                fontSize: txtSize,
+                color: txtColor,
+                fontWeight: FontWeight.w300),
+          ),
+        ),
+      ),
     );
   }
 }

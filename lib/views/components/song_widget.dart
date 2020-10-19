@@ -9,18 +9,21 @@ import 'package:lloud_mobile/views/components/song_info_bar.dart';
 class SongWidget extends StatefulWidget {
   final int index;
   final Song song;
+  final Function(BuildContext ctx, int index, Song song) onPlayButtonTap;
 
-  SongWidget(this.index, this.song);
+  SongWidget(this.index, this.song, {this.onPlayButtonTap});
 
   @override
-  _SongWidgetState createState() => _SongWidgetState(this.index, this.song);
+  _SongWidgetState createState() => _SongWidgetState(this.index, this.song,
+      onPlayButtonTap: this.onPlayButtonTap);
 }
 
 class _SongWidgetState extends State<SongWidget> {
   final int _index;
   final Song _song;
+  final Function(BuildContext ctx, int index, Song song) onPlayButtonTap;
 
-  _SongWidgetState(this._index, this._song);
+  _SongWidgetState(this._index, this._song, {this.onPlayButtonTap});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +50,11 @@ class _SongWidgetState extends State<SongWidget> {
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              PlayButton(this._index, this._song)
+                              PlayButton(
+                                this._index,
+                                this._song,
+                                onTapCB: onPlayButtonTap,
+                              )
                             ])),
                     Container(
                       padding: EdgeInsets.all(10),

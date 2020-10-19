@@ -1,7 +1,15 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
+import 'package:lloud_mobile/models/user.dart';
+import 'package:lloud_mobile/providers/user.dart';
+import 'package:lloud_mobile/views/components/buttons/home_btn.dart';
+import 'package:lloud_mobile/views/components/user_avatar.dart';
+import 'package:lloud_mobile/routes.dart';
+import 'package:lloud_mobile/models/image_file.dart';
+import 'package:lloud_mobile/models/artist.dart';
 import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/providers/audio.dart';
 import 'package:lloud_mobile/util/dal.dart';
@@ -25,6 +33,7 @@ class _ArtistPageState extends State<ArtistPage> {
   final double _horizontalPadding = 16.0;
   Future<ArtistProfile> artistProfile;
   ArtistProfile thisProfile;
+  List<dynamic> supporters;
 
   _ArtistPageState(this._artistId);
 
@@ -35,30 +44,50 @@ class _ArtistPageState extends State<ArtistPage> {
   }
 
   Future<ArtistProfile> fetchArtistProfile() async {
-    final response =
-        await DAL.instance().fetch('artists/${_artistId.toString()}');
+    final artistRes = await DAL.instance().fetch('artists/$_artistId');
+    Map<String, dynamic> decodedArtistRes = json.decode(artistRes.body);
+    Artist artist = Artist.fromJson(decodedArtistRes["data"]["artist"]);
 
-    if (response.statusCode == 200) {
-      ArtistProfile ap = ArtistProfile.fromJson(json.decode(response.body));
+    int likes = decodedArtistRes['data']['likes'];
+    int plays = decodedArtistRes['data']['plays'];
 
-      setState(() {
-        thisProfile = ap;
-      });
+    final imgRes = await DAL.instance().fetch('artist/$_artistId/image-files');
+    Map<String, dynamic> decodedImgRes = json.decode(imgRes.body);
+    ImageFile profileImg =
+        ImageFile.fromJson(decodedImgRes['data']['imageFile']);
 
-      return ap;
+    final songsRes = await DAL.instance().fetch('artist/$_artistId/songs');
+    Map<String, dynamic> songsResDecoded = json.decode(songsRes.body);
+
+    List<Song> songs = [];
+    if (songsResDecoded['data'] != null) {
+      songs = Song.fromJsonList(songsResDecoded["data"]["songs"]);
     }
+
+    ArtistProfile artistProfile = new ArtistProfile(
+        artist: artist,
+        songs: songs,
+        likes: likes,
+        plays: plays,
+        profileImg: profileImg.location);
+
+    final supportersRes =
+        await DAL.instance().fetch('artist/$_artistId/supporters');
+    Map<String, dynamic> decodedSupportersRes = json.decode(supportersRes.body);
+
+    List<dynamic> decodedSupporters =
+        decodedSupportersRes["data"]["supporters"];
+
+    setState(() {
+      thisProfile = artistProfile;
+      supporters = decodedSupporters;
+    });
+
+    return artistProfile;
   }
 
   String getPlaylistKey() {
-    return 'artist:${_artistId.toString()}';
-  }
-
-  Widget songWidgetBuilder(ArtistProfile ap) {
-    return ListView.builder(
-        itemCount: ap.songs.length,
-        itemBuilder: (context, i) {
-          return SongWidgetSmall(i, ap.songs[i]);
-        });
+    return 'artist:$_artistId';
   }
 
   String formatNumber(int stat) {
@@ -80,9 +109,12 @@ class _ArtistPageState extends State<ArtistPage> {
     const Key infoKey = ValueKey('info-sliver');
     const Key songsKey = ValueKey('songs-sliver');
     const Key aboutKey = ValueKey('about-sliver');
+    const Key supportersKey = ValueKey('supporters-sliver');
 
     return Scaffold(
       backgroundColor: LloudTheme.blackLight,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniStartFloat,
+      floatingActionButton: HomeButton(),
       body: SafeArea(
           child: FutureBuilder<ArtistProfile>(
         future: artistProfile,
@@ -177,6 +209,35 @@ class _ArtistPageState extends State<ArtistPage> {
                 }, childCount: ap.songs.length),
               ),
               SliverList(
+                  delegate: SliverChildListDelegate.fixed(<Widget>[
+                Container(
+                  margin: EdgeInsets.only(top: 32, bottom: 8),
+                  padding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      H1(
+                        'Top Supporters',
+                        color: LloudTheme.white,
+                      ),
+                    ],
+                  ),
+                )
+              ])),
+              SliverList(
+                key: supportersKey,
+                delegate: SliverChildListDelegate.fixed(<Widget>[
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: _horizontalPadding),
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceEvenly,
+                      children: supportersList(context),
+                    ),
+                  )
+                ]),
+              ),
+              SliverList(
                   key: aboutKey,
                   delegate: SliverChildListDelegate.fixed(<Widget>[about(ap)]))
             ],
@@ -190,16 +251,73 @@ class _ArtistPageState extends State<ArtistPage> {
     AudioProvider ap = Provider.of<AudioProvider>(ctx, listen: false);
 
     if (ap.playlistKey != getPlaylistKey()) {
-      ap.stopAndClearPlaylist();
-      ap.playlistKey = getPlaylistKey();
-      ap.addSongsToPlaylist(thisProfile.songs);
+      bool wasActiveBeforeNewPlaylistLoaded = ap.isActive(song);
+      ap.isBeingPlayed(song) ? ap.pause() : ap.resume();
+
+      ap.setPlaylist(getPlaylistKey(), thisProfile.songs);
+
+      if (wasActiveBeforeNewPlaylistLoaded) {
+        return;
+      }
     }
 
-    if (ap.currentSong == null || ap.currentSong.id != song.id) {
+    if (!ap.isActive(song)) {
       return ap.findAndPlay(index);
     }
 
-    (ap.isPlaying) ? ap.pause() : ap.resume();
+    ap.isBeingPlayed(song) ? ap.pause() : ap.resume();
+  }
+
+  List<Widget> supportersList(BuildContext context) {
+    List<Widget> sups = [];
+    int count = 1;
+
+    for (var s in supporters) {
+      sups.add(supporter(context, count, s));
+      count++;
+    }
+
+    return sups;
+  }
+
+  Widget supporter(BuildContext context, int rank, dynamic user) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: InkWell(
+        onTap: () {
+          User me = Provider.of<UserProvider>(context, listen: false).user;
+          if (me.id == user["id"]) {
+            Navigator.of(context).pushNamed(Routes.my_profile);
+            return;
+          }
+
+          Navigator.of(context)
+              .pushNamed(Routes.profile, arguments: user["id"]);
+        },
+        child: Column(
+          children: [
+            Stack(
+              alignment: Alignment.bottomLeft,
+              children: [
+                UserAvatar(
+                  userId: user['id'],
+                ),
+                Text(
+                  '$rank.',
+                  style: TextStyle(
+                      color: LloudTheme.white.withOpacity(.75),
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 8,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget about(ArtistProfile ap) {
@@ -221,7 +339,7 @@ class _ArtistPageState extends State<ArtistPage> {
           cityState(ap.artist.city, ap.artist.state),
           description(ap.artist.description),
           SizedBox(
-            height: 8,
+            height: 64,
           )
         ],
       ),

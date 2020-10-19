@@ -47,8 +47,7 @@ class _LikeButtonState extends State<LikeButton> {
       isLoading = true;
     });
 
-    final response =
-        await DAL.instance().post('songs/${songId.toString()}/like', {});
+    final response = await DAL.instance().post('likes', {'song_id': songId});
 
     if (response.statusCode == 201) {
       _songLikedDialog(ctx);

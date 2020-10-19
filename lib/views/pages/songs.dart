@@ -61,17 +61,19 @@ class _SongsPageState extends State<SongsPage> {
       isFetching = !isFetching;
     });
 
-    String url = 'songs/' + requestedPage.toString();
+    String url = 'songs?page=' + requestedPage.toString();
     final response = await DAL.instance().fetch(url);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> decodedResponse = json.decode(response.body);
       List<Song> tmpSongs = [];
-      decodedResponse['data']
+      decodedResponse['data']['songs']
           .forEach((song) => tmpSongs.add(Song.fromJson(song)));
 
       songs.addAll(tmpSongs);
+
       AudioProvider ap = Provider.of<AudioProvider>(ctx, listen: false);
+
       ap.playlistKey = getPlaylistKey();
       ap.addSongsToPlaylist(tmpSongs);
 
@@ -85,7 +87,7 @@ class _SongsPageState extends State<SongsPage> {
   }
 
   String getPlaylistKey() {
-    return 'songs:${currentPage.toString()}';
+    return 'songs:$currentPage';
   }
 
   Widget songWidgetBuilder() {
@@ -98,7 +100,27 @@ class _SongsPageState extends State<SongsPage> {
   }
 
   Widget buildSongWidget(int index, Song song) {
-    return SongWidget(index, song);
+    return SongWidget(
+      index,
+      song,
+      onPlayButtonTap: playSong,
+    );
+  }
+
+  void playSong(BuildContext ctx, int index, Song song) {
+    AudioProvider ap = Provider.of<AudioProvider>(context, listen: false);
+    bool thisSongIsBeingPlayed = ap.isBeingPlayed(song);
+    bool thisSongIsActive = ap.isActive(song);
+
+    if (ap.playlistKey != getPlaylistKey()) {
+      ap.setPlaylist(getPlaylistKey(), songs);
+    }
+
+    if (thisSongIsBeingPlayed) {
+      ap.pause();
+    } else {
+      thisSongIsActive ? ap.resume() : ap.findAndPlay(index);
+    }
   }
 
   Widget loader() {
