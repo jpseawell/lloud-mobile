@@ -112,6 +112,13 @@ class DurationBar extends StatelessWidget {
           }
 
           final Duration current = asyncSnapShot.data;
+
+          if (ap.audioPlayer.current.value == null) {
+            return Column(
+              children: [Container()],
+            );
+          }
+
           final Duration totalDuration =
               ap.audioPlayer.current.value.audio.duration;
 

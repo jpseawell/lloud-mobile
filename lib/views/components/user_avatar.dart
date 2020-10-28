@@ -10,8 +10,9 @@ import 'package:lloud_mobile/views/components/empty_avatar.dart';
 class UserAvatar extends StatefulWidget {
   final int userId;
   final double radius;
+  final Key key;
 
-  UserAvatar({this.userId, this.radius = 40});
+  UserAvatar({this.userId, this.radius = 40, this.key});
 
   @override
   _UserAvatarState createState() =>
@@ -32,9 +33,7 @@ class _UserAvatarState extends State<UserAvatar> {
   }
 
   Future<ImageFile> fetchProfileImage() async {
-    final response = await DAL
-        .instance()
-        .fetch('user/${this.userId.toString()}/image-files');
+    final response = await DAL.instance().fetch('user/$userId/image-files');
     Map<String, dynamic> decodedResponse = json.decode(response.body);
 
     if (decodedResponse['data']['imageFile'] == null) {

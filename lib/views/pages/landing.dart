@@ -15,10 +15,12 @@ class LandingPage extends StatelessWidget {
       return false;
     }
 
-    await Provider.of<UserProvider>(context, listen: false).fetchAndNotify();
-    await Provider.of<UserProvider>(context, listen: false)
-        .fetchProfileImgAndNotify();
-    await Provider.of<AccountProvider>(context, listen: false).fetchAndNotify();
+    await Future.wait([
+      Provider.of<UserProvider>(context, listen: false).fetchAndNotify(),
+      Provider.of<UserProvider>(context, listen: false)
+          .fetchProfileImgAndNotify(),
+      Provider.of<AccountProvider>(context, listen: false).fetchAndNotify(),
+    ]);
 
     return true;
   }
@@ -36,6 +38,7 @@ class LandingPage extends StatelessWidget {
             return EmailPage();
           } else {
             return Scaffold(
+              backgroundColor: LloudTheme.blackLight,
               body: Center(
                 child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.red)),
