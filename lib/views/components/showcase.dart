@@ -109,8 +109,9 @@ class _ShowcaseState extends State<Showcase> {
                         child: Container(
                       decoration: BoxDecoration(
                           image: DecorationImage(
-                              image: NetworkImage(
-                                  i.subject['imageFile']['location']),
+                              image: NetworkImage(i.subject['imageFile']
+                                      ['location'] +
+                                  '?tr=w-300,h-300'),
                               fit: BoxFit.cover)),
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),

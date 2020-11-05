@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter/material.dart';
@@ -63,7 +64,7 @@ class SearchResult extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Image.network(
-                    imgLocation,
+                    imgLocation + '?tr=w-75,h-75',
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -129,14 +130,16 @@ class SearchResult extends StatelessWidget {
                   child: Stack(
                     children: [
                       Image.network(
-                        imgLocation,
+                        imgLocation + '?tr=w-75,h-75',
                         fit: BoxFit.fill,
                       ),
                       Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(16),
-                        child: Image.asset('assets/play.png'),
-                      )
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.all(16),
+                          child: SvgPicture.asset(
+                            'assets/play.svg',
+                            color: LloudTheme.white.withOpacity(.85),
+                          )),
                     ],
                   ),
                 ),

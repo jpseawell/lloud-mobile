@@ -11,7 +11,7 @@ description: Lloud is an interactive new way to stream music.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 2.0.0+1
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
@@ -57,8 +57,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/pause.png
-    - assets/play.png
+    - assets/pause.svg
+    - assets/play.svg
     - assets/heart.svg
     - assets/heart_full.svg
     # An image asset can refer to one or more resolution-specific "variants", see

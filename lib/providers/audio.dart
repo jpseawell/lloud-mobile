@@ -25,12 +25,17 @@ class AudioProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void init(List<Song> songs) {
-    _audioPlayer.open(Playlist(audios: _convertSongsToAudio(songs)),
+  Future<void> openPlaylist(List<Audio> audios) async {
+    await _audioPlayer.open(Playlist(audios: audios),
         autoStart: false,
-        showNotification: false,
+        showNotification: true,
         loopMode: LoopMode.playlist,
-        volume: 1.0);
+        volume: 1.0,
+        playInBackground: PlayInBackground.enabled);
+  }
+
+  Future<void> init(List<Song> songs) async {
+    await openPlaylist(_convertSongsToAudio(songs));
 
     _audioPlayer.current.listen((Playing playing) {
       if (!_isOpened) {
@@ -74,14 +79,24 @@ class AudioProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addSongsToPlaylist(List<Song> songs) {
+  Future<void> addSongsToPlaylist(List<Song> songs) async {
     _songs.addAll(songs);
 
     if (_audioPlayer.playlist == null) {
-      return init(songs);
+      return await init(songs);
     }
 
-    _audioPlayer.playlist.addAll(_convertSongsToAudio(songs));
+    _audioPlayer.playlist.audios.addAll(_convertSongsToAudio(songs));
+
+    // HACK:
+    /**
+     * HACK:
+     * I'm doing this to trigger the hidden playlist
+     * 'under the hood' to update the indexList
+     * variable to reflect the playlist
+     */
+    _audioPlayer.toggleShuffle();
+    _audioPlayer.toggleShuffle();
 
     notifyListeners();
   }
@@ -99,14 +114,14 @@ class AudioProvider with ChangeNotifier {
     clearPlaylist();
   }
 
-  void setPlaylist(String newPlaylistKey, List<Song> songs) {
+  Future<void> setPlaylist(String newPlaylistKey, List<Song> songs) async {
     if (currentIndex != null) {
       reportPlay(_currentIndex, _audioPlayer.currentPosition.value);
     }
 
     stopAndClearPlaylist();
     playlistKey = newPlaylistKey;
-    addSongsToPlaylist(songs);
+    await addSongsToPlaylist(songs);
   }
 
   void findAndPlay(int index) {

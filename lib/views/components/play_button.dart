@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/models/song.dart';
@@ -38,9 +40,11 @@ class _PlayButtonState extends State<PlayButton> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          thisSongIsBeingPlayed
-              ? Image.asset('assets/pause.png')
-              : Image.asset('assets/play.png')
+          SvgPicture.asset(
+            (thisSongIsBeingPlayed) ? 'assets/pause.svg' : 'assets/play.svg',
+            width: 80,
+            color: LloudTheme.white.withOpacity(.9),
+          )
         ],
       ),
     );

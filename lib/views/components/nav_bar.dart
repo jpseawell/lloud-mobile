@@ -17,12 +17,11 @@ class NavBar extends StatelessWidget {
       selectedItemColor: LloudTheme.red,
       unselectedItemColor: LloudTheme.black,
       items: [
-        BottomNavigationBarItem(title: Text('Home'), icon: Icon(Icons.home)),
+        BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
+        BottomNavigationBarItem(label: 'Explore', icon: Icon(Icons.search)),
+        BottomNavigationBarItem(label: 'Shop', icon: Icon(Icons.store)),
         BottomNavigationBarItem(
-            title: Text('Explore'), icon: Icon(Icons.search)),
-        BottomNavigationBarItem(title: Text('Shop'), icon: Icon(Icons.store)),
-        BottomNavigationBarItem(
-            title: Text('Profile'),
+            label: 'Profile',
             icon: MyAvatar(
               radius: 12,
             )),

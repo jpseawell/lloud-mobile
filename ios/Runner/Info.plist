@@ -43,5 +43,14 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>fetch</string>
+	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Uploading profile image from photo library</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Uploading profile image from camera</string>
 </dict>
 </plist>

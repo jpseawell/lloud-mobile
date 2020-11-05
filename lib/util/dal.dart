@@ -20,10 +20,10 @@ class DAL {
   //final String _apiUrl = 'https://www.lloudapp.com/api/v1/';
 
   // DEV - windows
-  final String _apiUrl = 'http://10.0.2.2:3333/api/';
+  // final String _apiUrl = 'http://10.0.2.2:3333/api/';
 
   // DEV - mac
-  // final String _apiUrl = 'http://davids-mac.local:3333/api/v1/';
+  final String _apiUrl = 'http://dev.lloudapp.com/api/';
 
   final _requestHeaders = {
     'Accept': 'application/json',

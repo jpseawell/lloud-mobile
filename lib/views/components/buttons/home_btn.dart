@@ -13,7 +13,7 @@ class HomeButton extends StatelessWidget {
     return MaterialButton(
       elevation: 3,
       onPressed: () {
-        Navigator.pushNamed(context, Routes.songs);
+        Navigator.popUntil(context, ModalRoute.withName(Routes.home));
       },
       color: isDark
           ? LloudTheme.blackLight.withOpacity(.85)

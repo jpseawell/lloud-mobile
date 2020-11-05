@@ -142,7 +142,8 @@ class _ArtistPageState extends State<ArtistPage> {
                       Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: NetworkImage(ap.profileImg),
+                                image: NetworkImage(
+                                    ap.profileImg + '?tr=w-300,h-300'),
                                 fit: BoxFit.fitWidth)),
                       ),
                       Container(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/routes.dart';
@@ -35,8 +36,9 @@ class _AudioBarState extends State<AudioBar> {
                           child: Container(
                               decoration: BoxDecoration(
                                   image: DecorationImage(
-                                      image:
-                                          NetworkImage(ap.currentSong.imageUrl),
+                                      image: NetworkImage(
+                                          ap.currentSong.imageUrl +
+                                              '?tr=w-100,h-100'),
                                       fit: BoxFit.cover)),
                               alignment: Alignment.bottomLeft,
                               padding: EdgeInsets.all(16.0)),
@@ -54,19 +56,23 @@ class _AudioBarState extends State<AudioBar> {
                   child: InkWell(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Text(ap.currentSong.title,
                                 style: TextStyle(
                                     color: LloudTheme.white,
-                                    fontSize: 20,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Raleway'))),
+                        // SizedBox(
+                        //   height: 2,
+                        // ),
                         Text(
                           ap.currentSong.artistName,
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 18,
                               color: LloudTheme.white,
                               fontWeight: FontWeight.w300),
                         )
@@ -110,9 +116,10 @@ class AudioBarPlayButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ap.isPlaying
-              ? Image.asset('assets/pause.png')
-              : Image.asset('assets/play.png')
+          SvgPicture.asset(
+            (ap.isPlaying) ? 'assets/pause.svg' : 'assets/play.svg',
+            width: 48,
+          )
         ],
       ),
     );

@@ -28,8 +28,9 @@ class ShowcaseTile extends StatelessWidget {
                 child: Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image:
-                          NetworkImage(item.subject['imageFile']['location']),
+                      image: NetworkImage(item.subject['imageFile']
+                              ['location'] +
+                          '?tr=w-200,h-200'),
                       fit: BoxFit.cover)),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),

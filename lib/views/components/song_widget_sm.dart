@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -55,7 +56,8 @@ class _SongWidgetSmallState extends State<SongWidgetSmall> {
                       child: Container(
                     decoration: BoxDecoration(
                         image: DecorationImage(
-                            image: NetworkImage(_song.imageUrl),
+                            image: NetworkImage(
+                                _song.imageUrl + '?tr=w-100,h-100'),
                             fit: BoxFit.cover)),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -83,17 +85,22 @@ class _SongWidgetSmallState extends State<SongWidgetSmall> {
                           ),
                           child: Stack(
                             children: [
-                              Image.network(
-                                _song.imageUrl,
-                                fit: BoxFit.fill,
+                              Container(
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: NetworkImage(
+                                            _song.imageUrl + '?tr=w-75,h-75'),
+                                        fit: BoxFit.cover)),
                               ),
                               Container(
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.all(16),
-                                child: _thisSongIsBeingPlayed
-                                    ? Image.asset('assets/pause.png')
-                                    : Image.asset('assets/play.png'),
-                              )
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.all(16),
+                                  child: SvgPicture.asset(
+                                    (_thisSongIsBeingPlayed)
+                                        ? 'assets/pause.svg'
+                                        : 'assets/play.svg',
+                                    color: LloudTheme.white.withOpacity(.85),
+                                  ))
                             ],
                           ),
                         ),
@@ -109,12 +116,12 @@ class _SongWidgetSmallState extends State<SongWidgetSmall> {
                           color: _thisSongIsBeingPlayed
                               ? LloudTheme.black
                               : LloudTheme.white,
-                          size: 28,
+                          size: 24,
                         ),
                         Text(
                           _song.artistName,
                           style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               color: _thisSongIsBeingPlayed
                                   ? LloudTheme.black
                                   : LloudTheme.white,

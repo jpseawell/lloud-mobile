@@ -74,8 +74,17 @@ class _SongsPageState extends State<SongsPage> {
 
       AudioProvider ap = Provider.of<AudioProvider>(ctx, listen: false);
 
-      ap.playlistKey = getPlaylistKey();
-      ap.addSongsToPlaylist(tmpSongs);
+      /**
+       * NOTE:
+       * If the loaded playlist is from the songs
+       * page then keep adding songs from the feed
+       * 
+       * Otherwise, leave the playlist alone
+       */
+      if (ap.playlistKey == null || ap.playlistKey.contains('songs')) {
+        ap.playlistKey = getPlaylistKey();
+        await ap.addSongsToPlaylist(tmpSongs);
+      }
 
       setState(() {
         isFetching = !isFetching;

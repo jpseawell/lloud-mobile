@@ -19,15 +19,19 @@ class SongInfoBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      // mainAxisAlignment: MainAxisAlignment.start,
-      // mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
             flex: 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SongTitle(song.title),
+                SongTitle(
+                  song.title,
+                  size: 26,
+                ),
+                SizedBox(
+                  height: 2,
+                ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

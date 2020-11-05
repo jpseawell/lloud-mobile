@@ -39,9 +39,12 @@ class _SongWidgetState extends State<SongWidget> {
             ),
             child: Stack(
               children: <Widget>[
-                Image.network(
-                  this._song.imageUrl,
-                  fit: BoxFit.fill,
+                Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: NetworkImage(
+                              this._song.imageUrl + '?tr=w-300,h-300'),
+                          fit: BoxFit.cover)),
                 ),
                 Column(
                   children: <Widget>[

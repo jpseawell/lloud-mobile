@@ -43,12 +43,12 @@ class _CostBadgeState extends State<CostBadge> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Text(
-          'Sold Out',
+          'Sold\nOut',
           textAlign: TextAlign.center,
           style: TextStyle(
               fontWeight: FontWeight.w900,
               color: LloudTheme.white,
-              fontSize: 22),
+              fontSize: 20),
         ),
       ],
     );

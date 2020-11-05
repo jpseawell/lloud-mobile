@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:lloud_mobile/models/image_file.dart';
-import 'package:lloud_mobile/views/components/loading_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:lloud_mobile/models/image_file.dart';
+import 'package:lloud_mobile/views/components/loading_screen.dart';
 import 'package:lloud_mobile/views/components/my_avatar.dart';
 import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/views/components/lloud_dialog.dart';
@@ -43,14 +43,17 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> uploadImage(BuildContext context, PickedFile file) async {
+    if (file == null) {
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
 
     User user = Provider.of<UserProvider>(context, listen: false).user;
-    final response = await DAL
-        .instance()
-        .postFile(file.path, 'user/${user.id.toString()}/image-files');
+    final response =
+        await DAL.instance().postFile(file.path, 'user/${user.id}/image-files');
     Map<String, dynamic> decodedResponse = json.decode(response.body);
 
     // TODO: Handle failed response

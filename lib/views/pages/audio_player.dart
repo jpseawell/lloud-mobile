@@ -27,6 +27,7 @@ class AudioPlayerPage extends StatelessWidget {
             child: Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -62,8 +63,9 @@ class AudioPlayerPage extends StatelessWidget {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                   image: DecorationImage(
-                                      image:
-                                          NetworkImage(ap.currentSong.imageUrl),
+                                      image: NetworkImage(
+                                          ap.currentSong.imageUrl +
+                                              '?tr=w-300,h-300'),
                                       fit: BoxFit.cover)),
                             ),
                           ),
@@ -71,15 +73,25 @@ class AudioPlayerPage extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(12.0),
-                child: SongInfoBar(
-                  ap.currentSong,
-                  artistLinkCB: onArtistLinkTap,
-                ),
-              ),
-              DurationBar(),
-              PlayerControlsBar()
+              Row(
+                children: [
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: SongInfoBar(
+                          ap.currentSong,
+                          artistLinkCB: onArtistLinkTap,
+                        ),
+                      ),
+                      DurationBar(),
+                      PlayerControlsBar()
+                    ],
+                  ))
+                ],
+              )
             ],
           ),
         )),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -100,18 +101,22 @@ class _PortfolioItemWidgetState extends State<PortfolioItemWidget> {
           ),
           child: Stack(
             children: [
-              Image.network(
-                portfolioItem.song.imageUrl,
-                fit: BoxFit.fill,
+              Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(
+                            portfolioItem.song.imageUrl + '?tr=w-75,h-75'),
+                        fit: BoxFit.cover)),
               ),
               Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.all(16),
-                child: _thisSongIsBeingPlayed
-                    ? Image.asset('assets/pause.png')
-                    : Image.asset('assets/play.png'),
-                // child: Image.asset('assets/play.png'),
-              )
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(16),
+                  child: SvgPicture.asset(
+                    (_thisSongIsBeingPlayed)
+                        ? 'assets/pause.svg'
+                        : 'assets/play.svg',
+                    color: LloudTheme.white.withOpacity(.85),
+                  ))
             ],
           ),
         ),
