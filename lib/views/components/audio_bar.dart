@@ -63,12 +63,9 @@ class _AudioBarState extends State<AudioBar> {
                             child: Text(ap.currentSong.title,
                                 style: TextStyle(
                                     color: LloudTheme.white,
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Raleway'))),
-                        // SizedBox(
-                        //   height: 2,
-                        // ),
                         Text(
                           ap.currentSong.artistName,
                           style: TextStyle(
