@@ -52,7 +52,7 @@ class User {
         address1: json['address1'],
         address2: json['address2'],
         city: json['city'],
-        state: json['state'],
+        state: json['state_id'],
         zipcode: json['zipcode'],
         country: json['country']);
 
@@ -68,7 +68,7 @@ class User {
     mapData["address1"] = user.address1;
     mapData["address2"] = user.address2;
     mapData["city"] = user.city;
-    mapData["state"] = user.state;
+    mapData["state_id"] = user.state;
     mapData["zipcode"] = user.zipcode;
     mapData["country"] = user.country;
     return mapData;
@@ -103,7 +103,7 @@ class User {
 
   bool addressComplete() {
     Map thisUser = this._properties();
-    List<String> keys = ['address1', 'city', 'state', 'zipcode', 'country'];
+    List<String> keys = ['address1', 'city', 'state_id', 'zipcode', 'country'];
 
     for (var key in keys) {
       if (thisUser[key] == null) {
