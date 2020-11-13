@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/models/user.dart';
 import 'package:lloud_mobile/views/components/empty_avatar.dart';
 import 'package:provider/provider.dart';
 
@@ -15,8 +16,11 @@ class MyAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     ImageFile profileImg = Provider.of<UserProvider>(context).profileImg;
     if (profileImg == null) {
+      User user = Provider.of<UserProvider>(context).user;
       return EmptyAvatar(
+        initial: user.userName.substring(0, 1),
         radius: radius,
+        isDark: true,
       );
     }
 

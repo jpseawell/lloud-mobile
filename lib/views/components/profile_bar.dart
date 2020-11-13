@@ -85,6 +85,7 @@ class _ProfileBarState extends State<ProfileBar> {
 
     return UserAvatar(
       userId: user.id,
+      darkIfEmpty: true,
     );
   }
 
