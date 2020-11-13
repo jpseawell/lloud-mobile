@@ -31,7 +31,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
   }
 
   Future<List<USState>> fetchStates() async {
-    final response = await DAL.instance().fetch('states/');
+    final response = await DAL.instance().fetch('states');
     if (response.statusCode == 200) {
       Map<String, dynamic> decodedResponse = json.decode(response.body);
       List<USState> tmpStates =
@@ -183,9 +183,6 @@ class _ShippingInfoState extends State<ShippingInfo> {
                               try {
                                 form.save();
                                 await user.update(user);
-                                await Provider.of<UserProvider>(context,
-                                        listen: false)
-                                    .fetchAndNotify();
                                 return Navigator.pop(context, 'success');
                               } catch (e) {
                                 Scaffold.of(snackCtx)
