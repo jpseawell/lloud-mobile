@@ -54,7 +54,7 @@ class AccountBalancesBar extends StatelessWidget {
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold),
                           ),
-                          Text('Likes')
+                          Text('Likes Remaining')
                         ],
                       ),
                     ),
