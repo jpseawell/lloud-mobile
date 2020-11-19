@@ -39,7 +39,7 @@ class TopNav extends StatelessWidget with PreferredSizeWidget {
               child: NavLogo(),
             ),
           ),
-          Notifications(3),
+          Notifications(userId: acct.userId),
         ],
       ),
     );

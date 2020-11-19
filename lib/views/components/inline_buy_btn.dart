@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
-import 'package:lloud_mobile/views/components/h2.dart';
 
 class InlineBuyBtn extends StatelessWidget {
   @override
@@ -23,7 +22,7 @@ class InlineBuyBtn extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Get 10 Likes',
+                '+10 Likes',
                 style: TextStyle(
                     shadows: [
                       Shadow(

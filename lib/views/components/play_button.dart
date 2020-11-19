@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
+import 'package:lloud_mobile/views/components/shadow_icon.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/models/song.dart';

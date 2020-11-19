@@ -49,7 +49,7 @@ class AccountBalancesBar extends StatelessWidget {
                             acct.likesBalance.toString(),
                             style: TextStyle(
                                 color: (acct.likesBalance == 0)
-                                    ? LloudTheme.black.withOpacity(.5)
+                                    ? LloudTheme.red.withOpacity(.85)
                                     : LloudTheme.black,
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold),

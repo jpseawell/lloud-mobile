@@ -288,7 +288,7 @@ class _ShowcaseState extends State<Showcase> {
 
     AudioProvider ap = Provider.of<AudioProvider>(context, listen: false);
 
-    ap.setPlaylist('song:${song.id}', [song]);
+    await ap.setPlaylist('song:${song.id}', [song]);
     ap.findAndPlay(0);
     Navigator.pushNamed(context, Routes.audio_player);
   }

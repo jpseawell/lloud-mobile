@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/views/pages/activity.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -76,7 +77,8 @@ class _MyAppState extends State<MyApp> {
         },
         onGenerateRoute: (RouteSettings settings) {
           var routes = <String, WidgetBuilder>{
-            Routes.login: (ctx) => LoginPage(), // TODO: Change back to login
+            Routes.login: (ctx) => LoginPage(),
+            Routes.notifications: (ctx) => ActivityPage(),
             // '/forgot-password': (ctx) => ForgotPasswordPage(),
             Routes.artist: (ctx) => ArtistPage(settings.arguments),
             Routes.profile: (ctx) => ProfilePage(settings.arguments),

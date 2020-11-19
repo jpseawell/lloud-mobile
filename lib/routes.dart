@@ -5,6 +5,7 @@ class Routes {
   static final audio_player = "/audio-player";
   static final explore = "/explore";
   static final profile = "/profile";
+  static final notifications = "/notifications";
   static final my_profile = "/my-profile";
   static final edit_profile = "/profile/edit";
   static final shipping_info = "/profile/shipping_info";

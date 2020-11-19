@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -168,6 +169,8 @@ class _LikeButtonState extends State<LikeButton> {
               /// - if no likes remaining: show 'buy likes alert'
               /// x if likedByUser: show already liked dialog
               /// x like song
+
+              HapticFeedback.vibrate();
 
               if (likedByUser) {
                 _showAlreadyLikedDialog(context);

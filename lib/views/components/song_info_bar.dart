@@ -223,7 +223,7 @@ class PlaysStat extends StatelessWidget {
       Container(
         margin: EdgeInsets.only(right: 1.0),
         child: Icon(
-          Icons.play_arrow,
+          Icons.play_arrow_rounded,
           color: (color == null)
               ? Color.fromRGBO(255, 255, 255, 0.6)
               : color.withOpacity(.6),
