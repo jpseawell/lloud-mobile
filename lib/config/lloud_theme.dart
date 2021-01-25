@@ -25,9 +25,5 @@ class LloudTheme {
     return Theme.of(ctx)
         .textTheme
         .apply(displayColor: _red, fontFamily: 'Lato');
-    // body1: TextStyle(color: _black, fontFamily: 'Lato'),
-    // title: TextStyle(
-    //     fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Raleway'),
-    // button: TextStyle(color: _red, fontFamily: 'Lato'));
   }
 }
