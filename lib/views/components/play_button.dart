@@ -1,51 +1,38 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lloud_mobile/config/lloud_theme.dart';
-import 'package:lloud_mobile/views/components/shadow_icon.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/config/lloud_theme.dart';
+import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:lloud_mobile/models/song.dart';
-import 'package:lloud_mobile/providers/audio.dart';
 
-class PlayButton extends StatefulWidget {
-  final int index;
+class PlayButton extends StatelessWidget {
   final Song song;
-  final Function(BuildContext ctx, int index, Song song) onTapCB;
+  final Function onPlay;
 
-  PlayButton(this.index, this.song, {this.onTapCB});
-
-  @override
-  _PlayButtonState createState() =>
-      _PlayButtonState(this.index, this.song, onTapCB: this.onTapCB);
-}
-
-class _PlayButtonState extends State<PlayButton> {
-  final int index;
-  final Song song;
-  final Function(BuildContext ctx, int index, Song song) onTapCB;
-
-  bool thisSongIsActive = false;
-  bool thisSongIsBeingPlayed = false;
-
-  _PlayButtonState(this.index, this.song, {this.onTapCB});
+  PlayButton({this.song, this.onPlay});
 
   @override
   Widget build(BuildContext context) {
-    AudioProvider ap = Provider.of<AudioProvider>(context);
-    bool thisSongIsBeingPlayed = ap.isBeingPlayed(song);
+    final audioPlayer = Provider.of<AudioPlayer>(context);
 
     return FlatButton(
-      onPressed: () {
-        onTapCB(context, index, song);
-      },
+      onPressed: () => onPlay(song),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SvgPicture.asset(
-            (thisSongIsBeingPlayed) ? 'assets/pause.svg' : 'assets/play.svg',
-            width: 80,
-            color: LloudTheme.white.withOpacity(.9),
-          )
+          PlayerBuilder.isPlaying(
+              player: audioPlayer.player,
+              builder: (context, isPlaying) {
+                return SvgPicture.asset(
+                  (audioPlayer.currentSongId == song.id && isPlaying)
+                      ? 'assets/pause.svg'
+                      : 'assets/play.svg',
+                  width: 80,
+                  color: LloudTheme.white.withOpacity(.9),
+                );
+              }),
         ],
       ),
     );

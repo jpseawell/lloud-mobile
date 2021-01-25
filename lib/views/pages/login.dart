@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:lloud_mobile/providers/auth.dart';
 
 import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/util/auth.dart';
-import 'package:lloud_mobile/providers/user.dart';
-import 'package:lloud_mobile/providers/account.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/templates/signup.dart';
 import 'package:lloud_mobile/views/components/links/signup_flow_link.dart';
 import 'package:lloud_mobile/views/components/buttons/signup_flow_btn.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -22,11 +20,12 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> login(BuildContext context) async {
     // TODO: Post login activity
     try {
-      await Auth.authenticateUser(email.text, password.text);
-      await Provider.of<UserProvider>(context, listen: false).fetchAndNotify();
-      await Provider.of<AccountProvider>(context, listen: false)
-          .fetchAndNotify();
-      Navigator.pushNamed(context, Routes.songs);
+      final authProvider = Provider.of<Auth>(context, listen: false);
+      await authProvider
+          .login({'email': email.text, 'password': password.text});
+      if (!authProvider.isAuth) throw Exception('User authentication failed.');
+
+      return Navigator.pushReplacementNamed(context, Routes.songs);
     } catch (e) {
       Scaffold.of(context).showSnackBar(SnackBar(
           backgroundColor: LloudTheme.red,

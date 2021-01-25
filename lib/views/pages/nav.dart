@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/providers/loading.dart';
+import 'package:lloud_mobile/views/components/loading_screen.dart';
 import 'package:provider/provider.dart';
 
-import 'package:lloud_mobile/providers/audio.dart';
+import 'package:lloud_mobile/providers/apn.dart';
+import 'package:lloud_mobile/providers/audio_player.dart';
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/views/components/top_nav.dart';
 import 'package:lloud_mobile/views/components/nav_bar.dart';
 import 'package:lloud_mobile/views/components/audio_bar.dart';
@@ -15,7 +19,7 @@ import 'package:lloud_mobile/views/pages/store_page.dart';
 ///
 /// It acts as a shell for navigating back
 /// and forth between the four main pages:
-/// Songs, Search, Store, Profile
+/// Home, Search, Store, Profile
 ///
 
 class NavPage extends StatefulWidget {
@@ -40,10 +44,15 @@ class _NavPageState extends State<NavPage> {
 
   @override
   void initState() {
-    super.initState();
     if (pageIndex != null) {
       _selectedPageIndex = pageIndex;
     }
+    final authProvider = Provider.of<Auth>(context, listen: false);
+    authProvider.fetchAndSetAccount(authProvider.token);
+
+    Provider.of<Apn>(context, listen: false);
+
+    super.initState();
   }
 
   void _selectPage(int index) {
@@ -54,25 +63,29 @@ class _NavPageState extends State<NavPage> {
 
   @override
   Widget build(BuildContext context) {
-    AudioProvider ap = Provider.of<AudioProvider>(context);
+    final bool songLoaded =
+        (Provider.of<AudioPlayer>(context).currentSongId != null);
 
-    return Scaffold(
-      appBar: TopNav(),
-      body: Stack(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(bottom: (ap.currentSong != null) ? 64 : 0),
-            child: _pages[_selectedPageIndex],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              (ap.currentSong != null) ? AudioBar() : Container()
-            ],
-          ),
-        ],
+    return Stack(children: [
+      Scaffold(
+        appBar: TopNav(),
+        body: Stack(
+          children: <Widget>[
+            // TODO: See if there's a more natural way to set this up
+            Container(
+              margin: EdgeInsets.only(bottom: (songLoaded) ? 64 : 0),
+              child: _pages[_selectedPageIndex],
+            ),
+            if (songLoaded)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[AudioBar()],
+              ),
+          ],
+        ),
+        bottomNavigationBar: NavBar(_selectPage, _selectedPageIndex),
       ),
-      bottomNavigationBar: NavBar(_selectPage, _selectedPageIndex),
-    );
+      if (Provider.of<Loading>(context).loading) LoadingScreen()
+    ]);
   }
 }

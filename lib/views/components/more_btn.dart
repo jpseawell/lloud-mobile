@@ -1,8 +1,13 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-import 'package:lloud_mobile/util/dal.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
+import 'package:lloud_mobile/util/network.dart';
 
 class MoreButton extends StatelessWidget {
   final Song _song;
@@ -10,8 +15,12 @@ class MoreButton extends StatelessWidget {
 
   MoreButton(this._song, {this.color});
 
-  Future<void> _reportSong() async {
-    await DAL.instance().post('offensive-report', {'song_id': _song.id});
+  Future<void> _reportSong(BuildContext context) async {
+    final url = '${Network.host}/api/v2/offensive-report';
+    final token = Provider.of<Auth>(context, listen: false).token;
+    await http.post(url,
+        headers: Network.headers(token: token),
+        body: json.encode({'song_id': _song.id}));
   }
 
   void _showReportConfirmedDialog(BuildContext context) {
@@ -56,7 +65,7 @@ class MoreButton extends StatelessWidget {
                     ),
                     textColor: LloudTheme.red,
                     onPressed: () async {
-                      await _reportSong();
+                      await _reportSong(context);
                       Navigator.of(context).pop();
                       _showReportConfirmedDialog(context);
                     },

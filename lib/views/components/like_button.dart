@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/providers/auth.dart';
+import 'package:lloud_mobile/providers/likes.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
-import 'package:lloud_mobile/providers/account.dart';
-import 'package:lloud_mobile/util/dal.dart';
 
 class LikeButton extends StatefulWidget {
   final double width;
@@ -43,26 +43,89 @@ class _LikeButtonState extends State<LikeButton> {
     this.height = 56,
   });
 
-  Future<void> _likeSong(BuildContext ctx) async {
+  Widget icon() {
+    if (isLoading) {
+      return Center(
+        child: SizedBox(
+          height: 24,
+          width: 24,
+          child: Opacity(
+            opacity: .75,
+            child: CircularProgressIndicator(
+              strokeWidth: 1.5,
+              valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.white),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SvgPicture.asset(
+      (likedByUser) ? 'assets/heart_full.svg' : 'assets/heart.svg',
+      semanticsLabel: 'Heart Icon',
+      width: 32,
+      height: 32,
+    );
+  }
+
+  Future<void> _onTap() async {
+    HapticFeedback.heavyImpact();
+
+    if (likedByUser) {
+      _showAlreadyLikedDialog(context);
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
 
-    final response = await DAL.instance().post('likes', {'song_id': songId});
+    final userId = Provider.of<Auth>(context, listen: false).userId;
+    await Provider.of<Likes>(context, listen: false).addLike(userId, songId);
 
-    if (response.statusCode == 201) {
-      _songLikedDialog(ctx);
-
-      Provider.of<AccountProvider>(ctx, listen: false).fetchAndNotify();
-
-      setState(() {
-        likedByUser = true;
-      });
-    }
+    _songLikedDialog(context);
 
     setState(() {
+      likedByUser = true;
       isLoading = false;
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            boxShadow: [
+              BoxShadow(
+                color: LloudTheme.black.withOpacity(.25),
+                offset: Offset(0.0, 2),
+                blurRadius: 4,
+              )
+            ],
+            gradient: LinearGradient(
+              colors: [
+                LloudTheme.red.withOpacity(1.0),
+                LloudTheme.red.withOpacity(1.0),
+                LloudTheme.red.withOpacity(.95)
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            )),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            highlightColor: LloudTheme.red,
+            onTap: _onTap,
+            child: Container(
+              margin: EdgeInsets.only(top: 4),
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: icon(),
+            ),
+          ),
+        ));
   }
 
   void _showAlreadyLikedDialog(BuildContext context) {
@@ -110,81 +173,5 @@ class _LikeButtonState extends State<LikeButton> {
     Timer timer = new Timer(new Duration(milliseconds: 1000), () {
       Navigator.of(context).pop();
     });
-  }
-
-  Widget icon() {
-    if (isLoading) {
-      return Center(
-        child: SizedBox(
-          height: 24,
-          width: 24,
-          child: Opacity(
-            opacity: .75,
-            child: CircularProgressIndicator(
-              strokeWidth: 1.5,
-              valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.white),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return SvgPicture.asset(
-      (likedByUser) ? 'assets/heart_full.svg' : 'assets/heart.svg',
-      semanticsLabel: 'Heart Icon',
-      width: 32,
-      height: 32,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4.0),
-            boxShadow: [
-              BoxShadow(
-                color: LloudTheme.black.withOpacity(.25),
-                offset: Offset(0.0, 2),
-                blurRadius: 4,
-              )
-            ],
-            gradient: LinearGradient(
-              colors: [
-                LloudTheme.red.withOpacity(1.0),
-                LloudTheme.red.withOpacity(1.0),
-                LloudTheme.red.withOpacity(.95)
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            )),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            highlightColor: LloudTheme.red,
-            onTap: () {
-              /// TODO:
-              /// - if no likes remaining: show 'buy likes alert'
-              /// x if likedByUser: show already liked dialog
-              /// x like song
-
-              HapticFeedback.vibrate();
-
-              if (likedByUser) {
-                _showAlreadyLikedDialog(context);
-                return;
-              }
-
-              _likeSong(context);
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 4),
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: icon(),
-            ),
-          ),
-        ));
   }
 }

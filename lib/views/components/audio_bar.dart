@@ -1,10 +1,11 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/routes.dart';
+import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
-import 'package:lloud_mobile/providers/audio.dart';
 
 class AudioBar extends StatefulWidget {
   @override
@@ -12,13 +13,9 @@ class AudioBar extends StatefulWidget {
 }
 
 class _AudioBarState extends State<AudioBar> {
-  void openAudioPlayer(BuildContext context) {
-    Navigator.pushNamed(context, Routes.audio_player);
-  }
-
   @override
   Widget build(BuildContext context) {
-    AudioProvider ap = Provider.of<AudioProvider>(context);
+    final currentAudio = Provider.of<AudioPlayer>(context).currentAudio;
     return Container(
       color: LloudTheme.black,
       height: 64,
@@ -37,15 +34,13 @@ class _AudioBarState extends State<AudioBar> {
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                       image: NetworkImage(
-                                          ap.currentSong.imageUrl +
-                                              '?tr=w-100,h-100'),
+                                          '${currentAudio.metas.extra['imageUrl']}?tr=w-100,h-100'),
                                       fit: BoxFit.cover)),
                               alignment: Alignment.bottomLeft,
                               padding: EdgeInsets.all(16.0)),
                         )),
-                    onTap: () {
-                      openAudioPlayer(context);
-                    },
+                    onTap: () =>
+                        Navigator.pushNamed(context, Routes.audio_player),
                   ))
             ],
           ),
@@ -60,14 +55,14 @@ class _AudioBarState extends State<AudioBar> {
                       children: <Widget>[
                         SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child: Text(ap.currentSong.title,
+                            child: Text(currentAudio.metas.title,
                                 style: TextStyle(
                                     color: LloudTheme.white,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Raleway'))),
                         Text(
-                          ap.currentSong.artistName,
+                          currentAudio.metas.artist,
                           style: TextStyle(
                               fontSize: 18,
                               color: LloudTheme.white,
@@ -75,9 +70,8 @@ class _AudioBarState extends State<AudioBar> {
                         )
                       ],
                     ),
-                    onTap: () {
-                      openAudioPlayer(context);
-                    },
+                    onTap: () =>
+                        Navigator.pushNamed(context, Routes.audio_player),
                   ))),
           Column(
             children: <Widget>[
@@ -97,26 +91,24 @@ class _AudioBarState extends State<AudioBar> {
 }
 
 class AudioBarPlayButton extends StatelessWidget {
-  void play(BuildContext ctx) {
-    Provider.of<AudioProvider>(ctx, listen: false).resume();
-  }
-
-  void pause(BuildContext ctx) {
-    Provider.of<AudioProvider>(ctx, listen: false).pause();
-  }
-
   @override
   Widget build(BuildContext context) {
-    AudioProvider ap = Provider.of<AudioProvider>(context);
+    final audioPlayer = Provider.of<AudioPlayer>(context);
+
     return FlatButton(
-      onPressed: () => {ap.isPlaying ? pause(context) : play(context)},
+      onPressed: () => audioPlayer.toggleCurrentSong(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SvgPicture.asset(
-            (ap.isPlaying) ? 'assets/pause.svg' : 'assets/play.svg',
-            width: 48,
-          )
+          PlayerBuilder.isPlaying(
+              player: audioPlayer.player,
+              builder: (context, isPlaying) {
+                return SvgPicture.asset(
+                  isPlaying ? 'assets/pause.svg' : 'assets/play.svg',
+                  width: 48,
+                  color: LloudTheme.white.withOpacity(.9),
+                );
+              }),
         ],
       ),
     );

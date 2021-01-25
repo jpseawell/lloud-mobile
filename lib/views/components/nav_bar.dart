@@ -13,18 +13,14 @@ class NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: selectedPageIndex,
-      onTap: this.ontap,
+      onTap: ontap,
       selectedItemColor: LloudTheme.red,
       unselectedItemColor: LloudTheme.black,
       items: [
         BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
         BottomNavigationBarItem(label: 'Explore', icon: Icon(Icons.search)),
         BottomNavigationBarItem(label: 'Shop', icon: Icon(Icons.store)),
-        BottomNavigationBarItem(
-            label: 'Profile',
-            icon: MyAvatar(
-              radius: 12,
-            )),
+        BottomNavigationBarItem(label: 'Profile', icon: MyAvatar(radius: 12)),
       ],
     );
   }

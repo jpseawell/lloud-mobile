@@ -1,14 +1,17 @@
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+import 'package:lloud_mobile/providers/audio_player.dart';
+import 'package:lloud_mobile/providers/auth.dart';
+import 'package:lloud_mobile/util/network.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/song.dart';
-import 'package:lloud_mobile/providers/audio.dart';
 import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/views/components/h2.dart';
 import 'package:lloud_mobile/views/components/user_avatar.dart';
 
@@ -63,10 +66,12 @@ class SearchResult extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Image.network(
-                    imgLocation + '?tr=w-75,h-75',
-                    fit: BoxFit.fill,
-                  ),
+                  child: imgLocation.isNotEmpty
+                      ? Image.network(
+                          imgLocation + '?tr=w-75,h-75',
+                          fit: BoxFit.fill,
+                        )
+                      : Container(),
                 ),
               ),
             ),
@@ -96,14 +101,20 @@ class SearchResult extends StatelessWidget {
 
   // TODO: DRY this up with the one in showcase.dart
   Future<void> loadSongAndOpenPlayer(BuildContext context, int songId) async {
-    final response = await DAL.instance().fetch('songs/$songId');
-    Map<String, dynamic> decodedResponse = json.decode(response.body);
-    Song song = Song.fromJson(decodedResponse["data"]["song"]);
+    final url = '${Network.host}/api/v2/songs/$songId';
+    final token = Provider.of<Auth>(context).token;
+    final res = await http.get(url, headers: Network.headers(token: token));
+    Map<String, dynamic> decodedRes = json.decode(res.body);
 
-    AudioProvider ap = Provider.of<AudioProvider>(context, listen: false);
+    Song song = Song.fromJson(decodedRes["data"]["song"]);
 
-    ap.setPlaylist('song:${song.id}', [song]);
-    ap.findAndPlay(0);
+    final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    final sourceKey = 'song:${song.id}';
+    if (!audioPlayer.isSourcedFrom(sourceKey)) {
+      audioPlayer.setPlaylistFromNewSource(sourceKey, [song]);
+    }
+    await audioPlayer.togglePlay(song);
+
     Navigator.pushNamed(context, Routes.audio_player);
   }
 

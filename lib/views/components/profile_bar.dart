@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/user.dart';
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/util/dal.dart';
-import 'package:lloud_mobile/views/components/my_avatar.dart';
+import 'package:lloud_mobile/util/network.dart';
 import 'package:lloud_mobile/views/components/user_avatar.dart';
 
 class ProfileBar extends StatefulWidget {
@@ -26,20 +28,20 @@ class _ProfileBarState extends State<ProfileBar> {
 
   _ProfileBarState({@required this.userId, this.isMyProfile = false});
 
-  Future<User> fetchUser() async {
-    final response = await DAL.instance().fetch('users/${userId.toString()}');
-
-    if (response.statusCode == 200) {
-      User user = User.fromJson(json.decode(response.body));
-
-      return user;
-    }
-  }
-
   @override
   void initState() {
+    user = fetchUser(Provider.of<Auth>(context, listen: false).token);
     super.initState();
-    user = fetchUser();
+  }
+
+  Future<User> fetchUser(String token) async {
+    final url = '${Network.host}/api/v2/users/$userId';
+    final res = await http.get(url, headers: Network.headers(token: token));
+    Map<String, dynamic> decodedResponse = json.decode(res.body);
+
+    if (res.statusCode == 200) {
+      return User.fromJson(decodedResponse);
+    }
   }
 
   @override
@@ -47,10 +49,10 @@ class _ProfileBarState extends State<ProfileBar> {
     return FutureBuilder<User>(
         future: user,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.red));
-          }
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.red)));
 
           User thisUser = snapshot.data;
 
@@ -79,7 +81,7 @@ class _ProfileBarState extends State<ProfileBar> {
         onTap: () {
           Navigator.pushNamed(context, Routes.edit_profile);
         },
-        child: MyAvatar(),
+        child: UserAvatar(userId: user.id, darkIfEmpty: true),
       );
     }
 

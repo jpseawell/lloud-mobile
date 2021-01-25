@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/user.dart';
-import 'package:lloud_mobile/util/dal.dart';
+import 'package:lloud_mobile/providers/auth.dart';
+import 'package:lloud_mobile/util/network.dart';
+import 'package:provider/provider.dart';
 
 class ProfileNav extends StatefulWidget with PreferredSizeWidget {
   final int userId;
@@ -27,11 +30,12 @@ class _ProfileNavState extends State<ProfileNav> {
   _ProfileNavState({this.userId});
 
   Future<User> fetchUser() async {
-    final response = await DAL.instance().fetch('users/$userId');
+    final url = '${Network.host}/api/v2/users/$userId';
+    final token = Provider.of<Auth>(context, listen: false).token;
+    final res = await http.get(url, headers: Network.headers(token: token));
 
-    if (response.statusCode == 200) {
-      User user = User.fromJson(json.decode(response.body));
-
+    if (res.statusCode == 200) {
+      User user = User.fromJson(json.decode(res.body));
       return user;
     }
   }

@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
-import 'package:lloud_mobile/util/dal.dart';
+import 'package:lloud_mobile/models/image_file.dart';
+import 'package:lloud_mobile/util/network.dart';
 
 class User {
   int id;
@@ -31,15 +32,19 @@ class User {
     @required this.country,
   });
 
-  static Future<User> registerUser(Map<String, String> userData) async {
-    dynamic dal = DAL.instance();
-    Response res = await dal.post('register', userData, useAuthHeader: false);
-
-    if (res.statusCode == 201) {
-      return User.fromJson(json.decode(res.body));
-    } else {
-      throw Exception('Failed to create user');
-    }
+  factory User.empty() {
+    return User(
+        id: 0,
+        firstName: '',
+        lastName: '',
+        userName: '',
+        email: '',
+        address1: '',
+        address2: '',
+        city: '',
+        state: 0,
+        zipcode: '',
+        country: '');
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -59,19 +64,20 @@ class User {
     return user;
   }
 
-  Map _toMap(User user) {
-    var mapData = new Map();
-    mapData["firstname"] = user.firstName;
-    mapData["lastname"] = user.lastName;
-    mapData["username"] = user.userName;
-    mapData["email"] = user.email;
-    mapData["address1"] = user.address1;
-    mapData["address2"] = user.address2;
-    mapData["city"] = user.city;
-    mapData["state_id"] = user.state;
-    mapData["zipcode"] = user.zipcode;
-    mapData["country"] = user.country;
-    return mapData;
+  static Map toMap(User user) {
+    var map = new Map();
+    map["id"] = user.id;
+    map["firstname"] = user.firstName;
+    map["lastname"] = user.lastName;
+    map["username"] = user.userName;
+    map["email"] = user.email;
+    map["address1"] = user.address1;
+    map["address2"] = user.address2;
+    map["city"] = user.city;
+    map["state_id"] = user.state;
+    map["zipcode"] = user.zipcode;
+    map["country"] = user.country;
+    return map;
   }
 
   Map _properties() {
@@ -89,21 +95,9 @@ class User {
     return mapData;
   }
 
-  Future<Map<String, dynamic>> update(User user) async {
-    dynamic dal = DAL.instance();
-    Response response = await dal.put('users/${user.id}', _toMap(user));
-
-    Map<String, dynamic> decodedResponse = json.decode(response.body);
-    if (decodedResponse['status'] == "fail") {
-      throw Exception('Failed to update user');
-    }
-
-    return decodedResponse;
-  }
-
   bool addressComplete() {
     Map thisUser = this._properties();
-    List<String> keys = ['address1', 'city', 'state_id', 'zipcode', 'country'];
+    List<String> keys = ['address1', 'city', 'state', 'zipcode', 'country'];
 
     for (var key in keys) {
       if (thisUser[key] == null) {
@@ -112,5 +106,21 @@ class User {
     }
 
     return true;
+  }
+
+  Future<ImageFile> fetchProfileImg(String token) async {
+    final url = '${Network.host}/api/v2/user/$id/image-files';
+    final res = await http.get(url, headers: Network.headers(token: token));
+    Map<String, dynamic> decodedRes = json.decode(res.body);
+
+    if (res.statusCode != 200) {
+      throw Exception('Fetch profile image failed.');
+    }
+
+    if (decodedRes['data']['imageFile'] == null) {
+      return ImageFile.empty();
+    }
+
+    return ImageFile.fromJson(decodedRes['data']['imageFile']);
   }
 }

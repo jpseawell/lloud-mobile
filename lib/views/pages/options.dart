@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:lloud_mobile/providers/user.dart';
-import 'package:lloud_mobile/models/user.dart';
 import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/util/auth.dart';
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/components/h2.dart';
 import 'package:lloud_mobile/views/templates/base.dart';
@@ -20,10 +18,12 @@ class OptionsPage extends StatelessWidget {
   }
 
   Future<void> logout(BuildContext context) async {
-    await Auth.clearToken();
+    // Navigator.pushReplacementNamed(context, Routes.login);
+    Navigator.popUntil(context, ModalRoute.withName(Routes.home));
+    await Provider.of<Auth>(context, listen: false).logout();
+
     // await Purchases.reset();
     // await Provider.of<SongPlayer>(context, listen: false).stopSong();
-    return Navigator.pushNamed(context, Routes.login);
   }
 
   Widget successSnackBar(String message) {

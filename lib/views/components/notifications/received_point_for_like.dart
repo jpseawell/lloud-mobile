@@ -2,15 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Notification;
-import 'package:lloud_mobile/views/components/empty_avatar.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
+import 'package:lloud_mobile/providers/audio_player.dart';
+import 'package:lloud_mobile/providers/auth.dart';
+import 'package:lloud_mobile/views/components/empty_avatar.dart';
+import 'package:lloud_mobile/util/network.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/notification.dart';
 import 'package:lloud_mobile/models/song.dart';
-import 'package:lloud_mobile/providers/audio.dart';
 import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/util/dal.dart';
 
 class ReceivedPointForLike extends StatefulWidget {
   final Notification notification;
@@ -36,7 +38,6 @@ class _ReceivedPointForLikeState extends State<ReceivedPointForLike> {
   @override
   void initState() {
     super.initState();
-
     _user = notification.subjects.first.subject;
     _song = notification.subjects.elementAt(1).subject;
     _artist = notification.subjects.elementAt(2).subject;
@@ -56,14 +57,20 @@ class _ReceivedPointForLikeState extends State<ReceivedPointForLike> {
   }
 
   Future<void> _handleSongNameTap() async {
-    final response = await DAL.instance().fetch('songs/${_song["id"]}');
-    Map<String, dynamic> decodedResponse = json.decode(response.body);
-    Song song = Song.fromJson(decodedResponse["data"]["song"]);
+    final url = '${Network.host}/api/v2/songs/${_song["id"]}';
+    final token = Provider.of<Auth>(context, listen: false).token;
+    final res = await http.get(url, headers: Network.headers(token: token));
+    Map<String, dynamic> decodedRes = json.decode(res.body);
 
-    AudioProvider ap = Provider.of<AudioProvider>(context, listen: false);
+    Song song = Song.fromJson(decodedRes["data"]["song"]);
 
-    await ap.setPlaylist('song:${song.id}', [song]);
-    ap.findAndPlay(0);
+    final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    final sourceKey = 'song:${song.id}';
+    if (!audioPlayer.isSourcedFrom(sourceKey)) {
+      audioPlayer.setPlaylistFromNewSource(sourceKey, [song]);
+    }
+    await audioPlayer.togglePlay(song);
+
     Navigator.pushNamed(context, Routes.audio_player);
   }
 
@@ -82,7 +89,7 @@ class _ReceivedPointForLikeState extends State<ReceivedPointForLike> {
                   Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.only(top: 4),
+                        margin: EdgeInsets.only(top: 4, right: 4),
                         child: InkWell(
                           onTap: () {
                             Navigator.of(context).pushNamed(Routes.profile,
@@ -115,40 +122,39 @@ class _ReceivedPointForLikeState extends State<ReceivedPointForLike> {
                                     text: '@' + _user['username'],
                                     style: TextStyle(
                                         height: 1.5,
-                                        color: LloudTheme.red,
+                                        color: LloudTheme.blackLight,
                                         fontFamily: 'Lato',
-                                        fontSize: 16),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
                                     children: [
                                   TextSpan(
                                       text: ' gave you a point for liking ',
                                       style: TextStyle(
-                                          color: LloudTheme.black,
-                                          fontSize: 14)),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal)),
                                   TextSpan(
                                       recognizer: _songNameTapRecognizer,
                                       text: _song['title'],
-                                      style: TextStyle(
-                                          color: LloudTheme.red, fontSize: 14)),
+                                      style: TextStyle(fontSize: 14)),
                                   TextSpan(
                                       text: ' by ',
                                       style: TextStyle(
-                                          color: LloudTheme.black,
-                                          fontSize: 14)),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal)),
                                   TextSpan(
                                       recognizer: _artistNameTapRecognizer,
                                       text: _artist['name'],
-                                      style: TextStyle(
-                                          color: LloudTheme.red, fontSize: 14)),
+                                      style: TextStyle(fontSize: 14)),
                                   TextSpan(
                                       text: '.',
                                       style: TextStyle(
-                                          color: LloudTheme.black,
+                                          fontWeight: FontWeight.normal,
                                           fontSize: 16)),
                                   TextSpan(
-                                      text: ' 2w',
+                                      text: ' ${notification.createdAtFromNow}',
                                       style: TextStyle(
                                           color: LloudTheme.black,
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w300)),
                                 ])),
                           )
@@ -193,7 +199,8 @@ class _ReceivedPointForLikeState extends State<ReceivedPointForLike> {
                   : LloudTheme.white,
             ),
             Divider(
-              height: 0,
+              height: 1,
+              color: LloudTheme.blackLight.withOpacity(.25),
             )
           ],
         ))

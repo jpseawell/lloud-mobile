@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
+
 import 'package:lloud_mobile/models/notification_subject.dart';
-import 'package:lloud_mobile/util/dal.dart';
 
 class Notification {
   int id;
@@ -9,6 +8,7 @@ class Notification {
   int type;
   DateTime seenAt;
   DateTime createdAt;
+  String createdAtFromNow;
   List<NotificationSubject> subjects = [];
 
   Notification(
@@ -17,6 +17,7 @@ class Notification {
       @required this.type,
       this.seenAt,
       @required this.createdAt,
+      @required this.createdAtFromNow,
       this.subjects});
 
   factory Notification.fromJson(Map<String, dynamic> json) {
@@ -39,6 +40,7 @@ class Notification {
         createdAt: (json['created_at'] != null)
             ? DateTime.parse(json['created_at'])
             : null,
+        createdAtFromNow: json['created_at_from_now'],
         subjects: subjects);
   }
 
@@ -48,12 +50,5 @@ class Notification {
       notifications.add(Notification.fromJson(json));
     });
     return notifications;
-  }
-
-  static Future<void> markAsSeen(Notification notification) async {
-    dynamic dal = DAL.instance();
-    Response response = await dal.post(
-        'user/${notification.userId}/notifications/${notification.id}/seen',
-        {});
   }
 }

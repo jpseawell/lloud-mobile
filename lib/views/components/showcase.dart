@@ -1,19 +1,21 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+import 'package:lloud_mobile/providers/audio_player.dart';
+import 'package:lloud_mobile/providers/auth.dart';
+import 'package:lloud_mobile/util/network.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/showcase_item.dart';
 import 'package:lloud_mobile/models/song.dart';
-import 'package:lloud_mobile/providers/audio.dart';
+import 'package:lloud_mobile/providers/showcase.dart' as ShowcaseProvider;
 import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/util/dal.dart';
-import 'package:lloud_mobile/views/components/h1.dart';
 import 'package:lloud_mobile/views/components/loading_screen.dart';
 import 'package:lloud_mobile/views/components/showcase_tile.dart';
-import 'package:provider/provider.dart';
 
 class Showcase extends StatefulWidget {
   @override
@@ -21,31 +23,27 @@ class Showcase extends StatefulWidget {
 }
 
 class _ShowcaseState extends State<Showcase> {
-  Future<List<ShowcaseItem>> showcaseItems;
+  Future<void> showcaseItems;
 
   @override
   void initState() {
     super.initState();
-    showcaseItems = fetchShowcaseItems();
-  }
-
-  Future<List<ShowcaseItem>> fetchShowcaseItems() async {
-    final res = await DAL.instance().fetch('showcase-items');
-    Map<String, dynamic> decodedRes = json.decode(res.body);
-
-    return ShowcaseItem.fromJsonList(decodedRes["data"]["showcaseItems"]);
+    showcaseItems =
+        Provider.of<ShowcaseProvider.Showcase>(context, listen: false)
+            .fetchAndSetItems();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ShowcaseItem>>(
+    final showcaseProvider = Provider.of<ShowcaseProvider.Showcase>(context);
+    return FutureBuilder(
         future: showcaseItems,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();
           }
 
-          List<ShowcaseItem> items = snapshot.data;
+          List<ShowcaseItem> items = showcaseProvider.items;
 
           return Column(
             children: [
@@ -282,14 +280,20 @@ class _ShowcaseState extends State<Showcase> {
   }
 
   Future<void> loadSongAndOpenPlayer(BuildContext context, int songId) async {
-    final response = await DAL.instance().fetch('songs/$songId');
-    Map<String, dynamic> decodedResponse = json.decode(response.body);
-    Song song = Song.fromJson(decodedResponse["data"]["song"]);
+    final url = '${Network.host}/api/v2/songs/$songId';
+    final token = Provider.of<Auth>(context).token;
+    final res = await http.get(url, headers: Network.headers(token: token));
+    Map<String, dynamic> decodedRes = json.decode(res.body);
 
-    AudioProvider ap = Provider.of<AudioProvider>(context, listen: false);
+    Song song = Song.fromJson(decodedRes["data"]["song"]);
 
-    await ap.setPlaylist('song:${song.id}', [song]);
-    ap.findAndPlay(0);
+    final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    final sourceKey = 'song:${song.id}';
+    if (!audioPlayer.isSourcedFrom(sourceKey)) {
+      audioPlayer.setPlaylistFromNewSource(sourceKey, [song]);
+    }
+    await audioPlayer.togglePlay(song);
+
     Navigator.pushNamed(context, Routes.audio_player);
   }
 }

@@ -6,24 +6,11 @@ import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/views/components/play_button.dart';
 import 'package:lloud_mobile/views/components/song_info_bar.dart';
 
-class SongWidget extends StatefulWidget {
-  final int index;
+class SongWidget extends StatelessWidget {
   final Song song;
-  final Function(BuildContext ctx, int index, Song song) onPlayButtonTap;
+  final Function onPlay;
 
-  SongWidget(this.index, this.song, {this.onPlayButtonTap});
-
-  @override
-  _SongWidgetState createState() => _SongWidgetState(this.index, this.song,
-      onPlayButtonTap: this.onPlayButtonTap);
-}
-
-class _SongWidgetState extends State<SongWidget> {
-  final int _index;
-  final Song _song;
-  final Function(BuildContext ctx, int index, Song song) onPlayButtonTap;
-
-  _SongWidgetState(this._index, this._song, {this.onPlayButtonTap});
+  SongWidget({this.song, this.onPlay});
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +29,8 @@ class _SongWidgetState extends State<SongWidget> {
                 Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: NetworkImage(
-                              this._song.imageUrl + '?tr=w-300,h-300'),
+                          image:
+                              NetworkImage(song.imageUrl + '?tr=w-500,h-500'),
                           fit: BoxFit.cover)),
                 ),
                 Column(
@@ -54,16 +41,15 @@ class _SongWidgetState extends State<SongWidget> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               PlayButton(
-                                this._index,
-                                this._song,
-                                onTapCB: onPlayButtonTap,
+                                song: song,
+                                onPlay: onPlay,
                               )
                             ])),
                     Container(
                       padding: EdgeInsets.all(10),
                       decoration:
                           BoxDecoration(color: Color.fromRGBO(28, 28, 28, 0.6)),
-                      child: SongInfoBar(this._song),
+                      child: SongInfoBar(song),
                     )
                   ],
                 )

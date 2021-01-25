@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart' hide Notification;
 
 import 'package:lloud_mobile/models/notification.dart';
-import 'package:lloud_mobile/util/dal.dart';
+import 'package:lloud_mobile/providers/notifications.dart';
 import 'package:lloud_mobile/views/components/notifications/received_point_for_like.dart';
+import 'package:provider/provider.dart';
 
 class NotificationWidget extends StatefulWidget {
   final Notification notification;
@@ -23,7 +24,8 @@ class _NotificationWidgetState extends State<NotificationWidget> {
   void initState() {
     super.initState();
     if (notification.seenAt == null) {
-      Notification.markAsSeen(notification);
+      Provider.of<Notifications>(context, listen: false)
+          .markAsSeen(notification);
     }
   }
 

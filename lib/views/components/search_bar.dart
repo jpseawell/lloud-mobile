@@ -1,83 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
+import 'package:lloud_mobile/providers/search.dart';
 
 class SearchBar extends StatefulWidget {
-  final Function(String value) onChanged;
-  final Function() onOpen;
-  final Function() onClose;
-
-  SearchBar({this.onChanged, this.onOpen, this.onClose});
-
   @override
-  _SearchBarState createState() => _SearchBarState(
-      onChanged: this.onChanged, onOpen: this.onOpen, onClose: this.onClose);
+  _SearchBarState createState() => _SearchBarState();
 }
 
 class _SearchBarState extends State<SearchBar> {
-  final Function(String value) onChanged;
-  final Function() onOpen;
-  final Function() onClose;
-  bool isSearching = false;
+  final TextEditingController _controller = TextEditingController();
 
-  _SearchBarState({this.onChanged, this.onOpen, this.onClose});
-
-  Widget textField() {
-    return TextField(
-      onChanged: (value) {
-        onChanged(value);
-      },
-      onTap: () {
-        if (!isSearching) {
-          onOpen();
-          setState(() {
-            isSearching = true;
-          });
-        }
-      },
-      cursorColor: LloudTheme.red,
-      decoration: InputDecoration(
-          border: InputBorder.none,
-          focusColor: LloudTheme.red,
-          icon: Icon(
-            Icons.search,
-          ),
-          hintText: 'Search'),
-    );
+  @override
+  void initState() {
+    super.initState();
+    // Start listening to changes.
+    _controller.addListener(_handleChange);
   }
 
-  Widget cancelBtn(BuildContext ctx) {
-    if (!isSearching) {
-      return Container();
-    }
+  Future<void> _handleChange() async {
+    final searchProvider = Provider.of<Search>(context, listen: false);
+    searchProvider.isFetching = true;
+    await searchProvider.fetchAndSetSearchResults(_controller.text);
+    searchProvider.isFetching = false;
+  }
 
-    return Container(
-      width: 48,
-      child: FlatButton(
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        onPressed: () {
-          onClose();
-          setState(() {
-            isSearching = false;
-          });
-          FocusScope.of(ctx).unfocus(); // close keyboard
-        },
-        child: Icon(
-          Icons.cancel,
-          color: LloudTheme.whiteDark,
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final searchProvider = Provider.of<Search>(context);
     return Card(
       elevation: 5,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: Row(
-          children: [Expanded(flex: 1, child: textField()), cancelBtn(context)],
+          children: [
+            Expanded(
+                flex: 1,
+                child: TextField(
+                  controller: _controller,
+                  onTap: () {
+                    if (!searchProvider.isSearching)
+                      searchProvider.isSearching = true;
+                  },
+                  cursorColor: LloudTheme.red,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      focusColor: LloudTheme.red,
+                      icon: Icon(
+                        Icons.search,
+                      ),
+                      hintText: 'Search'),
+                )),
+            if (searchProvider.isSearching)
+              Container(
+                width: 48,
+                child: FlatButton(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  onPressed: () {
+                    FocusScope.of(context).unfocus(); // close keyboard
+                    searchProvider.clear();
+                    _controller.clear();
+                  },
+                  child: Icon(
+                    Icons.cancel,
+                    color: LloudTheme.whiteDark,
+                  ),
+                ),
+              )
+          ],
         ),
       ),
     );

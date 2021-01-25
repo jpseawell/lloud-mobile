@@ -12,7 +12,7 @@ import 'package:lloud_mobile/views/components/song_title.dart';
 
 class SongInfoBar extends StatelessWidget {
   final Song song;
-  final Function artistLinkCB; // I don't love this approach :/
+  final Function artistLinkCB;
 
   SongInfoBar(this.song, {this.artistLinkCB});
 

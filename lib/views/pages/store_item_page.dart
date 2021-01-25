@@ -1,12 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
-import 'package:lloud_mobile/providers/account.dart';
-import 'package:lloud_mobile/providers/user.dart';
+import 'package:lloud_mobile/providers/store_items.dart';
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/store_item.dart';
 import 'package:lloud_mobile/views/components/cost_badge.dart';
@@ -24,42 +21,36 @@ class StoreItemPage extends StatefulWidget {
 class _StoreItemPageState extends State<StoreItemPage> {
   final StoreItem storeItem;
   final GlobalKey<FormFieldState> _shirtSizeKey = GlobalKey<FormFieldState>();
-  bool _isPurchased = false;
   String _shirtSize;
 
   _StoreItemPageState(this.storeItem);
 
   Future<void> _purchaseItem(BuildContext context) async {
-    dynamic dal = DAL.instance();
     String shirtSize = (_shirtSizeKey.currentState == null)
         ? null
         : _shirtSizeKey.currentState.value;
-    Response res = await dal.post('store-purchases',
-        {'store_item_id': this.storeItem.id, 'size': shirtSize});
 
-    Map<String, dynamic> decodedResponse = json.decode(res.body);
-
-    if (!decodedResponse['success']) {
+    try {
+      Provider.of<StoreItems>(context, listen: false)
+          .purchaseItem({'store_item_id': storeItem.id, 'size': shirtSize});
+    } catch (e) {
       Navigator.of(context).pop();
-      _showPurchaseFailureDialog(context, decodedResponse['message']);
+      _showPurchaseFailureDialog(context);
       return;
     }
-
-    setState(() {
-      _isPurchased = true;
-    });
 
     Navigator.of(context).pop();
     _showPurchaseSuccessDialog(context);
   }
 
-  void _showPurchaseFailureDialog(BuildContext context, String message) {
+  void _showPurchaseFailureDialog(BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Oh No!"),
-            content: Text("Something went wrong. Error Message: $message"),
+            content: Text(
+                "The store item could not be purchased at this time. Please try again later."),
             actions: <Widget>[
               RaisedButton(
                 color: LloudTheme.red,
@@ -113,7 +104,8 @@ class _StoreItemPageState extends State<StoreItemPage> {
                 },
               ),
               FlatButton(
-                child: Text("Cancel"),
+                child:
+                    Text("Cancel", style: TextStyle(color: LloudTheme.black)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -130,7 +122,7 @@ class _StoreItemPageState extends State<StoreItemPage> {
           return AlertDialog(
             title: Text("You don't have enough points!"),
             content: Text(
-                "Like more songs in order to earn points. You get a point when someone likes a song after you."),
+                "Like more songs in order to earn points.\n\nYou get a point when someone likes a song after you."),
             actions: <Widget>[
               FlatButton(
                 color: LloudTheme.red,
@@ -177,11 +169,13 @@ class _StoreItemPageState extends State<StoreItemPage> {
                 color: LloudTheme.red,
                 child: Text("Go Enter My Address"),
                 onPressed: () async {
+                  Navigator.of(context).pop();
                   Navigator.pushNamed(context, Routes.shipping_info);
                 },
               ),
               FlatButton(
-                child: Text("I'll Do It Later"),
+                child: Text("I'll Do It Later",
+                    style: TextStyle(color: LloudTheme.black)),
                 onPressed: () async {
                   Navigator.of(context).pop();
                 },
@@ -193,10 +187,9 @@ class _StoreItemPageState extends State<StoreItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    final points = Provider.of<AccountProvider>(context, listen: false)
-        .account
-        .pointsBalance;
-    final user = Provider.of<UserProvider>(context, listen: false).user;
+    final authProvider = Provider.of<Auth>(context, listen: false);
+    final points = authProvider.account.pointsBalance;
+    final user = authProvider.user;
 
     return BackpageTemplate(<Widget>[
       Container(
@@ -209,34 +202,17 @@ class _StoreItemPageState extends State<StoreItemPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        this.storeItem.name,
-                        style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Raleway'),
-                      ),
-                      Text(
                         this.storeItem.type,
                         style: TextStyle(fontSize: 20),
                       ),
-                    ],
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            color: LloudTheme.red,
-                            shape: BoxShape.rectangle,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(4.0))),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 4.0, horizontal: 16.0),
-                        child:
-                            CostBadge(this.storeItem.cost, this.storeItem.qty),
-                      )
+                      SizedBox(height: 4),
+                      Text(
+                        this.storeItem.name,
+                        style: TextStyle(
+                            fontSize: 32, fontWeight: FontWeight.w900),
+                      ),
+                      SizedBox(height: 12),
+                      CostBadge(storeItem)
                     ],
                   )),
             ],
@@ -244,7 +220,8 @@ class _StoreItemPageState extends State<StoreItemPage> {
       SizedBox(height: 16.0),
       AspectRatio(
           aspectRatio: 1 / 1,
-          child: Image.network(this.storeItem.imageUrl, fit: BoxFit.cover)),
+          child: Image.network(this.storeItem.imageUrl + '?tr=w-1200,h-1200',
+              fit: BoxFit.cover)),
       SizedBox(height: 16.0),
       Container(
         padding: EdgeInsets.symmetric(horizontal: 16.0),

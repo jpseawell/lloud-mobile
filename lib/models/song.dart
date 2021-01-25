@@ -59,8 +59,10 @@ class Song {
   Audio toAudio() {
     return Audio.network(this.audioUrl,
         metas: Metas(
+            id: this.id.toString(),
             title: this.title,
             artist: this.artistName,
-            image: MetasImage.network(this.imageUrl)));
+            image: MetasImage.network(this.imageUrl),
+            extra: {'imageUrl': this.imageUrl}));
   }
 }

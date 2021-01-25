@@ -1,13 +1,15 @@
-import 'dart:convert';
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_native_admob/native_admob_controller.dart';
 import 'package:provider/provider.dart';
 
-import 'package:lloud_mobile/providers/audio.dart';
-import 'package:lloud_mobile/util/dal.dart';
-import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/song.dart';
+import 'package:lloud_mobile/views/components/ad.dart';
+import 'package:lloud_mobile/providers/audio_player.dart';
+import 'package:lloud_mobile/providers/songs.dart';
 import 'package:lloud_mobile/views/components/song_widget.dart';
+import 'package:lloud_mobile/config/lloud_theme.dart';
 
 class SongsPage extends StatefulWidget {
   @override
@@ -15,141 +17,137 @@ class SongsPage extends StatefulWidget {
 }
 
 class _SongsPageState extends State<SongsPage> {
-  ScrollController scrollController;
-  List<Song> songs = <Song>[];
-  bool isFetching = false;
-  int currentPage = 1;
+  // TODO: Move this to global
+  static const _adUnitID = "ca-app-pub-3940256099942544/3986624511";
+  final _nativeAdController = NativeAdmobController();
+  final int _adInterval = 5;
+
+  final String _sourceKey = 'songs';
+  ScrollController _scrollController;
+  bool _isFetching = true;
+  int _currentPage = 1;
+
+  int adjustedIndex(index) => index - (index / _adInterval).floor();
+  int adjustedLength(length) => length + (length / _adInterval).floor();
 
   @override
-  Widget build(BuildContext ctx) {
-    if (songs.length == 0 && !isFetching) {
-      fetchSongs(ctx, currentPage);
-    }
-
-    return Scaffold(
-      backgroundColor: LloudTheme.blackLight,
-      body: SafeArea(
-          child: RefreshIndicator(
-              color: LloudTheme.red,
-              backgroundColor: LloudTheme.black,
-              child: NotificationListener<ScrollNotification>(
-                child: Stack(children: <Widget>[
-                  songWidgetBuilder(),
-                  loader(),
-                ]),
-                onNotification: (ScrollNotification scroll) {
-                  if ((scroll.metrics.pixels ==
-                          scroll.metrics.maxScrollExtent) &&
-                      !isFetching) {
-                    fetchSongs(ctx, currentPage);
-                  }
-                },
-              ),
-              onRefresh: refresh)),
-    );
-  }
-
-  Future<void> refresh() async {
-    setState(() {
-      songs = <Song>[];
-      currentPage = 1;
-    });
-  }
-
-  Future<void> fetchSongs(BuildContext ctx, int requestedPage) async {
-    setState(() {
-      isFetching = !isFetching;
-    });
-
-    String url = 'songs?page=' + requestedPage.toString();
-    final response = await DAL.instance().fetch(url);
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> decodedResponse = json.decode(response.body);
-      List<Song> tmpSongs = [];
-      decodedResponse['data']['songs']
-          .forEach((song) => tmpSongs.add(Song.fromJson(song)));
-
-      songs.addAll(tmpSongs);
-
-      AudioProvider ap = Provider.of<AudioProvider>(ctx, listen: false);
-
-      /**
-       * NOTE:
-       * If the loaded playlist is from the songs
-       * page then keep adding songs from the feed
-       * 
-       * Otherwise, leave the playlist alone
-       */
-      if (ap.playlistKey == null || ap.playlistKey.contains('songs')) {
-        ap.playlistKey = getPlaylistKey();
-        await ap.addSongsToPlaylist(tmpSongs);
+  void initState() {
+    Provider.of<Songs>(context, listen: false).resetSongs().then((value) {
+      final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+      if (audioPlayer.source == null) {
+        final songs = Provider.of<Songs>(context, listen: false).songs;
+        audioPlayer.setPlaylistFromNewSource(_sourceKey, songs);
       }
 
       setState(() {
-        isFetching = !isFetching;
-        currentPage += 1;
+        _isFetching = false;
       });
-    } else {
-      // TODO: err
+    }).catchError((err) => print(err.toString()));
+    _scrollController = ScrollController();
+    _scrollController.addListener(shouldFetch);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nativeAdController.dispose();
+    super.dispose();
+  }
+
+  void shouldFetch() {
+    if (_isFetching) return;
+
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent - 160 &&
+        !_scrollController.position.outOfRange) {
+      fetchSongs();
     }
   }
 
-  String getPlaylistKey() {
-    return 'songs:$currentPage';
-  }
+  Future<void> fetchSongs() async {
+    setState(() {
+      _isFetching = true;
+      _currentPage = _currentPage + 1;
+    });
 
-  Widget songWidgetBuilder() {
-    return ListView.builder(
-        controller: scrollController,
-        itemCount: songs.length,
-        itemBuilder: (context, i) {
-          return buildSongWidget(i, songs[i]);
-        });
-  }
-
-  Widget buildSongWidget(int index, Song song) {
-    return SongWidget(
-      index,
-      song,
-      onPlayButtonTap: playSong,
-    );
-  }
-
-  void playSong(BuildContext ctx, int index, Song song) {
-    AudioProvider ap = Provider.of<AudioProvider>(context, listen: false);
-    bool thisSongIsBeingPlayed = ap.isBeingPlayed(song);
-    bool thisSongIsActive = ap.isActive(song);
-
-    if (ap.playlistKey != getPlaylistKey()) {
-      ap.setPlaylist(getPlaylistKey(), songs);
+    final songProvider = Provider.of<Songs>(context, listen: false);
+    final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
+    await songProvider.fetchAndSetSongs(page: _currentPage);
+    if (audioProvider.isSourcedFrom(_sourceKey)) {
+      audioProvider.playlist = songProvider.songs;
     }
-
-    if (thisSongIsBeingPlayed) {
-      ap.pause();
-    } else {
-      thisSongIsActive ? ap.resume() : ap.findAndPlay(index);
-    }
+    setState(() {
+      _isFetching = false;
+    });
   }
 
-  Widget loader() {
-    return isFetching
-        ? Align(
-            child: Container(
-              width: 70.0,
-              height: 70.0,
-              child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Center(
+  Future<void> _refresh() async {
+    setState(() {
+      _isFetching = true;
+    });
+
+    await Provider.of<Songs>(context, listen: false).resetSongs();
+
+    setState(() {
+      _isFetching = false;
+      _currentPage = 1;
+    });
+  }
+
+  Future<void> handlePlay(Song song) async {
+    final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    if (!audioPlayer.isSourcedFrom(_sourceKey)) {
+      final songs = Provider.of<Songs>(context, listen: false).songs;
+      audioPlayer.setPlaylistFromNewSource(_sourceKey, songs);
+    }
+    await audioPlayer.togglePlay(song);
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    final songs = Provider.of<Songs>(context).songs;
+    return Scaffold(
+        backgroundColor: LloudTheme.blackLight,
+        body: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: _refresh,
+            color: LloudTheme.red,
+            backgroundColor: LloudTheme.blackLight,
+            child: CustomScrollView(
+              semanticChildCount: songs.length,
+              controller: _scrollController,
+              slivers: [
+                SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                  if ((index + 1) % _adInterval == 0) {
+                    _nativeAdController.reloadAd(forceRefresh: true);
+                    return Ad(
+                      adUnitID: _adUnitID,
+                      controller: _nativeAdController,
+                    );
+                  }
+                  return SongWidget(
+                      song: songs[adjustedIndex(index)], onPlay: handlePlay);
+                }, semanticIndexCallback: (Widget widget, int localIndex) {
+                  if ((localIndex + 1) % _adInterval == 0) return null;
+                  return adjustedIndex(localIndex);
+                }, childCount: adjustedLength(songs.length))),
+                if (_isFetching)
+                  SliverList(
+                      delegate: SliverChildListDelegate([
+                    Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 16),
                       child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.red),
-                  ))),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(LloudTheme.red),
+                      ),
+                    )
+                  ]))
+              ],
             ),
-            alignment: FractionalOffset.bottomCenter,
-          )
-        : SizedBox(
-            width: 0.0,
-            height: 0.0,
-          );
+          ),
+        ));
   }
 }

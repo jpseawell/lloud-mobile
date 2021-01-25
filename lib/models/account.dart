@@ -24,4 +24,19 @@ class Account {
       likesBalance: json['likes_balance'],
     );
   }
+
+  factory Account.empty() {
+    return Account(
+        id: 0, userId: 0, accountTypeId: 0, likesBalance: 0, pointsBalance: 0);
+  }
+
+  static Map toMap(Account account) {
+    var map = new Map();
+    map['id'] = account.id;
+    map['user_id'] = account.userId;
+    map['account_type_id'] = account.accountTypeId;
+    map['points_balance'] = account.pointsBalance;
+    map['likes_balance'] = account.likesBalance;
+    return map;
+  }
 }

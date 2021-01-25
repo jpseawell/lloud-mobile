@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
 
-import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/routes.dart';
+import 'package:lloud_mobile/util/network.dart';
 import 'package:lloud_mobile/views/components/buttons/signup_flow_btn.dart';
 import 'package:lloud_mobile/views/components/links/signup_flow_link.dart';
 import 'package:lloud_mobile/views/templates/signup.dart';
@@ -19,10 +19,12 @@ class _EmailPageState extends State<EmailPage> {
   bool emailIsTaken = false;
 
   Future<bool> isEmailTaken(String email) async {
-    dynamic dal = DAL.instance();
-    Response res =
-        await dal.post('email', {'email': email}, useAuthHeader: false);
-    return !json.decode(res.body)['success'];
+    final url = '${Network.host}/api/v2/email';
+    final res = await http.post(url,
+        headers: Network.headers(), body: json.encode({'email': email}));
+    Map<String, dynamic> decodedRes = json.decode(res.body);
+
+    return !decodedRes['success'];
   }
 
   @override

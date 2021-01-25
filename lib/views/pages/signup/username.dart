@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
+import 'package:lloud_mobile/util/network.dart';
 import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/util/dal.dart';
 import 'package:lloud_mobile/views/components/buttons/signup_flow_btn.dart';
 import 'package:lloud_mobile/views/templates/signup.dart';
 
@@ -17,11 +17,12 @@ class _UsernamePageState extends State<UsernamePage> {
   bool usernameIsTaken = false;
 
   Future<bool> isUsernameTaken(String username) async {
-    dynamic dal = DAL.instance();
-    Response res = await dal.post('username', {'username': username},
-        useAuthHeader: false);
+    final url = '${Network.host}/api/v2/username';
+    final res = await http.post(url,
+        headers: Network.headers(), body: json.encode({'username': username}));
+    Map<String, dynamic> decodedRes = json.decode(res.body);
 
-    return !json.decode(res.body)['success'];
+    return !decodedRes['success'];
   }
 
   @override

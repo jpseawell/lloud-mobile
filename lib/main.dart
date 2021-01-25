@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:lloud_mobile/views/pages/activity.dart';
-import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/providers/products.dart';
+import 'package:lloud_mobile/providers/search.dart';
+import 'package:lloud_mobile/providers/store_items.dart';
+import 'package:lloud_mobile/providers/showcase.dart';
+import 'package:lloud_mobile/providers/loading.dart';
+import 'package:lloud_mobile/providers/apn.dart';
+import 'package:lloud_mobile/providers/notifications.dart';
+import 'package:lloud_mobile/providers/audio_player.dart';
+import 'package:lloud_mobile/providers/avatar.dart';
+import 'package:lloud_mobile/providers/likes.dart';
+import 'package:lloud_mobile/providers/songs.dart';
+import 'package:lloud_mobile/providers/auth.dart';
+import 'package:lloud_mobile/views/components/loading_screen.dart';
+import 'package:lloud_mobile/views/pages/signup/email.dart';
+import 'package:lloud_mobile/views/pages/activity.dart';
 import 'package:lloud_mobile/views/pages/store_item_page.dart';
 import 'package:lloud_mobile/views/pages/login.dart';
 import 'package:lloud_mobile/views/pages/edit_profile.dart';
@@ -10,17 +24,12 @@ import 'package:lloud_mobile/views/pages/shipping_info.dart';
 import 'package:lloud_mobile/views/pages/options.dart';
 import 'package:lloud_mobile/views/pages/profile.dart';
 import 'package:lloud_mobile/views/pages/artist.dart';
-import 'package:lloud_mobile/views/pages/landing.dart';
-import 'package:lloud_mobile/routes.dart';
-import 'package:lloud_mobile/keys.dart';
-import 'package:lloud_mobile/providers/audio.dart';
-import 'package:lloud_mobile/providers/user.dart';
-import 'package:lloud_mobile/providers/account.dart';
 import 'package:lloud_mobile/views/pages/audio_player.dart';
 import 'package:lloud_mobile/views/pages/signup/username.dart';
 import 'package:lloud_mobile/views/pages/signup/password.dart';
 import 'package:lloud_mobile/views/pages/signup/welcome.dart';
 import 'package:lloud_mobile/views/pages/nav.dart';
+import 'package:lloud_mobile/routes.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,37 +41,122 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    initPaymentPlatform();
-  }
-
   Future<void> initPaymentPlatform() async {
     await Purchases.setDebugLogsEnabled(true);
     await Purchases.setup("XstlTtxLyLvhognmeAZyaVDIDSLQCFMy");
   }
 
   @override
+  void initState() {
+    initPaymentPlatform();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Provider.of<AudioPlayer>(context, listen: false).stopAndDispose(); // ??
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AudioProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => AccountProvider()),
+        ChangeNotifierProvider(create: (_) => Loading()),
+        ChangeNotifierProvider(create: (_) => Auth()),
+        ChangeNotifierProxyProvider<Auth, StoreItems>(
+            create: null,
+            update: (context, auth, storeItems) =>
+                storeItems == null ? StoreItems(auth.token) : storeItems),
+        ChangeNotifierProxyProvider<Auth, Likes>(
+            create: null,
+            update: (context, auth, likes) =>
+                likes == null ? Likes(auth.token, auth.userId) : likes),
+        ChangeNotifierProxyProvider<Auth, Songs>(
+            create: null,
+            update: (context, auth, songs) =>
+                songs == null ? Songs(auth.token) : songs),
+        ChangeNotifierProxyProvider<Auth, Avatar>(
+            create: null,
+            update: (context, auth, avatar) =>
+                avatar == null ? Avatar(auth.token, auth.userId) : avatar),
+        ChangeNotifierProxyProvider<Auth, Search>(
+            create: null,
+            update: (context, auth, search) =>
+                search == null ? Search(auth.token) : search),
+        ChangeNotifierProxyProvider<Auth, Showcase>(
+            create: null,
+            update: (context, auth, showcase) =>
+                showcase == null ? Showcase(auth.token) : showcase),
+        ChangeNotifierProxyProvider<Auth, Apn>(
+            create: null,
+            update: (context, auth, apn) {
+              if (apn == null) {
+                final apnProv = Apn(auth.token, auth.userId);
+                apnProv.init();
+                return apnProv;
+              }
+
+              return apn;
+            }),
+        ChangeNotifierProxyProvider<Auth, Products>(
+            create: null,
+            update: (context, auth, products) {
+              if (products == null) {
+                final newProducts = Products();
+                newProducts.fetchAndSetProduct();
+                return newProducts;
+              }
+
+              return products;
+            }),
+        ChangeNotifierProxyProvider<Auth, Notifications>(
+            create: null,
+            update: (context, auth, notifications) {
+              if (notifications == null) {
+                final notifs = Notifications(auth.token, auth.userId);
+                notifs.listenForUnreadNotifications();
+                return notifs;
+              }
+
+              return notifications;
+            }),
+        ChangeNotifierProxyProvider<Auth, AudioPlayer>(
+            create: null,
+            update: (context, auth, audio) {
+              if (audio == null) {
+                final audioPlayer = AudioPlayer(auth.token);
+                audioPlayer.listenForEndOfSong();
+                return audioPlayer;
+              }
+
+              return audio;
+            }),
       ],
       child: MaterialApp(
         title: 'Lloud',
         initialRoute: Routes.home,
+        home: Consumer<Auth>(
+          builder: (context, auth, _) {
+            return auth.isAuth
+                ? NavPage.fromData()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (ctx, snapshot) =>
+                        snapshot.connectionState == ConnectionState.waiting
+                            ? LoadingScreen()
+                            : EmailPage());
+          },
+        ),
         debugShowCheckedModeBanner: false,
-        navigatorKey: Keys.navKey,
-        theme: ThemeData(
-            fontFamily: 'Lato'), // TODO: Correctly implement custom theme
+        theme: ThemeData(fontFamily: 'Lato'),
         routes: {
+          // Normal routes
+          Routes.login: (ctx) => LoginPage(),
+          Routes.notifications: (ctx) => ActivityPage(),
           Routes.signup_username: (ctx) => UsernamePage(),
           Routes.signup_password: (ctx) => PasswordPage(),
           Routes.signup_welcome: (ctx) => WelcomePage(),
-          Routes.home: (ctx) => LandingPage(),
           Routes.audio_player: (ctx) => AudioPlayerPage(),
           Routes.songs: (ctx) => NavPage.fromData(),
           Routes.options: (ctx) => OptionsPage(),
@@ -77,23 +171,11 @@ class _MyAppState extends State<MyApp> {
         },
         onGenerateRoute: (RouteSettings settings) {
           var routes = <String, WidgetBuilder>{
-            Routes.login: (ctx) => LoginPage(),
-            Routes.notifications: (ctx) => ActivityPage(),
-            // '/forgot-password': (ctx) => ForgotPasswordPage(),
+            // Routes that need arguments passed in
             Routes.artist: (ctx) => ArtistPage(settings.arguments),
             Routes.profile: (ctx) => ProfilePage(settings.arguments),
-            // '/store': (ctx) => NavPage.fromData(
-            //       pageIndex: 2,
-            //     ),
-            // '/account': (ctx) => NavPage.fromData(
-            //       pageIndex: 3,
-            //     ),
-            // '/edit-personal-info': (ctx) => EditPersonalInfoPage(),
             Routes.store_item: (ctx) => StoreItemPage(settings.arguments),
-            // '/likes': (ctx) => LikesPage(),
-            // '/subscription': (ctx) => SubscriptionPage(),
-            // '/subscription-error': (ctx) => SubscriptionErrorPage(),
-            // '/subscription-success': (ctx) => SubscriptionSuccessPage(),
+            // '/forgot-password': (ctx) => ForgotPasswordPage(),
           };
 
           WidgetBuilder builder = routes[settings.name];

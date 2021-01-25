@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
-import 'package:lloud_mobile/util/dal.dart';
-import 'package:lloud_mobile/models/store_item.dart';
+import 'package:lloud_mobile/providers/store_items.dart';
 import 'package:lloud_mobile/views/components/h1.dart';
 import 'package:lloud_mobile/views/components/store_item_widget.dart';
 
@@ -13,52 +12,41 @@ class StorePage extends StatefulWidget {
 }
 
 class _StorePageState extends State<StorePage> {
-  Future<List<StoreItem>> _storeItems;
-
-  Future<List<StoreItem>> fetchStoreItems() async {
-    final response = await DAL.instance().fetch('store-items');
-    Map<String, dynamic> decodedResponse = json.decode(response.body);
-
-    List<StoreItem> storeItems = [];
-
-    try {
-      decodedResponse['data'].forEach(
-          (storeItem) => storeItems.add(StoreItem.fromJson(storeItem)));
-    } catch (err) {}
-
-    return storeItems;
-  }
+  Future<void> _storeItems;
 
   @override
   void initState() {
     super.initState();
-    _storeItems = fetchStoreItems();
+    _storeItems =
+        Provider.of<StoreItems>(context, listen: false).fetchAndSetStoreItems();
   }
 
   @override
   Widget build(BuildContext context) {
+    final items = Provider.of<StoreItems>(context).items;
     return Scaffold(
+      backgroundColor: LloudTheme.white2,
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
             H1('Shop'),
             SizedBox(height: 8.0),
-            FutureBuilder<List<StoreItem>>(
+            FutureBuilder(
                 future: _storeItems,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<StoreItemWidget> storeItemWidgets = [];
-                    snapshot.data.forEach(
-                        (item) => storeItemWidgets.add(StoreItemWidget(item)));
-                    return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: storeItemWidgets);
-                  }
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    return Center(
+                      child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(LloudTheme.red)),
+                    );
 
-                  return CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(LloudTheme.red));
+                  return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        for (var item in items) StoreItemWidget(item)
+                      ]);
                 })
           ],
         ),

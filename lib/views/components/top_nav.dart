@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'package:lloud_mobile/models/account.dart';
+import 'package:lloud_mobile/views/components/points_balance.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
-import 'package:lloud_mobile/providers/account.dart';
 import 'package:lloud_mobile/views/components/nav_logo.dart';
-import 'package:lloud_mobile/views/components/notifications.dart';
+import 'package:lloud_mobile/views/components/notifications_icon.dart';
 
 class TopNav extends StatelessWidget with PreferredSizeWidget {
   @override
@@ -18,28 +16,23 @@ class TopNav extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    Account acct = Provider.of<AccountProvider>(context).account;
-    int points = (acct != null) ? acct.pointsBalance : 0;
-
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: LloudTheme.black,
-      title: Row(
-        children: <Widget>[
+      title: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            child: NavLogo(),
+          ),
           Container(
             alignment: Alignment.centerLeft,
-            height: 40,
-            width: 40,
-            child: Text(points.toString()),
+            child: PointsBalance(),
           ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              alignment: Alignment.center,
-              child: NavLogo(),
-            ),
+          Container(
+            alignment: Alignment.centerRight,
+            child: NotificationsIcon(),
           ),
-          Notifications(userId: acct.userId),
         ],
       ),
     );
