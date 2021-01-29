@@ -4,6 +4,7 @@ import 'package:flutter/material.dart' hide Notification;
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/util/ws_client.dart';
 import 'package:lloud_mobile/models/notification.dart';
 import 'package:lloud_mobile/util/network.dart';
@@ -49,7 +50,7 @@ class Notifications with ChangeNotifier {
 
   void listenForUnreadNotifications() {
     final wsClient =
-        new WsClient(url: '${Network.wsHost}/adonis-ws', authToken: authToken);
+        new WsClient(url: '${Network.wsHost}/adonis-ws/', authToken: authToken);
     _channel = wsClient.connect();
     wsClient.join('notifications:$userId');
 
@@ -59,9 +60,8 @@ class Notifications with ChangeNotifier {
     }, onDone: () {
       print('done');
       listenForUnreadNotifications();
-    }, onError: (err) {
-      print('err:');
-      print(err.toString());
+    }, onError: (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
     });
   }
 

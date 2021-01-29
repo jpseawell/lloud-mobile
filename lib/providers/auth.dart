@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:lloud_mobile/models/account.dart';
 import 'package:lloud_mobile/models/user.dart';
+import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/util/jwt.dart';
 import 'package:lloud_mobile/util/network.dart';
 
@@ -57,13 +58,12 @@ class Auth with ChangeNotifier {
         fetchAndSetUser(token),
         fetchAndSetAccount(token)
       ]);
-    } catch (err) {
-      // TODO: Setup err handling
-      print(err.toString());
-    }
 
-    await Future.wait(
-        [_storeTokenData(), _storeUserData(), _storeAccountData()]);
+      await Future.wait(
+          [_storeTokenData(), _storeUserData(), _storeAccountData()]);
+    } catch (err, stack) {
+      await ErrorReportingService.report(err, stackTrace: stack);
+    }
   }
 
   Future<void> _extractAndSetTokenData(String token) async {

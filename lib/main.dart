@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/providers/products.dart';
@@ -31,8 +32,14 @@ import 'package:lloud_mobile/views/pages/signup/welcome.dart';
 import 'package:lloud_mobile/views/pages/nav.dart';
 import 'package:lloud_mobile/routes.dart';
 
-void main() {
-  runApp(MyApp());
+Future<void> main() async {
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://e81c4240f7584caebd543f7194ad7e1f@o513234.ingest.sentry.io/5614720';
+    },
+    appRunner: () => runApp(MyApp()),
+  );
 }
 
 class MyApp extends StatefulWidget {
