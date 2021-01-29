@@ -5,6 +5,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:lloud_mobile/models/song.dart';
+import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/util/network.dart';
 
 class AudioPlayer with ChangeNotifier {
@@ -76,17 +77,22 @@ class AudioPlayer with ChangeNotifier {
         customPrevAction: (player) => prev(),
         customPlayPauseAction: (player) => toggleCurrentSong(),
       );
+
       await _player.open(_playlist[index],
           showNotification: true, notificationSettings: settings);
-    } catch (err) {
-      print(err.toString());
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
     }
+
     await _player.play();
+
     _index = index;
     notifyListeners();
   }
 
   Future<void> togglePlay(Song song) async {
+    if (_player.isBuffering.value) return;
+
     if (currentSongId == song.id) {
       await toggleCurrentSong();
       return;
@@ -97,7 +103,12 @@ class AudioPlayer with ChangeNotifier {
   }
 
   Future<void> toggleCurrentSong() async {
-    _player.isPlaying.value ? await _player.pause() : await _player.play();
+    try {
+      _player.isPlaying.value ? await _player.pause() : await _player.play();
+    } catch (err, stack) {
+      print(err);
+      ErrorReportingService.report(err, stackTrace: stack);
+    }
   }
 
   Future<void> next() async {

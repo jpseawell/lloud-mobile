@@ -149,8 +149,6 @@ class Auth with ChangeNotifier {
 
     Map<String, dynamic> decodedRes = json.decode(res.body);
 
-    print(decodedRes);
-
     _account = Account.fromJson(decodedRes['data']);
     notifyListeners();
     _storeAccountData();
@@ -189,9 +187,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
-    print('trying to auto login');
     final tokenData = await _storage.read(key: 'tokenData');
-    print('token: $tokenData');
     if (tokenData == null) {
       return false;
     }
@@ -209,7 +205,6 @@ class Auth with ChangeNotifier {
     _expiryDate = expiryDate;
 
     final userData = await _storage.read(key: 'userData');
-    print('user: $userData');
     if (userData == null) {
       return false;
     }
@@ -217,14 +212,12 @@ class Auth with ChangeNotifier {
     _user = User.fromJson(json.decode(userData));
 
     final accountData = await _storage.read(key: 'accountData');
-    print('account: $accountData');
     if (accountData == null) {
       return false;
     }
 
     _account = Account.fromJson(json.decode(accountData));
 
-    print('auto logged in :)');
     notifyListeners();
 
     return true;

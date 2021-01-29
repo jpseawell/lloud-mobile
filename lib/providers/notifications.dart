@@ -67,7 +67,6 @@ class Notifications with ChangeNotifier {
 
   void _parseAndSetUnreadNotifications(event) {
     Map<String, dynamic> decodedResponse = json.decode(event);
-    print(decodedResponse);
 
     if (decodedResponse['t'] == 7) {
       int unreadNotifications =
