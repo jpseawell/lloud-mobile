@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
 
-import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/providers/products.dart';
 import 'package:lloud_mobile/providers/search.dart';
 import 'package:lloud_mobile/providers/store_items.dart';

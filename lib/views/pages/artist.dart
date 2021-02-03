@@ -5,7 +5,6 @@ import 'package:lloud_mobile/services/artist_service.dart';
 import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/models/image_file.dart';
-import 'package:lloud_mobile/models/artist.dart';
 import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:lloud_mobile/util/helpers.dart';
 import 'package:lloud_mobile/views/components/artist_profile_img.dart';
@@ -28,7 +27,7 @@ class _ArtistPageState extends State<ArtistPage> {
   final int artistId;
   ScrollController _scrollController;
 
-  Future<Artist> _artist;
+  Future<Map<String, dynamic>> _artistProfile;
   Future<ImageFile> _profileImg;
   Future<List<dynamic>> _supporters;
 
@@ -41,14 +40,23 @@ class _ArtistPageState extends State<ArtistPage> {
   void initState() {
     super.initState();
     final authToken = Provider.of<Auth>(context, listen: false).token;
-    fetchSongs();
-    _artist = ArtistService.fetchArtist(authToken, artistId);
+    fetchSongs(authToken);
+    _artistProfile = fetchArtistProfile(authToken);
     _profileImg = ArtistService.fetchImage(authToken, artistId);
     _supporters = ArtistService.fetchSupporters(authToken, artistId);
   }
 
-  Future<void> fetchSongs() async {
-    final authToken = Provider.of<Auth>(context, listen: false).token;
+  Future<Map<String, dynamic>> fetchArtistProfile(String authToken) async {
+    final profile = await ArtistService.fetchArtistProfile(authToken, artistId);
+    setState(() {
+      _likes = profile['likes'];
+      _plays = profile['plays'];
+    });
+
+    return profile;
+  }
+
+  Future<void> fetchSongs(String authToken) async {
     final songs = await ArtistService.fetchSongs(authToken, artistId);
 
     setState(() {
@@ -82,13 +90,14 @@ class _ArtistPageState extends State<ArtistPage> {
               backgroundColor: LloudTheme.black,
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                title: FutureBuilder<Artist>(
-                  future: _artist,
+                title: FutureBuilder<Map<String, dynamic>>(
+                  future: _artistProfile,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         !snapshot.hasData) return Container();
 
-                    return H1(snapshot.data.name, color: LloudTheme.white);
+                    return H1(snapshot.data['artist'].name,
+                        color: LloudTheme.white);
                   },
                 ),
                 background: FutureBuilder<ImageFile>(
@@ -177,14 +186,14 @@ class _ArtistPageState extends State<ArtistPage> {
             ])),
             SliverList(
                 delegate: SliverChildListDelegate([
-              FutureBuilder<Artist>(
-                  future: _artist,
+              FutureBuilder<Map<String, dynamic>>(
+                  future: _artistProfile,
                   builder: (context, snapshot) {
                     if (!snapshot.hasData ||
                         snapshot.connectionState == ConnectionState.waiting)
                       return Container();
 
-                    final artist = snapshot.data;
+                    final artist = snapshot.data['artist'];
                     return Container(
                       margin: EdgeInsets.only(top: 32, bottom: 8),
                       padding: EdgeInsets.symmetric(horizontal: 16),

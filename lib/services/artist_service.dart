@@ -8,7 +8,8 @@ import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/util/network.dart';
 
 class ArtistService {
-  static Future<Artist> fetchArtist(String authToken, int artistId) async {
+  static Future<Map<String, dynamic>> fetchArtistProfile(
+      String authToken, int artistId) async {
     final url = '${Network.host}/api/v2/artists/$artistId';
     final res = await http.get(url, headers: Network.headers(token: authToken));
     Map<String, dynamic> decodedRes = json.decode(res.body);
@@ -16,7 +17,11 @@ class ArtistService {
     if (decodedRes['status'] != 'success')
       throw Exception('Unable to retrieve artist');
 
-    return Artist.fromJson(decodedRes["data"]["artist"]);
+    return {
+      'artist': Artist.fromJson(decodedRes["data"]["artist"]),
+      'likes': decodedRes['data']['likes'],
+      'plays': decodedRes['data']['plays']
+    };
   }
 
   static Future<ImageFile> fetchImage(String authToken, int artistId) async {
