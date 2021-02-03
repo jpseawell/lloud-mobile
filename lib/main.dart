@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/providers/likes.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,6 @@ import 'package:lloud_mobile/providers/apn.dart';
 import 'package:lloud_mobile/providers/notifications.dart';
 import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:lloud_mobile/providers/avatar.dart';
-import 'package:lloud_mobile/providers/songs.dart';
 import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/views/components/loading_screen.dart';
 import 'package:lloud_mobile/views/pages/signup/email.dart';
@@ -77,10 +77,17 @@ class _MyAppState extends State<MyApp> {
             create: null,
             update: (context, auth, storeItems) =>
                 storeItems == null ? StoreItems(auth.token) : storeItems),
-        ChangeNotifierProxyProvider<Auth, Songs>(
+        ChangeNotifierProxyProvider<Auth, Likes>(
             create: null,
-            update: (context, auth, songs) =>
-                songs == null ? Songs(auth.token) : songs),
+            update: (context, auth, likes) {
+              if (likes == null) {
+                final likes = Likes(auth.token, auth.userId);
+                likes.fetchAndSetLikes();
+                return likes;
+              }
+
+              return likes;
+            }),
         ChangeNotifierProxyProvider<Auth, Avatar>(
             create: null,
             update: (context, auth, avatar) =>

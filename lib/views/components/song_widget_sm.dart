@@ -140,8 +140,7 @@ class SongWidgetSmall extends StatelessWidget {
                       width: 56,
                       height: 56,
                       margin: EdgeInsets.only(right: 4),
-                      child: LikeButton(
-                          songId: song.id, likedByUser: song.isLiked),
+                      child: LikeButton(songId: song.id),
                     )
                   ],
                 ),

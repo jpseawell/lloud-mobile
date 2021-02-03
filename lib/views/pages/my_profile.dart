@@ -107,6 +107,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<Auth>(context, listen: false);
     return Scaffold(
       backgroundColor: LloudTheme.white2,
       body: SafeArea(
@@ -128,7 +129,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
                   ),
                   Container(
                     padding: EdgeInsets.only(bottom: 8),
-                    child: PortfolioHeader(_likes, isMyProfile: true),
+                    child:
+                        PortfolioHeader(authProvider.userId, isMyProfile: true),
                   ),
                 ])),
                 SliverList(

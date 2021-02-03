@@ -1,50 +1,80 @@
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter/material.dart';
-import 'package:lloud_mobile/providers/auth.dart';
-import 'package:lloud_mobile/services/error_reporting.dart';
-import 'package:lloud_mobile/services/likes_service.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/providers/auth.dart';
+import 'package:lloud_mobile/routes.dart';
+import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
+import 'package:lloud_mobile/providers/likes.dart';
 
 class LikeButton extends StatefulWidget {
-  final double width;
-  final double height;
+  final double area;
 
   final int songId;
-  final bool likedByUser;
 
   const LikeButton({
     Key key,
     @required this.songId,
-    @required this.likedByUser,
-    this.width = 56,
-    this.height = 56,
+    this.area = 56,
   }) : super(key: key);
 
   @override
-  _LikeButtonState createState() => _LikeButtonState(
-      songId: songId, likedByUser: likedByUser, width: width, height: height);
+  _LikeButtonState createState() => _LikeButtonState(songId: songId);
 }
 
 class _LikeButtonState extends State<LikeButton> {
-  final double width;
-  final double height;
-
+  final double area;
   final int songId;
-  bool likedByUser;
+
+  _LikeButtonState({@required this.songId, this.area = 56});
+
   bool isLoading = false;
 
-  _LikeButtonState({
-    @required this.songId,
-    @required this.likedByUser,
-    this.width = 56,
-    this.height = 56,
-  });
+  @override
+  Widget build(BuildContext context) {
+    final songIds = Provider.of<Likes>(context).likedSongIds;
+    final likedByUser = songIds.contains(songId);
 
-  Widget icon() {
+    return Container(
+        width: area,
+        height: area,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            boxShadow: [
+              BoxShadow(
+                color: LloudTheme.black.withOpacity(.25),
+                offset: Offset(0.0, 2),
+                blurRadius: 4,
+              )
+            ],
+            gradient: LinearGradient(
+              colors: [
+                LloudTheme.red.withOpacity(1.0),
+                LloudTheme.red.withOpacity(1.0),
+                LloudTheme.red.withOpacity(.95)
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            )),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            highlightColor: LloudTheme.red,
+            onTap: () async => await handleLike(likedByUser),
+            child: Container(
+              margin: EdgeInsets.only(top: 4),
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: icon(likedByUser),
+            ),
+          ),
+        ));
+  }
+
+  Widget icon(bool likedByUser) {
     if (isLoading) {
       return Center(
         child: SizedBox(
@@ -69,11 +99,17 @@ class _LikeButtonState extends State<LikeButton> {
     );
   }
 
-  Future<void> _onTap() async {
+  Future<void> handleLike(bool isLikedByUser) async {
     HapticFeedback.heavyImpact();
 
-    if (likedByUser) {
+    if (isLikedByUser) {
       _showAlreadyLikedDialog(context);
+      return;
+    }
+
+    final authProvider = Provider.of<Auth>(context, listen: false);
+    if (authProvider.account.likesBalance <= 0) {
+      _showOutOfLikesDialog(context);
       return;
     }
 
@@ -81,60 +117,25 @@ class _LikeButtonState extends State<LikeButton> {
       isLoading = true;
     });
 
-    final authProvider = Provider.of<Auth>(context, listen: false);
-
+    final likesProvider = Provider.of<Likes>(context, listen: false);
     try {
-      await LikesService.addLike(
-          authProvider.token, authProvider.userId, songId);
+      await likesProvider.addLike(songId);
     } catch (err, stack) {
       ErrorReportingService.report(err, stackTrace: stack);
-      // TODO: Return error UI
+      _showLikeErrorDialog(context);
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
-    _songLikedDialog(context);
+    await authProvider.fetchAndSetAccount(authProvider.token);
+
+    _showSongLikedDialog(context);
 
     setState(() {
-      likedByUser = true;
       isLoading = false;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4.0),
-            boxShadow: [
-              BoxShadow(
-                color: LloudTheme.black.withOpacity(.25),
-                offset: Offset(0.0, 2),
-                blurRadius: 4,
-              )
-            ],
-            gradient: LinearGradient(
-              colors: [
-                LloudTheme.red.withOpacity(1.0),
-                LloudTheme.red.withOpacity(1.0),
-                LloudTheme.red.withOpacity(.95)
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            )),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            highlightColor: LloudTheme.red,
-            onTap: _onTap,
-            child: Container(
-              margin: EdgeInsets.only(top: 4),
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: icon(),
-            ),
-          ),
-        ));
   }
 
   void _showAlreadyLikedDialog(BuildContext context) {
@@ -157,7 +158,34 @@ class _LikeButtonState extends State<LikeButton> {
         });
   }
 
-  void _songLikedDialog(BuildContext context) {
+  void _showOutOfLikesDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("You're out of likes!"),
+            content: Text("You can purchase more on your profile page."),
+            actions: <Widget>[
+              FlatButton(
+                color: LloudTheme.red,
+                child: Text("Buy More Likes!"),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(Routes.my_profile);
+                },
+              ),
+              FlatButton(
+                textColor: LloudTheme.black,
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void _showSongLikedDialog(BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -173,6 +201,33 @@ class _LikeButtonState extends State<LikeButton> {
             ),
             content: Text(
               "Added to portfolio.",
+              textAlign: TextAlign.center,
+            ),
+            contentTextStyle: TextStyle(color: LloudTheme.white),
+          );
+        });
+
+    Timer timer = new Timer(new Duration(milliseconds: 1000), () {
+      Navigator.of(context).pop();
+    });
+  }
+
+  void _showLikeErrorDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: LloudTheme.red.withOpacity(.75),
+            title: Icon(
+              Icons.error,
+              size: 64,
+              color: LloudTheme.white,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            content: Text(
+              "Error: Like was not successful.",
               textAlign: TextAlign.center,
             ),
             contentTextStyle: TextStyle(color: LloudTheme.white),

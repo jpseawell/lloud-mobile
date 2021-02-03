@@ -56,7 +56,7 @@ class SongInfoBar extends StatelessWidget {
                     children: <Widget>[SongStats(song), MoreButton(song)],
                   ),
                 ),
-                LikeButton(songId: song.id, likedByUser: song.isLiked)
+                LikeButton(songId: song.id)
               ],
             )
           ],

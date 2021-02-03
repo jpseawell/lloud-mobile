@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/providers/likes.dart';
 import 'package:lloud_mobile/providers/loading.dart';
 import 'package:lloud_mobile/views/components/loading_screen.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +52,7 @@ class _NavPageState extends State<NavPage> {
     authProvider.fetchAndSetAccount(authProvider.token);
 
     Provider.of<Apn>(context, listen: false);
+    Provider.of<Likes>(context, listen: false);
 
     super.initState();
   }

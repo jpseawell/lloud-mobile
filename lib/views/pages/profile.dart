@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lloud_mobile/services/error_reporting.dart';
-import 'package:lloud_mobile/services/likes_service.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/services/error_reporting.dart';
+import 'package:lloud_mobile/services/likes_service.dart';
 import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/models/portfolio_item.dart';
 import 'package:lloud_mobile/models/song.dart';
@@ -129,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ProfileBar(userId: userId),
                   Container(
                     padding: EdgeInsets.only(bottom: 8),
-                    child: PortfolioHeader(_likes, isMyProfile: false),
+                    child: PortfolioHeader(userId, isMyProfile: false),
                   ),
                 ])),
                 SliverList(

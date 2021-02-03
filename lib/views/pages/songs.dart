@@ -12,7 +12,6 @@ import 'package:lloud_mobile/services/songs_service.dart';
 import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/models/feed_item.dart';
 import 'package:lloud_mobile/providers/audio_player.dart';
-import 'package:lloud_mobile/providers/songs.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 
 class SongsPage extends StatefulWidget {

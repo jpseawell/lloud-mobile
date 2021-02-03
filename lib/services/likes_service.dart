@@ -19,6 +19,18 @@ class LikesService {
         decodedRes['data']['likes'] as List<dynamic>);
   }
 
+  static Future<Map<String, dynamic>> fetchLikesProfile(
+      String authToken, int userId) async {
+    final url = '${Network.host}/api/v2/user/$userId/likes/profile';
+    final res = await http.get(url, headers: Network.headers(token: authToken));
+    Map<String, dynamic> decodedRes = json.decode(res.body);
+
+    if (decodedRes['status'] != 'success')
+      throw Exception('Likes profile fetch failed.');
+
+    return decodedRes['data'];
+  }
+
   static Future<void> addLike(String authToken, int userId, int songId) async {
     final url = '${Network.host}/api/v2/likes';
     final likeData = {'user_id': userId, 'song_id': songId};
@@ -27,6 +39,7 @@ class LikesService {
         body: json.encode(likeData));
     Map<String, dynamic> decodedRes = json.decode(res.body);
 
-    if (!decodedRes['success']) throw Exception('Add like failed.');
+    if (!decodedRes['success'])
+      throw Exception('Error: Like failed. ${decodedRes['message']}');
   }
 }
