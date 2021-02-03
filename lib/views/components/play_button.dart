@@ -1,4 +1,3 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -22,17 +21,13 @@ class PlayButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          PlayerBuilder.isPlaying(
-              player: audioPlayer.player,
-              builder: (context, isPlaying) {
-                return SvgPicture.asset(
-                  (audioPlayer.currentSongId == song.id && isPlaying)
-                      ? 'assets/pause.svg'
-                      : 'assets/play.svg',
-                  width: 80,
-                  color: LloudTheme.white.withOpacity(.9),
-                );
-              }),
+          SvgPicture.asset(
+            (audioPlayer.currentSongId == song.id && audioPlayer.isPlaying)
+                ? 'assets/pause.svg'
+                : 'assets/play.svg',
+            width: 80,
+            color: LloudTheme.white.withOpacity(.9),
+          )
         ],
       ),
     );

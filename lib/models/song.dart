@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 
 import 'package:lloud_mobile/models/portfolio_item.dart';
 
@@ -56,13 +56,12 @@ class Song {
     return songs;
   }
 
-  Audio toAudio() {
-    return Audio.network(this.audioUrl,
-        metas: Metas(
-            id: this.id.toString(),
-            title: this.title,
-            artist: this.artistName,
-            image: MetasImage.network(this.imageUrl),
-            extra: {'imageUrl': this.imageUrl}));
+  static Track toTrack(Song song) {
+    return Track(
+        albumArtUrl: song.imageUrl,
+        trackAuthor: song.artistName,
+        trackTitle: song.title,
+        trackPath: song.audioUrl,
+        codec: Codec.mp3);
   }
 }

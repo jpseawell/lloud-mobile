@@ -280,20 +280,20 @@ class _ShowcaseState extends State<Showcase> {
   }
 
   Future<void> loadSongAndOpenPlayer(BuildContext context, int songId) async {
-    final url = '${Network.host}/api/v2/songs/$songId';
-    final token = Provider.of<Auth>(context).token;
-    final res = await http.get(url, headers: Network.headers(token: token));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
+    // final url = '${Network.host}/api/v2/songs/$songId';
+    // final token = Provider.of<Auth>(context).token;
+    // final res = await http.get(url, headers: Network.headers(token: token));
+    // Map<String, dynamic> decodedRes = json.decode(res.body);
 
-    Song song = Song.fromJson(decodedRes["data"]["song"]);
+    // Song song = Song.fromJson(decodedRes["data"]["song"]);
 
-    final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
-    final sourceKey = 'song:${song.id}';
-    if (!audioPlayer.isSourcedFrom(sourceKey)) {
-      audioPlayer.setPlaylistFromNewSource(sourceKey, [song]);
-    }
-    await audioPlayer.togglePlay(song);
+    // final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    // final sourceKey = 'song:${song.id}';
+    // if (!audioPlayer.isSourcedFrom(sourceKey)) {
+    //   audioPlayer.setPlaylistFromNewSource(sourceKey, [song]);
+    // }
+    // await audioPlayer.togglePlay(song);
 
-    Navigator.pushNamed(context, Routes.audio_player);
+    // Navigator.pushNamed(context, Routes.audio_player);
   }
 }

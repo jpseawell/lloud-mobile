@@ -1,4 +1,3 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -18,61 +17,57 @@ class PortfolioItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioPlayer = Provider.of<AudioPlayer>(context);
+    final bool isPlayingThisSong =
+        (audioPlayer.currentSongId == portfolioItem.song.id &&
+            audioPlayer.isPlaying);
 
     return Container(
       height: 88,
-      child: PlayerBuilder.isPlaying(
-        player: audioPlayer.player,
-        builder: (context, isPlaying) {
-          final bool isPlayingThisSong =
-              (audioPlayer.currentSongId == portfolioItem.song.id && isPlaying);
-          return Card(
-            semanticContainer: true,
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            elevation: 3,
-            shadowColor: LloudTheme.black.withOpacity(.25),
-            color: (isPlayingThisSong) ? LloudTheme.black : LloudTheme.white,
-            child: InkWell(
-              splashColor: LloudTheme.black.withAlpha(30),
-              onTap: () => onPlay(portfolioItem.song),
-              child: Container(
-                padding: EdgeInsets.all(4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+      child: Card(
+        semanticContainer: true,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        elevation: 3,
+        shadowColor: LloudTheme.black.withOpacity(.25),
+        color: (isPlayingThisSong) ? LloudTheme.black : LloudTheme.white,
+        child: InkWell(
+          splashColor: LloudTheme.black.withAlpha(30),
+          onTap: () => onPlay(portfolioItem.song),
+          child: Container(
+            padding: EdgeInsets.all(4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                albumArt(isPlayingThisSong),
+                Expanded(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    albumArt(isPlayingThisSong),
-                    Expanded(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SongTitle(
-                          portfolioItem.song.title,
-                          color: (isPlayingThisSong)
-                              ? LloudTheme.white
-                              : LloudTheme.black,
-                          size: 22,
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        ArtistLink(
-                          portfolioItem.song.artistId,
-                          portfolioItem.song.artistName,
-                          txtSize: 18,
-                          txtColor: (isPlayingThisSong)
-                              ? LloudTheme.white
-                              : LloudTheme.black,
-                        ),
-                      ],
-                    )),
-                    points(isPlayingThisSong)
+                    SongTitle(
+                      portfolioItem.song.title,
+                      color: (isPlayingThisSong)
+                          ? LloudTheme.white
+                          : LloudTheme.black,
+                      size: 22,
+                    ),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    ArtistLink(
+                      portfolioItem.song.artistId,
+                      portfolioItem.song.artistName,
+                      txtSize: 18,
+                      txtColor: (isPlayingThisSong)
+                          ? LloudTheme.white
+                          : LloudTheme.black,
+                    ),
                   ],
-                ),
-              ),
+                )),
+                points(isPlayingThisSong)
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

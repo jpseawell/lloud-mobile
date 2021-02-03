@@ -1,4 +1,3 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +14,7 @@ class AudioBar extends StatefulWidget {
 class _AudioBarState extends State<AudioBar> {
   @override
   Widget build(BuildContext context) {
-    final currentAudio = Provider.of<AudioPlayer>(context).currentAudio;
+    final currentSong = Provider.of<AudioPlayer>(context).currentSong;
     return Container(
       color: LloudTheme.black,
       height: 64,
@@ -34,7 +33,7 @@ class _AudioBarState extends State<AudioBar> {
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                       image: NetworkImage(
-                                          '${currentAudio.metas.extra['imageUrl']}?tr=w-100,h-100'),
+                                          '${currentSong.imageUrl}?tr=w-100,h-100'),
                                       fit: BoxFit.cover)),
                               alignment: Alignment.bottomLeft,
                               padding: EdgeInsets.all(16.0)),
@@ -55,14 +54,14 @@ class _AudioBarState extends State<AudioBar> {
                       children: <Widget>[
                         SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child: Text(currentAudio.metas.title,
+                            child: Text(currentSong.title,
                                 style: TextStyle(
                                     color: LloudTheme.white,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Raleway'))),
                         Text(
-                          currentAudio.metas.artist,
+                          currentSong.artistName,
                           style: TextStyle(
                               fontSize: 18,
                               color: LloudTheme.white,
@@ -96,20 +95,10 @@ class AudioBarPlayButton extends StatelessWidget {
     final audioPlayer = Provider.of<AudioPlayer>(context);
 
     return FlatButton(
-      onPressed: () => audioPlayer.toggleCurrentSong(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          PlayerBuilder.isPlaying(
-              player: audioPlayer.player,
-              builder: (context, isPlaying) {
-                return SvgPicture.asset(
-                  isPlaying ? 'assets/pause.svg' : 'assets/play.svg',
-                  width: 48,
-                  color: LloudTheme.white.withOpacity(.9),
-                );
-              }),
-        ],
+      onPressed: () async => audioPlayer.toggle(),
+      child: SvgPicture.asset(
+        (audioPlayer.isPlaying) ? 'assets/pause.svg' : 'assets/play.svg',
+        color: LloudTheme.white.withOpacity(.9),
       ),
     );
   }

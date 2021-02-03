@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
+import 'package:lloud_mobile/services/artist_service.dart';
 import 'package:lloud_mobile/providers/auth.dart';
-import 'package:lloud_mobile/util/network.dart';
 import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/models/image_file.dart';
 import 'package:lloud_mobile/models/artist.dart';
@@ -31,10 +28,11 @@ class _ArtistPageState extends State<ArtistPage> {
   final int artistId;
   ScrollController _scrollController;
 
-  Artist _artist;
-  ImageFile _profileImg = ImageFile.empty();
+  Future<Artist> _artist;
+  Future<ImageFile> _profileImg;
+  Future<List<dynamic>> _supporters;
+
   List<Song> _songs = [];
-  List<dynamic> _supporters = [];
   int _likes = 0, _plays = 0;
 
   _ArtistPageState(this.artistId);
@@ -43,19 +41,30 @@ class _ArtistPageState extends State<ArtistPage> {
   void initState() {
     super.initState();
     final authToken = Provider.of<Auth>(context, listen: false).token;
-    _fetchAndSetArtist(artistId, authToken);
-    _fetchAndSetSongs(artistId, authToken);
-    _fetchAndSetImage(artistId, authToken);
-    _fetchAndSetSupporters(artistId, authToken);
+    fetchSongs();
+    _artist = ArtistService.fetchArtist(authToken, artistId);
+    _profileImg = ArtistService.fetchImage(authToken, artistId);
+    _supporters = ArtistService.fetchSupporters(authToken, artistId);
+  }
+
+  Future<void> fetchSongs() async {
+    final authToken = Provider.of<Auth>(context, listen: false).token;
+    final songs = await ArtistService.fetchSongs(authToken, artistId);
+
+    setState(() {
+      _songs = songs;
+    });
   }
 
   Future<void> handlePlay(Song song) async {
     final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
     final sourceKey = getSourceKey();
     if (!audioPlayer.isSourcedFrom(sourceKey)) {
-      audioPlayer.setPlaylistFromNewSource(sourceKey, _songs);
+      await audioPlayer.stop();
+      audioPlayer.clearCurrentSong();
+      audioPlayer.loadPlaylistFromSource(sourceKey, _songs);
     }
-    await audioPlayer.togglePlay(song);
+    await audioPlayer.playOrPause(song);
   }
 
   @override
@@ -73,10 +82,25 @@ class _ArtistPageState extends State<ArtistPage> {
               backgroundColor: LloudTheme.black,
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                title: _artist != null
-                    ? H1(_artist.name, color: LloudTheme.white)
-                    : Container(),
-                background: ArtistProfileImage(img: _profileImg),
+                title: FutureBuilder<Artist>(
+                  future: _artist,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        !snapshot.hasData) return Container();
+
+                    return H1(snapshot.data.name, color: LloudTheme.white);
+                  },
+                ),
+                background: FutureBuilder<ImageFile>(
+                  future: _profileImg,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData ||
+                        snapshot.connectionState == ConnectionState.waiting)
+                      return ArtistProfileImage(img: ImageFile.empty());
+
+                    return ArtistProfileImage(img: snapshot.data);
+                  },
+                ),
               ),
             ),
             SliverList(
@@ -126,69 +150,80 @@ class _ArtistPageState extends State<ArtistPage> {
             ),
             SliverList(
                 delegate: SliverChildListDelegate([
-              if (_supporters.length > 0)
-                Container(
-                  margin: EdgeInsets.only(top: 32, bottom: 8),
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      H1(
-                        'Top Supporters',
-                        color: LloudTheme.white,
+              FutureBuilder(
+                  future: _supporters,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData ||
+                        snapshot.connectionState == ConnectionState.waiting)
+                      return Container();
+
+                    return Container(
+                        margin: EdgeInsets.only(
+                            top: 32, right: 16, bottom: 8, left: 16),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(bottom: 16),
+                                child: H1('Top Supporters',
+                                    color: LloudTheme.white),
+                              ),
+                              Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 4),
+                                  child: ArtistSupporterList(
+                                      supporters: snapshot.data))
+                            ]));
+                  })
+            ])),
+            SliverList(
+                delegate: SliverChildListDelegate([
+              FutureBuilder<Artist>(
+                  future: _artist,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData ||
+                        snapshot.connectionState == ConnectionState.waiting)
+                      return Container();
+
+                    final artist = snapshot.data;
+                    return Container(
+                      margin: EdgeInsets.only(top: 32, bottom: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (artist.description != null)
+                            H1(
+                              'About',
+                              color: LloudTheme.white,
+                            ),
+                          if (artist.city != null && artist.state != null)
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                '${artist.city}, ${artist.state}',
+                                style: TextStyle(
+                                    color: LloudTheme.white,
+                                    height: 1.9,
+                                    fontSize: 16),
+                              ),
+                            ),
+                          if (artist.description != null)
+                            Container(
+                                margin: EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  artist.description,
+                                  style: TextStyle(
+                                      color: LloudTheme.white,
+                                      height: 1.9,
+                                      fontSize: 16),
+                                )),
+                          SizedBox(
+                            height: 64,
+                          )
+                        ],
                       ),
-                    ],
-                  ),
-                )
-            ])),
-            SliverList(
-                delegate: SliverChildListDelegate([
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: ArtistSupporterList(supporters: _supporters),
-              )
-            ])),
-            SliverList(
-                delegate: SliverChildListDelegate([
-              if (_artist != null)
-                Container(
-                  margin: EdgeInsets.only(top: 32, bottom: 8),
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (_artist.description != null)
-                        H1(
-                          'About',
-                          color: LloudTheme.white,
-                        ),
-                      if (_artist.city != null && _artist.state != null)
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            '${_artist.city}, ${_artist.state}',
-                            style: TextStyle(
-                                color: LloudTheme.white,
-                                height: 1.9,
-                                fontSize: 16),
-                          ),
-                        ),
-                      if (_artist.description != null)
-                        Container(
-                            margin: EdgeInsets.symmetric(vertical: 8),
-                            child: Text(
-                              _artist.description,
-                              style: TextStyle(
-                                  color: LloudTheme.white,
-                                  height: 1.9,
-                                  fontSize: 16),
-                            )),
-                      SizedBox(
-                        height: 64,
-                      )
-                    ],
-                  ),
-                )
+                    );
+                  })
             ]))
           ],
         ),
@@ -198,49 +233,5 @@ class _ArtistPageState extends State<ArtistPage> {
 
   String getSourceKey() {
     return 'artist:$artistId';
-  }
-
-  Future<void> _fetchAndSetArtist(int artistId, String authToken) async {
-    final url = '${Network.host}/api/v2/artists/$artistId';
-    final res = await http.get(url, headers: Network.headers(token: authToken));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
-
-    if (decodedRes['status'] != 'success')
-      throw Exception('Unable to retrieve artist');
-
-    setState(() {
-      _artist = Artist.fromJson(decodedRes["data"]["artist"]);
-      _likes = decodedRes['data']['likes'];
-      _plays = decodedRes['data']['plays'];
-    });
-  }
-
-  Future<void> _fetchAndSetImage(int artistId, String authToken) async {
-    final url = '${Network.host}/api/v2/artist/$artistId/image-files';
-    final res = await http.get(url, headers: Network.headers(token: authToken));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
-
-    setState(() {
-      _profileImg = ImageFile.fromJson(decodedRes['data']['imageFile']);
-    });
-  }
-
-  Future<void> _fetchAndSetSongs(int artistId, String authToken) async {
-    final url = '${Network.host}/api/v2/artist/$artistId/songs';
-    final res = await http.get(url, headers: Network.headers(token: authToken));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
-
-    if (decodedRes['data'] != null)
-      setState(() {
-        _songs = Song.fromJsonList(decodedRes['data']['songs']);
-      });
-  }
-
-  Future<void> _fetchAndSetSupporters(int artistId, String authToken) async {
-    final url = '${Network.host}/api/v2/artist/$artistId/supporters';
-    final res = await http.get(url, headers: Network.headers(token: authToken));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
-
-    _supporters = decodedRes['data']['supporters'];
   }
 }

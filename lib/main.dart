@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/providers/products.dart';
 import 'package:lloud_mobile/providers/search.dart';
 import 'package:lloud_mobile/providers/store_items.dart';
@@ -12,7 +15,6 @@ import 'package:lloud_mobile/providers/apn.dart';
 import 'package:lloud_mobile/providers/notifications.dart';
 import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:lloud_mobile/providers/avatar.dart';
-import 'package:lloud_mobile/providers/likes.dart';
 import 'package:lloud_mobile/providers/songs.dart';
 import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/views/components/loading_screen.dart';
@@ -48,6 +50,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final AudioPlayer _audioPlayerProvider = AudioPlayer();
+
   Future<void> initPaymentPlatform() async {
     await Purchases.setDebugLogsEnabled(true);
     await Purchases.setup("XstlTtxLyLvhognmeAZyaVDIDSLQCFMy");
@@ -56,13 +60,14 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     initPaymentPlatform();
+    _audioPlayerProvider.init();
     super.initState();
   }
 
   @override
   void dispose() {
+    _audioPlayerProvider.dispose();
     super.dispose();
-    Provider.of<AudioPlayer>(context, listen: false).stopAndDispose(); // ??
   }
 
   @override
@@ -75,10 +80,6 @@ class _MyAppState extends State<MyApp> {
             create: null,
             update: (context, auth, storeItems) =>
                 storeItems == null ? StoreItems(auth.token) : storeItems),
-        ChangeNotifierProxyProvider<Auth, Likes>(
-            create: null,
-            update: (context, auth, likes) =>
-                likes == null ? Likes(auth.token, auth.userId) : likes),
         ChangeNotifierProxyProvider<Auth, Songs>(
             create: null,
             update: (context, auth, songs) =>
@@ -132,9 +133,8 @@ class _MyAppState extends State<MyApp> {
             create: null,
             update: (context, auth, audio) {
               if (audio == null) {
-                final audioPlayer = AudioPlayer(auth.token);
-                audioPlayer.listenForEndOfSong();
-                return audioPlayer;
+                _audioPlayerProvider.authToken = auth.token;
+                return _audioPlayerProvider;
               }
 
               return audio;

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/models/portfolio_item.dart';
+import 'package:lloud_mobile/providers/auth.dart';
+import 'package:lloud_mobile/services/error_reporting.dart';
+import 'package:lloud_mobile/services/likes_service.dart';
 import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:lloud_mobile/models/song.dart';
-import 'package:lloud_mobile/providers/likes.dart';
 import 'package:lloud_mobile/views/components/inline_buy_btn.dart';
 import 'package:lloud_mobile/views/components/my_profile_bar.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -17,18 +20,16 @@ class MyProfilePage extends StatefulWidget {
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
-  String _sourceKey = 'my_profile';
+  final String _sourceKey = 'my_profile';
+
   ScrollController _scrollController;
   bool _isFetching = true;
   int _currentPage = 1;
+  List<PortfolioItem> _likes = [];
 
   @override
   void initState() {
-    Provider.of<Likes>(context, listen: false).resetLikes().then((_) {
-      setState(() {
-        _isFetching = false;
-      });
-    });
+    refresh().then((_) => loadSongsIntoAudioPlayer());
     _scrollController = ScrollController();
     _scrollController.addListener(shouldFetch);
     super.initState();
@@ -47,38 +48,65 @@ class _MyProfilePageState extends State<MyProfilePage> {
     if (_scrollController.offset >=
             _scrollController.position.maxScrollExtent - 160 &&
         !_scrollController.position.outOfRange) {
-      fetchItems();
+      fetchItems().then((_) => loadSongsIntoAudioPlayer());
     }
+  }
+
+  void loadSongsIntoAudioPlayer() {
+    final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    if (audioPlayer.isSourcedFrom(_sourceKey))
+      audioPlayer.loadPlaylistFromSource(
+          _sourceKey, Song.fromPortfolioItemList(_likes));
   }
 
   Future<void> fetchItems() async {
     setState(() {
       _isFetching = true;
-      _currentPage = _currentPage + 1;
     });
 
-    await Provider.of<Likes>(context, listen: false)
-        .fetchAndSetLikes(page: _currentPage);
+    final authProvider = Provider.of<Auth>(context, listen: false);
+
+    List<PortfolioItem> fetchedLikes = [];
+
+    try {
+      fetchedLikes = await LikesService.fetchLikes(
+          authProvider.token, authProvider.userId,
+          page: _currentPage);
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
+    }
+
+    List<PortfolioItem> likes = [..._likes];
+    likes.addAll(fetchedLikes);
 
     setState(() {
+      _likes = likes;
+      _currentPage = _currentPage + 1;
       _isFetching = false;
     });
+  }
+
+  Future<void> refresh() async {
+    setState(() {
+      _currentPage = 1;
+      _likes = [];
+    });
+    await fetchItems();
   }
 
   Future<void> handlePlay(Song song) async {
     final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
     if (!audioPlayer.isSourcedFrom(_sourceKey)) {
-      final portfolioItems = Provider.of<Likes>(context, listen: false).items;
-      audioPlayer.setPlaylistFromNewSource(
-          _sourceKey, Song.fromPortfolioItemList(portfolioItems));
+      await audioPlayer.stop();
+      audioPlayer.clearCurrentSong();
+      audioPlayer.loadPlaylistFromSource(
+          _sourceKey, Song.fromPortfolioItemList(_likes));
     }
-    await audioPlayer.togglePlay(song);
+    await audioPlayer.playOrPause(song);
   }
 
   @override
   Widget build(BuildContext context) {
-    final items = Provider.of<Likes>(context).items;
-
     return Scaffold(
       backgroundColor: LloudTheme.white2,
       body: SafeArea(
@@ -100,17 +128,17 @@ class _MyProfilePageState extends State<MyProfilePage> {
                   ),
                   Container(
                     padding: EdgeInsets.only(bottom: 8),
-                    child: PortfolioHeader(items, isMyProfile: true),
+                    child: PortfolioHeader(_likes, isMyProfile: true),
                   ),
                 ])),
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
                   return PortfolioItemWidget(
-                    portfolioItem: items[index],
+                    portfolioItem: _likes[index],
                     onPlay: handlePlay,
                   );
-                }, childCount: items.length)),
+                }, childCount: _likes.length)),
                 if (_isFetching)
                   SliverList(
                       delegate: SliverChildListDelegate([

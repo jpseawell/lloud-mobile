@@ -64,7 +64,7 @@ class _NavPageState extends State<NavPage> {
   @override
   Widget build(BuildContext context) {
     final bool songLoaded =
-        (Provider.of<AudioPlayer>(context).currentSongId != null);
+        (Provider.of<AudioPlayer>(context).currentSong != null);
 
     return Stack(children: [
       Scaffold(

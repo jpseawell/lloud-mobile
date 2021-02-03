@@ -1,177 +1,179 @@
+import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 
 import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/util/network.dart';
 
 class AudioPlayer with ChangeNotifier {
-  final AssetsAudioPlayer _player = AssetsAudioPlayer();
-  final String authToken;
+  final FlutterSoundPlayer _player = FlutterSoundPlayer();
+  final StreamController<PlaybackDisposition> _localController =
+      StreamController<PlaybackDisposition>.broadcast();
+
+  List<Song> _songs = [];
   int _index;
-  List<Audio> _playlist = [];
-  List<Song> _songs = []; // Strictly used for storing & displaying metadata
+  Song _currentSong;
   String _source;
+  bool _isPlaying = false;
+  String authToken;
 
-  AudioPlayer(this.authToken);
-
-  AssetsAudioPlayer get player => _player;
+  FlutterSoundPlayer get player => _player;
   String get source => _source;
+  Song get currentSong => _currentSong;
+  int get currentSongId => _currentSong == null ? null : _currentSong.id;
+  bool get isPlaying => _isPlaying;
+  StreamController<PlaybackDisposition> get streamController =>
+      _localController;
 
-  int get currentSongId {
-    if (_index == null) return null;
-
-    return int.parse(_playlist[_index].metas.id);
-  }
-
-  Audio get currentAudio {
-    if (_index == null) return null;
-
-    return _playlist[_index];
-  }
-
-  Song get currentSong {
-    if (_index == null) return null;
-
-    return _songs[_index];
-  }
-
-  set source(String source) {
-    _source = source;
+  set index(int i) {
+    _index = i;
     notifyListeners();
   }
 
-  set playlist(List<Song> songs) {
-    _playlist = _convertSongsToAudio(songs);
-    _songs = songs;
+  set currentSong(Song s) {
+    _currentSong = s;
     notifyListeners();
   }
 
-  void listenForEndOfSong() {
-    _player.playlistFinished.listen((finished) {
-      if (finished) next();
+  set isPlaying(bool b) {
+    _isPlaying = b;
+    notifyListeners();
+  }
+
+  Future<void> init() async {
+    await _player
+        .openAudioSession(
+      withUI: true,
+      focus: AudioFocus.requestFocusAndStopOthers,
+      category: SessionCategory.playback,
+      mode: SessionMode.modeMeasurement,
+      device: AudioDevice.speaker,
+      audioFlags: outputToSpeaker | allowBlueToothA2DP | allowAirPlay,
+    )
+        .then((_) {
+      _player.dispositionStream().listen(_localController.add);
+      _player.setSubscriptionDuration(Duration(milliseconds: 100));
     });
   }
 
-  void setPlaylistFromNewSource(String source, List<Song> songs) {
+  Future<void> dispose() async {
+    try {
+      _player.closeAudioSession();
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
+    }
+  }
+
+  Future<void> play(Song song) async {
+    loadSongOrThrow(song);
+    isPlaying = true;
+    await reportPlay(); // Report the previous play
+
+    await _player.startPlayerFromTrack(Song.toTrack(song),
+        onPaused: (_) => toggle(),
+        defaultPauseResume: false,
+        onSkipBackward: () => prev(),
+        onSkipForward: () => next(),
+        whenFinished: () {
+          reportPlay();
+          next();
+        });
+  }
+
+  Future<void> resume() async {
+    isPlaying = true;
+    await _player.resumePlayer();
+  }
+
+  Future<void> playOrPause(Song song) async {
+    if (song.id == currentSongId) {
+      await toggle();
+      return;
+    }
+
+    await play(song);
+  }
+
+  Future<void> stop() async {
+    isPlaying = false;
+    await _player.stopPlayer();
+  }
+
+  Future<void> pause() async {
+    isPlaying = false;
+    await _player.pausePlayer();
+  }
+
+  Future<void> toggle() async {
+    isPlaying ? await pause() : await resume();
+  }
+
+  Future<void> next() async {
+    if (_index == null)
+      throw Exception('Error: Calling next when index is null.');
+
+    int nextIndex = _index + 1;
+    if (nextIndex > _songs.length - 1) nextIndex = 0;
+
+    await play(_songs[nextIndex]);
+  }
+
+  Future<void> prev() async {
+    if (_index == null)
+      throw Exception('Error: Calling prev when index is null.');
+
+    int prevIndex = _index - 1;
+    if (prevIndex < 0) prevIndex = _songs.length - 1;
+
+    await play(_songs[prevIndex]);
+  }
+
+  int indexOfSong(Song song) =>
+      _songs.indexWhere((_song) => _song.id == song.id);
+
+  void loadSongOrThrow(Song song) {
+    final newIndex = indexOfSong(song);
+
+    if (newIndex == -1)
+      throw Exception('Error: Requested song not found in songs list.');
+
+    _index = newIndex;
+    _currentSong = song;
+    notifyListeners();
+  }
+
+  void clearCurrentSong() {
     _index = null;
+    _currentSong = null;
+    notifyListeners();
+  }
+
+  void loadPlaylistFromSource(String source, List<Song> songs) {
     _source = source;
-    _playlist = _convertSongsToAudio(songs);
     _songs = songs;
     notifyListeners();
   }
 
-  Future<void> play(Song song) async {
-    await playAtIndex(indexOfSong(song));
-  }
-
-  Future<void> playAtIndex(int index) async {
-    try {
-      final settings = NotificationSettings(
-        nextEnabled: true,
-        seekBarEnabled: false,
-        customNextAction: (player) => next(),
-        customPrevAction: (player) => prev(),
-        customPlayPauseAction: (player) => toggleCurrentSong(),
-      );
-
-      await _player.open(_playlist[index],
-          showNotification: true, notificationSettings: settings);
-    } catch (err, stack) {
-      ErrorReportingService.report(err, stackTrace: stack);
-    }
-
-    await _player.play();
-
-    _index = index;
-    notifyListeners();
-  }
-
-  Future<void> togglePlay(Song song) async {
-    if (_player.isBuffering.value) return;
-
-    if (currentSongId == song.id) {
-      await toggleCurrentSong();
-      return;
-    }
-
-    if (currentSongId != null) await stop();
-    await play(song);
-  }
-
-  Future<void> toggleCurrentSong() async {
-    try {
-      _player.isPlaying.value ? await _player.pause() : await _player.play();
-    } catch (err, stack) {
-      print(err);
-      ErrorReportingService.report(err, stackTrace: stack);
-    }
-  }
-
-  Future<void> next() async {
-    await stop();
-    await playAtIndex(nextIndex());
-  }
-
-  Future<void> prev() async {
-    await stop();
-    await playAtIndex(prevIndex());
-  }
-
-  Future<void> stop() async {
-    reportPlay();
-    await _player.stop();
-  }
-
-  Future<void> stopAndDispose() async {
-    await stop();
-    await _player.dispose();
-    _index = null;
-    notifyListeners();
-  }
+  bool isSourcedFrom(String source) => source == _source;
 
   Future<void> reportPlay() async {
-    final duration = _player.currentPosition.value;
+    if (!_player.isPlaying) return;
+
+    final playback =
+        await _localController.stream.firstWhere((packet) => packet != null);
+
     final url = '${Network.host}/api/v2/plays';
     final playData = {
       'song_id': currentSongId,
-      'duration': duration.toString().substring(0, 8)
+      'duration': playback.position.toString().substring(0, 8)
     };
     final res = await http.post(url,
         headers: Network.headers(token: authToken),
         body: json.encode(playData));
     Map<String, dynamic> decodedRes = json.decode(res.body);
-  }
-
-  int indexOfSong(Song song) => _playlist.indexOf(song.toAudio());
-  int nextIndex() {
-    if (_index == null) return null;
-
-    int nextIndex = _index + 1;
-    if (nextIndex > _playlist.length - 1) nextIndex = 0;
-
-    return nextIndex;
-  }
-
-  int prevIndex() {
-    if (_index == null) return null;
-
-    int prevIndex = _index - 1;
-    if (prevIndex < 0) prevIndex = _playlist.length - 1;
-
-    return prevIndex;
-  }
-
-  bool isSourcedFrom(String source) => source == _source;
-
-  List<Audio> _convertSongsToAudio(List<Song> songs) {
-    List<Audio> results = [];
-    songs.forEach((song) {
-      results.add(song.toAudio());
-    });
-    return results;
   }
 }

@@ -31,7 +31,7 @@ class DurationSlider extends StatelessWidget {
           double newPos = value * totalDuration.inMilliseconds.toDouble();
           Provider.of<AudioPlayer>(context, listen: false)
               .player
-              .seek(new Duration(milliseconds: newPos.toInt()));
+              .seekToPlayer(Duration(milliseconds: newPos.toInt()));
         },
       ),
       Container(

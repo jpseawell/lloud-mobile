@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/providers/auth.dart';
-import 'package:lloud_mobile/providers/likes.dart';
+import 'package:lloud_mobile/services/error_reporting.dart';
+import 'package:lloud_mobile/services/likes_service.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -80,8 +81,16 @@ class _LikeButtonState extends State<LikeButton> {
       isLoading = true;
     });
 
-    final userId = Provider.of<Auth>(context, listen: false).userId;
-    await Provider.of<Likes>(context, listen: false).addLike(userId, songId);
+    final authProvider = Provider.of<Auth>(context, listen: false);
+
+    try {
+      await LikesService.addLike(
+          authProvider.token, authProvider.userId, songId);
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
+      // TODO: Return error UI
+      return;
+    }
 
     _songLikedDialog(context);
 

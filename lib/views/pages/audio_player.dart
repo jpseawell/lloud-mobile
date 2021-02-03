@@ -65,7 +65,7 @@ class AudioPlayerPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10),
                                   image: DecorationImage(
                                       image: NetworkImage(
-                                          '${audioPlayer.currentAudio.metas.extra['imageUrl']}?tr=w-300,h-300'),
+                                          '${audioPlayer.currentSong.imageUrl}?tr=w-300,h-300'),
                                       fit: BoxFit.cover)),
                             ),
                           ),
@@ -110,7 +110,7 @@ class PlayerControlsBar extends StatelessWidget {
         children: <Widget>[
           Expanded(
               child: FlatButton(
-                  onPressed: () => audioPlayer.prev(),
+                  onPressed: () async => await audioPlayer.prev(),
                   child: Icon(
                     Icons.skip_previous,
                     color: LloudTheme.white,
@@ -123,7 +123,7 @@ class PlayerControlsBar extends StatelessWidget {
           )),
           Expanded(
               child: FlatButton(
-                  onPressed: () => audioPlayer.next(),
+                  onPressed: () async => await audioPlayer.next(),
                   child: Icon(
                     Icons.skip_next,
                     color: LloudTheme.white,
