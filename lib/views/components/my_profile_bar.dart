@@ -18,7 +18,7 @@ class MyProfileBar extends StatelessWidget {
             onTap: () {
               Navigator.pushNamed(context, Routes.edit_profile);
             },
-            child: MyAvatar(),
+            child: MyAvatar(darkIfEmpty: true),
           ),
           Expanded(
             child: Container(

@@ -20,7 +20,8 @@ class NavBar extends StatelessWidget {
         BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
         BottomNavigationBarItem(label: 'Explore', icon: Icon(Icons.search)),
         BottomNavigationBarItem(label: 'Shop', icon: Icon(Icons.store)),
-        BottomNavigationBarItem(label: 'Profile', icon: MyAvatar(radius: 12)),
+        BottomNavigationBarItem(
+            label: 'Profile', icon: MyAvatar(radius: 12, darkIfEmpty: true)),
       ],
     );
   }

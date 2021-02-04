@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,9 +42,16 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
     final res = await http.delete(url, headers: Network.headers(token: token));
     Map<String, dynamic> decodedResponse = json.decode(res.body);
 
-    // TODO: Handle failed response
+    if (decodedResponse['status'] != 'success') {
+      onNotLoading();
+      throw Exception('Error: Failed to delete image');
+    }
 
-    // TODO: Refresh Auth.user()
+    try {
+      await Provider.of<Avatar>(context, listen: false).fetchAndSetImage();
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
+    }
 
     onNotLoading();
   }
@@ -55,9 +63,12 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
 
     onLoading();
 
-    await Provider.of<Avatar>(context, listen: false).postProfileImg(file.path);
-
-    // TODO: Handle failed response
+    try {
+      await Provider.of<Avatar>(context, listen: false)
+          .postProfileImg(file.path);
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
+    }
 
     onNotLoading();
   }
@@ -164,7 +175,9 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
             },
             child: Column(
               children: [
-                MyAvatar(),
+                MyAvatar(
+                  darkIfEmpty: true,
+                ),
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 8),
                   child: Text('Change Profile Photo'),
