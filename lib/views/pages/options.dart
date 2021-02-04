@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:lloud_mobile/routes.dart';
@@ -18,12 +20,13 @@ class OptionsPage extends StatelessWidget {
   }
 
   Future<void> logout(BuildContext context) async {
-    // Navigator.pushReplacementNamed(context, Routes.login);
+    await Purchases.reset();
+    final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    await audioPlayer.stop();
+    await audioPlayer.dispose();
+
     Navigator.popUntil(context, ModalRoute.withName(Routes.home));
     await Provider.of<Auth>(context, listen: false).logout();
-
-    // await Purchases.reset();
-    // await Provider.of<SongPlayer>(context, listen: false).stopSong();
   }
 
   Widget successSnackBar(String message) {
