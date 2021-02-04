@@ -73,7 +73,7 @@ class AudioPlayer with ChangeNotifier {
     isPlaying = true;
     await reportPlay(); // Report the previous play
 
-    await _player.startPlayerFromTrack(Song.toTrack(song),
+    _player.startPlayerFromTrack(Song.toTrack(song),
         onPaused: (_) => toggle(),
         defaultPauseResume: false,
         onSkipBackward: () => prev(),
