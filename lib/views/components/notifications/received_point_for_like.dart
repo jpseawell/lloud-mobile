@@ -57,21 +57,24 @@ class _ReceivedPointForLikeState extends State<ReceivedPointForLike> {
   }
 
   Future<void> _handleSongNameTap() async {
-    // final url = '${Network.host}/api/v2/songs/${_song["id"]}';
-    // final token = Provider.of<Auth>(context, listen: false).token;
-    // final res = await http.get(url, headers: Network.headers(token: token));
-    // Map<String, dynamic> decodedRes = json.decode(res.body);
+    final url = '${Network.host}/api/v2/songs/${_song["id"]}';
+    final token = Provider.of<Auth>(context, listen: false).token;
+    final res = await http.get(url, headers: Network.headers(token: token));
+    Map<String, dynamic> decodedRes = json.decode(res.body);
 
-    // Song song = Song.fromJson(decodedRes["data"]["song"]);
+    if (decodedRes['status'] != 'success')
+      throw Exception('Error: Song retrieval failed.');
 
-    // final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
-    // final sourceKey = 'song:${song.id}';
-    // if (!audioPlayer.isSourcedFrom(sourceKey)) {
-    //   audioPlayer.setPlaylistFromNewSource(sourceKey, [song]);
-    // }
-    // await audioPlayer.togglePlay(song);
+    Song song = Song.fromJson(decodedRes["data"]["song"]);
 
-    // Navigator.pushNamed(context, Routes.audio_player);
+    final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    final sourceKey = 'song:${song.id}';
+    if (!audioPlayer.isSourcedFrom(sourceKey)) {
+      audioPlayer.loadPlaylistFromSource(sourceKey, [song]);
+    }
+    await audioPlayer.playOrPause(song);
+
+    Navigator.pushNamed(context, Routes.audio_player);
   }
 
   @override

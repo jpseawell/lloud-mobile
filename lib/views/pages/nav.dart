@@ -81,7 +81,7 @@ class _NavPageState extends State<NavPage> {
             if (songLoaded)
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[AudioBar()],
+                children: [AudioBar()],
               ),
           ],
         ),

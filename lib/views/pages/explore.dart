@@ -18,7 +18,7 @@ class _ExplorePageState extends State<ExplorePage> {
     final isSearching = Provider.of<Search>(context).isSearching;
     return Scaffold(
       backgroundColor: LloudTheme.white2,
-      resizeToAvoidBottomInset: true,
+      // resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Container(
           child: Column(children: [
