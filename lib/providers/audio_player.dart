@@ -50,8 +50,6 @@ class AudioPlayer with ChangeNotifier {
       withUI: true,
       focus: AudioFocus.requestFocusAndStopOthers,
       category: SessionCategory.playback,
-      mode: SessionMode.modeMeasurement,
-      device: AudioDevice.speaker,
       audioFlags: outputToSpeaker | allowBlueToothA2DP | allowAirPlay,
     )
         .then((_) {

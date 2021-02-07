@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 
@@ -61,7 +63,6 @@ class Song {
         albumArtUrl: song.imageUrl,
         trackAuthor: song.artistName,
         trackTitle: song.title,
-        trackPath: song.audioUrl,
-        codec: Codec.mp3);
+        trackPath: song.audioUrl);
   }
 }
