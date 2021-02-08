@@ -68,8 +68,6 @@ class _ArtistPageState extends State<ArtistPage> {
     final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
     final sourceKey = getSourceKey();
     if (!audioPlayer.isSourcedFrom(sourceKey)) {
-      await audioPlayer.stop();
-      audioPlayer.clearCurrentSong();
       audioPlayer.loadPlaylistFromSource(sourceKey, _songs);
     }
     await audioPlayer.playOrPause(song);

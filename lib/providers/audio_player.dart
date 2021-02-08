@@ -1,90 +1,60 @@
-import 'dart:async';
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:audiofileplayer/audio_system.dart';
+import 'package:audiofileplayer/audiofileplayer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/services/error_reporting.dart';
+import 'package:lloud_mobile/util/helpers.dart';
 import 'package:lloud_mobile/util/network.dart';
 
 class AudioPlayer with ChangeNotifier {
-  final FlutterSoundPlayer _player = FlutterSoundPlayer();
-  final StreamController<PlaybackDisposition> _localController =
-      StreamController<PlaybackDisposition>.broadcast();
+  final AudioSystem _system = AudioSystem.instance;
 
+  Audio _player;
   List<Song> _songs = [];
   int _index;
   Song _currentSong;
   String _source;
+  bool _isLoading = false;
   bool _isPlaying = false;
+  double _durationSeconds;
+  double _positionSeconds = 0;
+
   String authToken;
 
-  FlutterSoundPlayer get player => _player;
   String get source => _source;
+  bool get isLoading => _isLoading;
+  bool get isPlaying => _isPlaying;
   Song get currentSong => _currentSong;
   int get currentSongId => _currentSong == null ? null : _currentSong.id;
-  bool get isPlaying => _isPlaying;
-  StreamController<PlaybackDisposition> get streamController =>
-      _localController;
+  double get durationSeconds => _durationSeconds;
+  double get positionSeconds => _positionSeconds;
 
-  set index(int i) {
-    _index = i;
+  set isLoading(bool val) {
+    _isLoading = val;
     notifyListeners();
   }
 
-  set currentSong(Song s) {
-    _currentSong = s;
+  set isPlaying(bool val) {
+    _isPlaying = val;
     notifyListeners();
   }
 
-  set isPlaying(bool b) {
-    _isPlaying = b;
+  set durationSeconds(double val) {
+    _durationSeconds = val;
     notifyListeners();
   }
 
-  Future<void> init() async {
-    await _player
-        .openAudioSession(
-      withUI: true,
-      focus: AudioFocus.requestFocusAndStopOthers,
-      category: SessionCategory.playback,
-      audioFlags: outputToSpeaker | allowBlueToothA2DP | allowAirPlay,
-    )
-        .then((_) {
-      _player.dispositionStream().listen(_localController.add);
-      _player.setSubscriptionDuration(Duration(milliseconds: 100));
-    });
+  set positionSeconds(double val) {
+    _positionSeconds = val;
+    notifyListeners();
   }
 
-  Future<void> dispose() async {
-    try {
-      _player.closeAudioSession();
-    } catch (err, stack) {
-      ErrorReportingService.report(err, stackTrace: stack);
-    }
-  }
-
-  Future<void> play(Song song) async {
-    loadSongOrThrow(song);
-    isPlaying = true;
-    await reportPlay(); // Report the previous play
-
-    _player.startPlayerFromTrack(Song.toTrack(song),
-        onPaused: (_) => toggle(),
-        defaultPauseResume: false,
-        onSkipBackward: () => prev(),
-        onSkipForward: () => next(),
-        whenFinished: () {
-          reportPlay();
-          next();
-        });
-  }
-
-  Future<void> resume() async {
-    isPlaying = true;
-    await _player.resumePlayer();
+  Future<void> seek(double pos) async {
+    await _player.seek(pos);
   }
 
   Future<void> playOrPause(Song song) async {
@@ -96,18 +66,40 @@ class AudioPlayer with ChangeNotifier {
     await play(song);
   }
 
-  Future<void> stop() async {
-    isPlaying = false;
-    await _player.stopPlayer();
+  Future<void> play(Song song) async {
+    if (_player != null) await stop();
+
+    findAndSetIndex(song);
+    load(song);
+    isPlaying = true;
+    _player.resume(); // Intentionally calling resume instead of play
+  }
+
+  Future<void> resume() async {
+    isPlaying = true;
+    await _player.resume();
   }
 
   Future<void> pause() async {
     isPlaying = false;
-    await _player.pausePlayer();
+    await _player.pause();
   }
 
   Future<void> toggle() async {
     isPlaying ? await pause() : await resume();
+  }
+
+  Future<void> stop() async {
+    isPlaying = false;
+
+    try {
+      await reportPlay();
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
+    }
+
+    await _player.pause();
+    await _player.dispose();
   }
 
   Future<void> next() async {
@@ -130,48 +122,146 @@ class AudioPlayer with ChangeNotifier {
     await play(_songs[prevIndex]);
   }
 
-  int indexOfSong(Song song) =>
-      _songs.indexWhere((_song) => _song.id == song.id);
-
-  void loadSongOrThrow(Song song) {
-    final newIndex = indexOfSong(song);
-
-    if (newIndex == -1)
+  void findAndSetIndex(Song song) {
+    final index = indexOfSong(song);
+    if (index == -1)
       throw Exception('Error: Requested song not found in songs list.');
-
-    _index = newIndex;
-    _currentSong = song;
+    _index = index;
     notifyListeners();
   }
 
-  void clearCurrentSong() {
-    _index = null;
+  int indexOfSong(Song song) => _songs.indexWhere((s) => s.id == song.id);
+
+  void clear() {
+    isLoading = false;
+    isPlaying = false;
     _currentSong = null;
-    notifyListeners();
+    _index = null;
+    durationSeconds = null;
+    positionSeconds = 0;
   }
 
-  void loadPlaylistFromSource(String source, List<Song> songs) {
-    _source = source;
-    _songs = songs;
-    notifyListeners();
+  void load(Song song) {
+    isLoading = true;
+    _currentSong = song;
+    _player = Audio.loadFromRemoteUrl(song.audioUrl,
+        looping: true,
+        playInBackground: true,
+        onDuration: (double dur) {
+          _handleSongLoad(song);
+          durationSeconds = dur;
+        },
+        onPosition: (double pos) => positionSeconds = pos,
+        onComplete: () => _handleSongComplete(),
+        onError: (String message) => _handleSongLoadError(message));
   }
 
-  bool isSourcedFrom(String source) => source == _source;
+  Future<void> _handleSongLoad(Song song) async {
+    isLoading = false;
+    _system.setMetadata(await getMetaData(song));
+  }
+
+  void _handleSongComplete() {
+    next();
+  }
 
   Future<void> reportPlay() async {
-    if (!_player.isPlaying) return;
+    final playback = Duration(seconds: positionSeconds.round());
+    if (playback == Duration.zero) return;
 
-    final playback =
-        await _localController.stream.firstWhere((packet) => packet != null);
+    if (authToken == null)
+      throw Exception('Error: No auth token found when reporting audio play');
 
     final url = '${Network.host}/api/v2/plays';
     final playData = {
       'song_id': currentSongId,
-      'duration': playback.position.toString().substring(0, 8)
+      'duration': playback.toString().substring(0, 8)
     };
     final res = await http.post(url,
         headers: Network.headers(token: authToken),
         body: json.encode(playData));
     Map<String, dynamic> decodedRes = json.decode(res.body);
+  }
+
+  void _handleSongLoadError(String message) {
+    _index = null;
+    _currentSong = null;
+    _isPlaying = false;
+    _isLoading = false;
+
+    _player.dispose();
+    _player = null;
+    notifyListeners();
+
+    ErrorReportingService.report(Exception(message));
+  }
+
+  Future<AudioMetadata> getMetaData(Song song) async {
+    final albumArt = await Helpers.getBytesFromNetworkImg(song.imageUrl);
+    return AudioMetadata(
+        id: '${song.id}',
+        title: song.title,
+        artist: song.artistName,
+        artBytes: albumArt,
+        durationSeconds: durationSeconds);
+  }
+
+  void _mediaEventListener(MediaEvent event) {
+    final MediaActionType type = event.type;
+
+    switch (type) {
+      case MediaActionType.play:
+        resume();
+        _system.setPlaybackState(true, event.seekToPositionSeconds);
+        break;
+      case MediaActionType.playPause:
+        pause();
+        _system.setPlaybackState(false, event.seekToPositionSeconds);
+        break;
+      case MediaActionType.next:
+        next();
+        _system.setPlaybackState(true, event.seekToPositionSeconds);
+        break;
+      case MediaActionType.previous:
+        prev();
+        _system.setPlaybackState(true, event.seekToPositionSeconds);
+        break;
+      case MediaActionType.seekTo:
+        seek(event.seekToPositionSeconds);
+        _system.setPlaybackState(true, event.seekToPositionSeconds);
+        break;
+      default:
+        ErrorReportingService.report(
+            Exception('Error: Unknown MediaActionType emitted'));
+    }
+  }
+
+  void init() {
+    _system.setIosAudioCategory(IosAudioCategory.playback);
+    _system.addMediaEventListener(_mediaEventListener);
+
+    _system.setSupportedMediaActions(<MediaActionType>{
+      MediaActionType.playPause,
+      MediaActionType.play,
+      MediaActionType.next,
+      MediaActionType.previous,
+      MediaActionType.seekTo,
+    });
+  }
+
+  void dispose() {
+    _system.removeMediaEventListener(_mediaEventListener);
+    clear();
+    if (_player != null) {
+      _player.dispose();
+    }
+  }
+
+  bool isSourcedFrom(String source) => source == _source;
+
+  void loadPlaylistFromSource(String source, List<Song> songs) {
+    _source = source;
+    _songs = songs;
+    notifyListeners();
   }
 }

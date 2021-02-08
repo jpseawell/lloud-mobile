@@ -97,8 +97,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Future<void> handlePlay(Song song) async {
     final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
     if (!audioPlayer.isSourcedFrom(_sourceKey)) {
-      await audioPlayer.stop();
-      audioPlayer.clearCurrentSong();
       audioPlayer.loadPlaylistFromSource(
           _sourceKey, Song.fromPortfolioItemList(_likes));
     }

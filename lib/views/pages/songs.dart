@@ -110,8 +110,6 @@ class _SongsPageState extends State<SongsPage> {
   Future<void> handlePlay(Song song) async {
     final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
     if (!audioPlayer.isSourcedFrom(_sourceKey)) {
-      await audioPlayer.stop();
-      audioPlayer.clearCurrentSong();
       audioPlayer.loadPlaylistFromSource(_sourceKey, _songs);
     }
     await audioPlayer.playOrPause(song);

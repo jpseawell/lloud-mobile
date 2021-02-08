@@ -1,4 +1,6 @@
 PODS:
+  - audiofileplayer (0.0.1):
+    - Flutter
   - Firebase/CoreOnly (6.33.0):
     - FirebaseCore (= 6.10.3)
   - Firebase/Messaging (6.33.0):
@@ -48,10 +50,6 @@ PODS:
     - PureLayout
   - flutter_secure_storage (3.3.1):
     - Flutter
-  - "flutter_sound (7.5.3+1)":
-    - Flutter
-    - mobile-ffmpeg-audio (= 4.3.1.LTS)
-    - "tau_sound_core (= 7.5.3+1)"
   - Google-Mobile-Ads-SDK (7.67.0):
     - GoogleAppMeasurement (~> 6.0)
     - GoogleUserMessagingPlatform (~> 1.1)
@@ -85,15 +83,12 @@ PODS:
     - GoogleUtilities/Logger
   - image_picker (0.0.1):
     - Flutter
-  - mobile-ffmpeg-audio (4.3.1.LTS)
   - nanopb (1.30906.0):
     - nanopb/decode (= 1.30906.0)
     - nanopb/encode (= 1.30906.0)
   - nanopb/decode (1.30906.0)
   - nanopb/encode (1.30906.0)
   - package_info (0.0.1):
-    - Flutter
-  - path_provider (0.0.1):
     - Flutter
   - PromisesObjC (1.2.11)
   - Protobuf (3.13.0)
@@ -112,21 +107,19 @@ PODS:
   - sentry_flutter (0.0.1):
     - Flutter
     - Sentry (~> 6.1.4)
-  - "tau_sound_core (7.5.3+1)"
   - url_launcher (0.0.1):
     - Flutter
 
 DEPENDENCIES:
+  - audiofileplayer (from `.symlinks/plugins/audiofileplayer/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_apns (from `.symlinks/plugins/flutter_apns/ios`)
   - flutter_native_admob (from `.symlinks/plugins/flutter_native_admob/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
-  - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
-  - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
@@ -144,7 +137,6 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUserMessagingPlatform
     - GoogleUtilities
-    - mobile-ffmpeg-audio
     - nanopb
     - PromisesObjC
     - Protobuf
@@ -153,9 +145,10 @@ SPEC REPOS:
     - PurchasesHybridCommon
     - PureLayout
     - Sentry
-    - tau_sound_core
 
 EXTERNAL SOURCES:
+  audiofileplayer:
+    :path: ".symlinks/plugins/audiofileplayer/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_messaging:
@@ -168,14 +161,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_native_admob/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
-  flutter_sound:
-    :path: ".symlinks/plugins/flutter_sound/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
-  path_provider:
-    :path: ".symlinks/plugins/path_provider/ios"
   purchases_flutter:
     :path: ".symlinks/plugins/purchases_flutter/ios"
   sentry_flutter:
@@ -184,6 +173,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
+  audiofileplayer: 4aaff759a721ec3a850a682e0d9ec554e5f9e86f
   Firebase: 8db6f2d1b2c5e2984efba4949a145875a8f65fe5
   firebase_core: 5d6a02f3d85acd5f8321c2d6d62877626a670659
   firebase_messaging: 0aea2cd5885b65e19ede58ee3507f485c992cc75
@@ -196,17 +186,14 @@ SPEC CHECKSUMS:
   flutter_apns: ddc629f26016140bf52165040b0a8e8869f9ce32
   flutter_native_admob: 384f39f8b8dc0a96624c7cfa4cd255205e7c3da5
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
-  flutter_sound: 8e5c39a5017856de02a2a5fe71361c7a76258a4e
   Google-Mobile-Ads-SDK: 8b58584890539de4527c47ef01e4da941a10bc8a
   GoogleAppMeasurement: a6a3a066369828db64eda428cb2856dc1cdc7c4e
   GoogleDataTransport: f56af7caa4ed338dc8e138a5d7c5973e66440833
   GoogleUserMessagingPlatform: b168e8c46cd8f92aa3e34b584c4ca78a411ce367
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
-  mobile-ffmpeg-audio: adc36047b8032bc0f8e5c4e6ab7cb110189d9b37
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
-  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
   Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
   Purchases: 7ebce9418bc16732c3c3bb4b6ff7e7e397de024e
@@ -216,7 +203,6 @@ SPEC CHECKSUMS:
   PureLayout: bd3c4ec3a3819ad387c99ebb72c6b129c3ed4d2d
   Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
   sentry_flutter: 8b2b2e1c0101ef562106b5d272d3c0c741512c01
-  tau_sound_core: d6dad8fc83230965615e53717711e0550a642702
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
 
 PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea

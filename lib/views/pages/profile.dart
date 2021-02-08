@@ -103,8 +103,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
     final sourceKey = getSourceKey();
     if (!audioPlayer.isSourcedFrom(sourceKey)) {
-      await audioPlayer.stop();
-      audioPlayer.clearCurrentSong();
       audioPlayer.loadPlaylistFromSource(
           sourceKey, Song.fromPortfolioItemList(_likes));
     }

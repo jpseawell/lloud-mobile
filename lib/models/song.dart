@@ -1,7 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter/material.dart';
 
 import 'package:lloud_mobile/models/portfolio_item.dart';
 
@@ -56,13 +54,5 @@ class Song {
       songs.add(item.song);
     });
     return songs;
-  }
-
-  static Track toTrack(Song song) {
-    return Track(
-        albumArtUrl: song.imageUrl,
-        trackAuthor: song.artistName,
-        trackTitle: song.title,
-        trackPath: song.audioUrl);
   }
 }

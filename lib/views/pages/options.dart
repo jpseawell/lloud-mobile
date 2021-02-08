@@ -22,6 +22,7 @@ class OptionsPage extends StatelessWidget {
   Future<void> logout(BuildContext context) async {
     await Purchases.reset();
     final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
+    audioPlayer.clear();
     await audioPlayer.stop();
 
     Navigator.popUntil(context, ModalRoute.withName(Routes.home));

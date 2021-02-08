@@ -56,9 +56,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    super.initState();
     initPaymentPlatform();
     _audioPlayerProvider.init();
-    super.initState();
   }
 
   @override
