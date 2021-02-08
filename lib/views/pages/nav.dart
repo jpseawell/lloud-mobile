@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:lloud_mobile/providers/likes.dart';
 import 'package:lloud_mobile/providers/loading.dart';
 import 'package:lloud_mobile/views/components/loading_screen.dart';
-import 'package:provider/provider.dart';
-
 import 'package:lloud_mobile/providers/apn.dart';
 import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:lloud_mobile/providers/auth.dart';
@@ -48,11 +48,9 @@ class _NavPageState extends State<NavPage> {
     if (pageIndex != null) {
       _selectedPageIndex = pageIndex;
     }
-    final authProvider = Provider.of<Auth>(context, listen: false);
-    authProvider.fetchAndSetAccount(authProvider.token);
 
+    Provider.of<Auth>(context, listen: false).fetchAndSetAccount();
     Provider.of<Apn>(context, listen: false);
-    Provider.of<Likes>(context, listen: false);
 
     super.initState();
   }

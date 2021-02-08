@@ -18,7 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController password = TextEditingController();
 
   Future<void> login(BuildContext context) async {
-    // TODO: Post login activity
     try {
       final authProvider = Provider.of<Auth>(context, listen: false);
       await authProvider

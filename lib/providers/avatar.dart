@@ -5,14 +5,29 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 import 'package:lloud_mobile/models/image_file.dart';
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/util/network.dart';
 
 class Avatar with ChangeNotifier {
   ImageFile image;
-  final String authToken;
-  final int userId;
+  String authToken;
+  int userId;
 
   Avatar(this.authToken, this.userId);
+
+  Avatar update(Auth auth) {
+    authToken = auth.token;
+    userId = auth.userId;
+
+    (authToken == null) ? clear() : fetchAndSetImage();
+
+    return this;
+  }
+
+  void clear() {
+    image = null;
+    notifyListeners();
+  }
 
   Future<void> fetchAndSetImage() async {
     final url = '${Network.host}/api/v2/user/$userId/image-files';
@@ -20,7 +35,10 @@ class Avatar with ChangeNotifier {
     Map<String, dynamic> decodedRes = json.decode(res.body);
 
     if (res.statusCode != 200) {
-      throw Exception('Fetch profile image failed.');
+      image = ImageFile.empty();
+      notifyListeners();
+      return;
+      // throw Exception('Fetch profile image failed.');
     }
 
     image = decodedRes['data']['imageFile'] == null

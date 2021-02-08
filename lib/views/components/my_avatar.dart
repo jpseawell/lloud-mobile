@@ -26,12 +26,14 @@ class _MyAvatarState extends State<MyAvatar> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<Auth>(context);
     return Consumer<Avatar>(builder: (context, avatar, _) {
-      if (avatar.image == null) return PlaceholderAvatar(radius: widget.radius);
+      if (avatar.image == null || !authProvider.isAuth)
+        return PlaceholderAvatar(radius: widget.radius);
 
       if (avatar.image.location.isEmpty) {
         return EmptyAvatar(
-          initial: Provider.of<Auth>(context).user.userName.substring(0, 1),
+          initial: authProvider.user.userName.substring(0, 1),
           radius: widget.radius,
           isDark: widget.darkIfEmpty,
         );

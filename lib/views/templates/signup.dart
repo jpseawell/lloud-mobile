@@ -24,7 +24,7 @@ class SignupTemplate extends StatelessWidget {
                 children: <Widget>[H1(title)],
               )),
           Expanded(
-              flex: 1,
+              flex: 2,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: content,

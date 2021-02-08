@@ -79,19 +79,14 @@ class _MyAppState extends State<MyApp> {
                 storeItems == null ? StoreItems(auth.token) : storeItems),
         ChangeNotifierProxyProvider<Auth, Likes>(
             create: null,
-            update: (context, auth, likes) {
-              if (likes == null) {
-                final likes = Likes(auth.token, auth.userId);
-                likes.fetchAndSetLikes();
-                return likes;
-              }
-
-              return likes;
-            }),
+            update: (context, auth, likes) => likes == null
+                ? Likes(auth.token, auth.userId)
+                : likes.update(auth)),
         ChangeNotifierProxyProvider<Auth, Avatar>(
             create: null,
-            update: (context, auth, avatar) =>
-                avatar == null ? Avatar(auth.token, auth.userId) : avatar),
+            update: (context, auth, avatar) => avatar == null
+                ? Avatar(auth.token, auth.userId)
+                : avatar.update(auth)),
         ChangeNotifierProxyProvider<Auth, Search>(
             create: null,
             update: (context, auth, search) =>

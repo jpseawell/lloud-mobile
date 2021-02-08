@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lloud_mobile/providers/products.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import 'package:lloud_mobile/providers/products.dart';
+import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/providers/loading.dart';
 import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -49,6 +50,8 @@ class _InlineBuyBtnState extends State<InlineBuyBtn> {
       } else if (errorCode == PurchasesErrorCode.purchaseNotAllowedError) {
         print("User not allowed to purchase");
       }
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
     }
     loadingProvider.loading = false;
   }

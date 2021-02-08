@@ -11,7 +11,7 @@ class BaseTemplate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: this.backgroundColor ?? LloudTheme.white,
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       body: SafeArea(child: child),
     );
   }

@@ -129,7 +129,7 @@ class _LikeButtonState extends State<LikeButton> {
       return;
     }
 
-    await authProvider.fetchAndSetAccount(authProvider.token);
+    await authProvider.fetchAndSetAccount();
 
     _showSongLikedDialog(context);
 

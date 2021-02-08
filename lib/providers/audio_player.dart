@@ -90,6 +90,8 @@ class AudioPlayer with ChangeNotifier {
   }
 
   Future<void> stop() async {
+    if (_player == null) return;
+
     isPlaying = false;
 
     try {

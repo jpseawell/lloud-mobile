@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/services/likes_service.dart';
 
@@ -7,8 +8,8 @@ import 'package:lloud_mobile/services/likes_service.dart';
 /// about the history of likes of the authenticated user.
 /// (rather than fetching/updating the likes resource in general)
 class Likes with ChangeNotifier {
-  final String authToken;
-  final int userId;
+  String authToken;
+  int userId;
 
   Likes(this.authToken, this.userId);
 
@@ -17,6 +18,23 @@ class Likes with ChangeNotifier {
 
   List<int> get likedSongIds => [..._likedSongIds];
   int get totalPoints => _totalPoints;
+
+  Likes update(Auth auth) {
+    authToken = auth.token;
+    userId = auth.userId;
+
+    (authToken == null || userId == null || userId == 0)
+        ? clear()
+        : fetchAndSetLikes();
+
+    return this;
+  }
+
+  void clear() {
+    _likedSongIds = [];
+    _totalPoints = 0;
+    notifyListeners();
+  }
 
   Future<void> fetchAndSetLikes() async {
     Map<String, dynamic> profile;

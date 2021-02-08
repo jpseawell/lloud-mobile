@@ -11,98 +11,49 @@ import 'package:lloud_mobile/util/network.dart';
 
 class Auth with ChangeNotifier {
   static final _storage = FlutterSecureStorage();
+  static final _storedDataKey = 'lloud_auth_data';
 
   String _token;
   DateTime _expiryDate;
-  int _userId;
-  int _accountId;
   User _user = User.empty();
   Account _account = Account.empty();
 
-  int get userId => _userId;
-  int get accountId => _accountId;
+  int get userId => _user.id;
+  int get accountId => _account.id;
   User get user => _user;
   Account get account => _account;
 
-  bool get isAuth {
-    return token != null && _user != null && _account != null;
-  }
-
+  // TODO: Test this logic!
   String get token {
     if (_expiryDate != null &&
         _expiryDate.isAfter(DateTime.now()) &&
         _token != null) {
       return _token;
     }
+
     return null;
   }
 
-  Future<void> _authenticate(
-      Map<String, dynamic> credentials, String route) async {
-    final url = '${Network.host}/api/v2/$route';
-    final res = await http.post(url,
-        headers: Network.headers(), body: json.encode(credentials));
-    Map<String, dynamic> decodedResponse = json.decode(res.body);
-
-    if (decodedResponse['status'] != 'success' &&
-        decodedResponse['type'] != 'bearer')
-      throw Exception('User authentication failed.');
-
-    _token = route == 'register'
-        ? res.headers['x-auth-token']
-        : decodedResponse['token']; // TODO: Ensure token is valid
-
-    try {
-      await Future.wait([
-        _extractAndSetTokenData(token),
-        fetchAndSetUser(token),
-        fetchAndSetAccount(token)
-      ]);
-
-      await Future.wait(
-          [_storeTokenData(), _storeUserData(), _storeAccountData()]);
-    } catch (err, stack) {
-      await ErrorReportingService.report(err, stackTrace: stack);
-    }
+  bool get isAuth {
+    return token != null && _user != null && _account != null;
   }
 
-  Future<void> _extractAndSetTokenData(String token) async {
-    Map<String, dynamic> parsedToken = Jwt.parse(_token);
-    _expiryDate =
-        new DateTime.fromMillisecondsSinceEpoch(parsedToken['exp'] * 1000);
-    notifyListeners();
-  }
-
-  Future<void> _storeTokenData() async {
-    final storedTokenData = json.encode({
-      'token': _token,
-      'userId': _userId,
-      'accountId': _accountId,
-      'expiryDate': _expiryDate.toIso8601String()
-    });
-
-    await _storage.write(key: 'tokenData', value: storedTokenData);
-  }
-
-  Future<void> fetchAndSetUser(String token) async {
+  Future<User> _fetchMe(String authToken) async {
     const url = '${Network.host}/api/v2/me';
-    final res = await http.get(url, headers: Network.headers(token: token));
+    final res = await http.get(url, headers: Network.headers(token: authToken));
     Map<String, dynamic> decodedRes = json.decode(res.body);
 
     if (res.statusCode != 200) {
       throw Exception('Could not retrieve user.');
     }
 
-    print(decodedRes['data']);
-    _user = User.fromJson(decodedRes['data']);
-    _userId = _user.id;
-    notifyListeners();
+    return User.fromJson(decodedRes['data']);
   }
 
-  Future<List<dynamic>> updateUser(User user) async {
+  Future<List<dynamic>> updateUser(User updatedUser) async {
     final url = '${Network.host}/api/v2/users/$userId';
     final res = await http.patch(url,
-        body: json.encode(User.toMap(user)),
+        body: json.encode(User.toMap(updatedUser)),
         headers: Network.headers(token: token));
 
     if (res.statusCode == 401) throw Exception('Failed to update user.');
@@ -115,35 +66,35 @@ class Auth with ChangeNotifier {
 
     _user = User.fromJson(decodedRes['data']);
     notifyListeners();
-    _storeUserData();
 
+    _storeData();
+
+    // TODO: Fix results on error
     return [];
   }
 
-  Future<void> _storeUserData() async {
-    await _storage.write(
-        key: 'userData', value: json.encode(User.toMap(_user)));
-  }
-
-  Future<void> fetchAndSetAccount(String token) async {
+  Future<Account> _fetchMyAccount(String authToken) async {
     const url = '${Network.host}/api/v2/accounts/me';
-    final res = await http.get(url, headers: Network.headers(token: token));
+    final res = await http.get(url, headers: Network.headers(token: authToken));
     Map<String, dynamic> decodedRes = json.decode(res.body);
 
     if (!decodedRes['success']) {
       throw Exception('Fetch account failed.');
     }
 
-    _account = Account.fromJson(decodedRes['data']);
-    _accountId = _account.id;
+    return Account.fromJson(decodedRes['data']);
+  }
+
+  Future<void> fetchAndSetAccount() async {
+    _account = await _fetchMyAccount(_token);
     notifyListeners();
   }
 
-  Future<void> updateAccount(Account account) async {
+  Future<void> updateAccount(Account updatedAccount) async {
     final url = '${Network.host}/api/v2/accounts/$accountId';
     final res = await http.put(url,
-        body: json.encode(Account.toMap(account)),
-        headers: Network.headers(token: token));
+        body: json.encode(Account.toMap(updatedAccount)),
+        headers: Network.headers(token: _token));
 
     if (res.statusCode != 200) throw Exception('Failed to update account.');
 
@@ -151,75 +102,101 @@ class Auth with ChangeNotifier {
 
     _account = Account.fromJson(decodedRes['data']);
     notifyListeners();
-    _storeAccountData();
-  }
 
-  Future<void> _storeAccountData() async {
-    await _storage.write(
-        key: 'accountData', value: json.encode(Account.toMap(_account)));
-  }
-
-  Future<void> signup(Map<String, dynamic> userData) async {
-    return _authenticate(userData, 'register');
-  }
-
-  Future<void> login(Map<String, dynamic> userData) async {
-    return _authenticate(userData, 'login');
+    _storeData();
   }
 
   Future<void> logout() async {
     _token = null;
-    _userId = null;
-    _accountId = null;
     _expiryDate = null;
     _user = User.empty();
     _account = Account.empty();
-    await _clearStoredData();
     notifyListeners();
+    _clearStoredData();
   }
 
-  Future<void> _clearStoredData() {
-    return Future.wait([
-      _storage.delete(key: 'tokenData'),
-      _storage.delete(key: 'userData'),
-      _storage.delete(key: 'accountData')
-    ]);
+  Future<void> signup(Map<String, dynamic> credentials) async {
+    final url = '${Network.host}/api/v2/register';
+    final res = await http.post(url,
+        headers: Network.headers(), body: json.encode(credentials));
+
+    if (res.statusCode != 201) throw Exception('User registration failed.');
+
+    _initFromToken(res.headers['x-auth-token']);
+  }
+
+  Future<void> login(Map<String, dynamic> credentials) async {
+    final url = '${Network.host}/api/v2/login';
+    final res = await http.post(url,
+        headers: Network.headers(), body: json.encode(credentials));
+
+    if (res.statusCode != 200) throw Exception('User authentication failed.');
+
+    Map<String, dynamic> decodedResponse = json.decode(res.body);
+
+    _initFromToken(decodedResponse['token']);
+  }
+
+  Future<void> _initFromToken(String authToken) async {
+    _token = authToken;
+
+    Map<String, dynamic> parsedToken = Jwt.parse(authToken);
+    _expiryDate =
+        DateTime.fromMillisecondsSinceEpoch(parsedToken['exp'] * 1000);
+
+    try {
+      _user = await _fetchMe(authToken);
+      _account = await _fetchMyAccount(authToken);
+    } catch (err, stack) {
+      ErrorReportingService.report(err, stackTrace: stack);
+      return;
+    }
+
+    notifyListeners(); // Only notify listeners after ALL the data is loaded
+    _storeData();
+  }
+
+  Future<void> _storeData() async {
+    final storedData = json.encode({
+      'token': _token,
+      'expiryDate': _expiryDate.toIso8601String(),
+      'user': User.toMap(_user),
+      'account': Account.toMap(_account)
+    });
+
+    await _storage.write(key: _storedDataKey, value: storedData);
+  }
+
+  void _clearStoredData() {
+    _storage.delete(key: _storedDataKey);
+  }
+
+  Future<Map<String, dynamic>> _extractStoredData() async {
+    final extractedData = await _storage.read(key: _storedDataKey);
+    if (extractedData == null) return null;
+
+    final decodedData = json.decode(extractedData);
+
+    return {
+      'token': decodedData['token'],
+      'expiryDate': DateTime.parse(decodedData['expiryDate']),
+      'user': User.fromJson(decodedData['user']),
+      'account': Account.fromJson(decodedData['account']),
+    };
   }
 
   Future<bool> tryAutoLogin() async {
-    final tokenData = await _storage.read(key: 'tokenData');
-    if (tokenData == null) {
-      return false;
-    }
+    final extractedData = await _extractStoredData();
+    if (extractedData == null) return false;
 
-    final extractedTokenData = json.decode(tokenData) as Map<String, Object>;
-    final expiryDate = DateTime.parse(extractedTokenData['expiryDate']);
+    _expiryDate = extractedData['expiryDate'];
+    if (_expiryDate.isBefore(DateTime.now())) return false;
 
-    if (expiryDate.isBefore(DateTime.now())) {
-      return false;
-    }
-
-    _token = extractedTokenData['token'];
-    _userId = extractedTokenData['userId'];
-    _accountId = extractedTokenData['accountId'];
-    _expiryDate = expiryDate;
-
-    final userData = await _storage.read(key: 'userData');
-    if (userData == null) {
-      return false;
-    }
-
-    _user = User.fromJson(json.decode(userData));
-
-    final accountData = await _storage.read(key: 'accountData');
-    if (accountData == null) {
-      return false;
-    }
-
-    _account = Account.fromJson(json.decode(accountData));
+    _token = extractedData['token'];
+    _user = extractedData['user'];
+    _account = extractedData['account'];
 
     notifyListeners();
-
     return true;
   }
 }
