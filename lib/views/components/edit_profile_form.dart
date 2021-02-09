@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -117,8 +118,9 @@ class _EditProfileFormState extends State<EditProfileForm> {
 
                                         return Navigator.pop(
                                             context, 'success');
-                                      } catch (err) {
-                                        print('E: ${err.toString()}');
+                                      } catch (err, stack) {
+                                        ErrorReportingService.report(err,
+                                            stackTrace: stack);
                                       }
                                     }
                                   },

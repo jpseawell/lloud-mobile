@@ -56,7 +56,8 @@ class Auth with ChangeNotifier {
         body: json.encode(User.toMap(updatedUser)),
         headers: Network.headers(token: token));
 
-    if (res.statusCode == 401) throw Exception('Failed to update user.');
+    if (![200, 400].contains(res.statusCode))
+      throw Exception('Failed to update user.');
 
     Map<String, dynamic> decodedRes = json.decode(res.body);
 
