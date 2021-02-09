@@ -3,6 +3,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/views/pages/forgot_password_page.dart';
 import 'package:lloud_mobile/providers/likes.dart';
 import 'package:lloud_mobile/providers/products.dart';
 import 'package:lloud_mobile/providers/search.dart';
@@ -180,6 +181,7 @@ class _MyAppState extends State<MyApp> {
               ),
           Routes.edit_profile: (ctx) => EditProfile(),
           Routes.shipping_info: (ctx) => ShippingInfo(),
+          Routes.forgot_password: (ctx) => ForgotPasswordPage(),
         },
         onGenerateRoute: (RouteSettings settings) {
           var routes = <String, WidgetBuilder>{
@@ -187,7 +189,6 @@ class _MyAppState extends State<MyApp> {
             Routes.artist: (ctx) => ArtistPage(settings.arguments),
             Routes.profile: (ctx) => ProfilePage(settings.arguments),
             Routes.store_item: (ctx) => StoreItemPage(settings.arguments),
-            // '/forgot-password': (ctx) => ForgotPasswordPage(),
           };
 
           WidgetBuilder builder = routes[settings.name];
