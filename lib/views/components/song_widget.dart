@@ -19,7 +19,7 @@ class SongWidget extends StatelessWidget {
       child: AspectRatio(
           aspectRatio: 1 / 1,
           child: Card(
-            color: LloudTheme.red,
+            color: LloudTheme.black,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
