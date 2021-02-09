@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 
 import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/models/song.dart';
@@ -12,6 +13,7 @@ import 'package:lloud_mobile/util/network.dart';
 class MoreButton extends StatelessWidget {
   final Song _song;
   final Color color;
+  final String _appUrl = 'https://apps.apple.com/us/app/lloud/id1506399049';
 
   MoreButton(this._song, {this.color});
 
@@ -68,6 +70,26 @@ class MoreButton extends StatelessWidget {
                       await _reportSong(context);
                       Navigator.of(context).pop();
                       _showReportConfirmedDialog(context);
+                    },
+                  )),
+                ]),
+                Divider(
+                  height: 1,
+                ),
+                Row(children: <Widget>[
+                  Expanded(
+                      child: FlatButton(
+                    child: Text(
+                      "Share",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    textColor: LloudTheme.black,
+                    onPressed: () async {
+                      Share.share(
+                          'Go checkout the song ${_song.title} by ${_song.artistName} on Lloud:\n$_appUrl',
+                          subject:
+                              'Checkout ${_song.title} by ${_song.artistName} on Lloud!');
+                      Navigator.of(context).pop();
                     },
                   )),
                 ]),

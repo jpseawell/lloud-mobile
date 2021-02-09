@@ -107,6 +107,8 @@ PODS:
   - sentry_flutter (0.0.1):
     - Flutter
     - Sentry (~> 6.1.4)
+  - share (0.0.1):
+    - Flutter
   - url_launcher (0.0.1):
     - Flutter
 
@@ -122,6 +124,7 @@ DEPENDENCIES:
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
+  - share (from `.symlinks/plugins/share/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
 SPEC REPOS:
@@ -169,6 +172,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/purchases_flutter/ios"
   sentry_flutter:
     :path: ".symlinks/plugins/sentry_flutter/ios"
+  share:
+    :path: ".symlinks/plugins/share/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
 
@@ -203,6 +208,7 @@ SPEC CHECKSUMS:
   PureLayout: bd3c4ec3a3819ad387c99ebb72c6b129c3ed4d2d
   Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
   sentry_flutter: 8b2b2e1c0101ef562106b5d272d3c0c741512c01
+  share: 0b2c3e82132f5888bccca3351c504d0003b3b410
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
 
 PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
