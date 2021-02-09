@@ -19,7 +19,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
   @override
   void initState() {
-    Provider.of<Notifications>(context, listen: false).resetSongs().then((_) {
+    Provider.of<Notifications>(context, listen: false).reset().then((_) {
       setState(() {
         _isFetching = false;
       });

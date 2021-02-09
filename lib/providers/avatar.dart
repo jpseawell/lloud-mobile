@@ -32,7 +32,6 @@ class Avatar with ChangeNotifier {
   Future<void> fetchAndSetImage() async {
     final url = '${Network.host}/api/v2/user/$userId/image-files';
     final res = await http.get(url, headers: Network.headers(token: authToken));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
 
     if (res.statusCode != 200) {
       image = ImageFile.empty();
@@ -40,6 +39,8 @@ class Avatar with ChangeNotifier {
       return;
       // throw Exception('Fetch profile image failed.');
     }
+
+    Map<String, dynamic> decodedRes = json.decode(res.body);
 
     image = decodedRes['data']['imageFile'] == null
         ? ImageFile.empty()

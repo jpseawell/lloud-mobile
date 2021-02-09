@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lloud_mobile/providers/likes.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lloud_mobile/providers/likes.dart';
 import 'package:lloud_mobile/providers/products.dart';
 import 'package:lloud_mobile/providers/search.dart';
 import 'package:lloud_mobile/providers/store_items.dart';
@@ -79,9 +79,15 @@ class _MyAppState extends State<MyApp> {
                 storeItems == null ? StoreItems(auth.token) : storeItems),
         ChangeNotifierProxyProvider<Auth, Likes>(
             create: null,
-            update: (context, auth, likes) => likes == null
-                ? Likes(auth.token, auth.userId)
-                : likes.update(auth)),
+            update: (context, auth, likes) {
+              if (likes == null) {
+                final likesProvider = Likes(auth.token, auth.userId);
+                likesProvider.fetchAndSetLikes();
+                return likesProvider;
+              }
+
+              return likes.update(auth);
+            }),
         ChangeNotifierProxyProvider<Auth, Avatar>(
             create: null,
             update: (context, auth, avatar) => avatar == null
@@ -126,7 +132,7 @@ class _MyAppState extends State<MyApp> {
                 return notifs;
               }
 
-              return notifications;
+              return notifications.update(auth);
             }),
         ChangeNotifierProxyProvider<Auth, AudioPlayer>(
             create: null,

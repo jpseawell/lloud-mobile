@@ -23,9 +23,7 @@ class Likes with ChangeNotifier {
     authToken = auth.token;
     userId = auth.userId;
 
-    (authToken == null || userId == null || userId == 0)
-        ? clear()
-        : fetchAndSetLikes();
+    if (authToken != null) fetchAndSetLikes();
 
     return this;
   }

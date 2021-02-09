@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart' hide Notification;
 import 'package:http/http.dart' as http;
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'package:lloud_mobile/services/error_reporting.dart';
@@ -10,8 +11,8 @@ import 'package:lloud_mobile/models/notification.dart';
 import 'package:lloud_mobile/util/network.dart';
 
 class Notifications with ChangeNotifier {
-  final String authToken;
-  final int userId;
+  String authToken;
+  int userId;
   WebSocketChannel _channel;
   List<Notification> _notifications = [];
   bool _hasUnread = false;
@@ -20,6 +21,21 @@ class Notifications with ChangeNotifier {
 
   bool get hasUnread => _hasUnread;
   List<Notification> get notifications => [..._notifications];
+
+  Notifications update(Auth auth) {
+    authToken = auth.token;
+    userId = auth.userId;
+
+    authToken == null ? clear() : fetchAndSetNotifications();
+
+    return this;
+  }
+
+  void clear() {
+    _notifications = [];
+    _hasUnread = false;
+    notifyListeners();
+  }
 
   Future<void> fetchAndSetNotifications({int page = 1}) async {
     final url = '${Network.host}/api/v2/user/$userId/notifications?page=$page';
@@ -35,7 +51,7 @@ class Notifications with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> resetSongs() async {
+  Future<void> reset() async {
     _notifications = [];
     await fetchAndSetNotifications();
   }
@@ -58,7 +74,6 @@ class Notifications with ChangeNotifier {
       wsClient.handleEvent(event);
       _parseAndSetUnreadNotifications(event);
     }, onDone: () {
-      print('done');
       listenForUnreadNotifications();
     }, onError: (err, stack) {
       ErrorReportingService.report(err, stackTrace: stack);

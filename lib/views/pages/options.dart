@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:lloud_mobile/providers/audio_player.dart';
+import 'package:lloud_mobile/providers/likes.dart';
 import 'package:lloud_mobile/routes.dart';
 import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
@@ -25,6 +26,7 @@ class OptionsPage extends StatelessWidget {
     final audioPlayer = Provider.of<AudioPlayer>(context, listen: false);
     audioPlayer.clear();
     await audioPlayer.stop();
+    Provider.of<Likes>(context, listen: false).clear();
 
     Navigator.popUntil(context, ModalRoute.withName(Routes.home));
     await Provider.of<Auth>(context, listen: false).logout();
