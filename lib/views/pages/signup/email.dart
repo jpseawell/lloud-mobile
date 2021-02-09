@@ -37,7 +37,9 @@ class _EmailPageState extends State<EmailPage> {
           decoration: InputDecoration(
               labelText: 'Email',
               filled: true,
-              errorText: emailIsTaken ? 'This email is already in use' : null),
+              errorText: emailIsTaken
+                  ? 'Account already exists, try login instead'
+                  : null),
           keyboardType: TextInputType.emailAddress,
           onSaved: (String value) {
             return Navigator.pushNamed(context, Routes.signup_username,
