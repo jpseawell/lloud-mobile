@@ -48,8 +48,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final AudioPlayer _audioPlayerProvider = AudioPlayer();
-
   Future<void> initPaymentPlatform() async {
     await Purchases.setDebugLogsEnabled(true);
     await Purchases.setup("XstlTtxLyLvhognmeAZyaVDIDSLQCFMy");
@@ -59,13 +57,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPaymentPlatform();
-    _audioPlayerProvider.init();
-  }
-
-  @override
-  void dispose() {
-    _audioPlayerProvider.dispose();
-    super.dispose();
   }
 
   @override
@@ -139,11 +130,12 @@ class _MyAppState extends State<MyApp> {
             create: null,
             update: (context, auth, audio) {
               if (audio == null) {
-                _audioPlayerProvider.authToken = auth.token;
-                return _audioPlayerProvider;
+                final audioPlayerProvider = AudioPlayer(auth.token);
+                audioPlayerProvider.init();
+                return audioPlayerProvider;
               }
 
-              return audio;
+              return audio.update(auth);
             }),
       ],
       child: MaterialApp(

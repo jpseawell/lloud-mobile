@@ -38,6 +38,8 @@ class _ProfileNavState extends State<ProfileNav> {
       User user = User.fromJson(json.decode(res.body));
       return user;
     }
+
+    return null;
   }
 
   @override

@@ -42,6 +42,8 @@ class _ProfileBarState extends State<ProfileBar> {
     if (res.statusCode == 200) {
       return User.fromJson(decodedResponse);
     }
+
+    return null;
   }
 
   @override

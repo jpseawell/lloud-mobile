@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:lloud_mobile/providers/likes.dart';
 import 'package:lloud_mobile/providers/loading.dart';
 import 'package:lloud_mobile/views/components/loading_screen.dart';
 import 'package:lloud_mobile/providers/apn.dart';
@@ -71,7 +70,6 @@ class _NavPageState extends State<NavPage> {
         appBar: TopNav(),
         body: Stack(
           children: <Widget>[
-            // TODO: See if there's a more natural way to set this up
             Container(
               margin: EdgeInsets.only(bottom: (songLoaded) ? 64 : 0),
               child: _pages[_selectedPageIndex],

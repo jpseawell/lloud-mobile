@@ -49,7 +49,6 @@ class MoreButton extends StatelessWidget {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          // TODO: Replace with LloudDialog
           return AlertDialog(
             contentPadding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:lloud_mobile/models/song.dart';
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/util/helpers.dart';
 import 'package:lloud_mobile/util/network.dart';
@@ -13,6 +14,7 @@ import 'package:lloud_mobile/util/network.dart';
 class AudioPlayer with ChangeNotifier {
   final AudioSystem _system = AudioSystem.instance;
 
+  String _authToken;
   Audio _player;
   List<Song> _songs = [];
   int _index;
@@ -23,7 +25,7 @@ class AudioPlayer with ChangeNotifier {
   double _durationSeconds;
   double _positionSeconds = 0;
 
-  String authToken;
+  AudioPlayer(this._authToken);
 
   String get source => _source;
   bool get isLoading => _isLoading;
@@ -51,6 +53,12 @@ class AudioPlayer with ChangeNotifier {
   set positionSeconds(double val) {
     _positionSeconds = val;
     notifyListeners();
+  }
+
+  AudioPlayer update(Auth auth) {
+    _authToken = auth.token;
+
+    return this;
   }
 
   Future<void> seek(double pos) async {
@@ -171,7 +179,7 @@ class AudioPlayer with ChangeNotifier {
     final playback = Duration(seconds: positionSeconds.round());
     if (playback == Duration.zero) return;
 
-    if (authToken == null)
+    if (_authToken == null)
       throw Exception('Error: No auth token found when reporting audio play');
 
     final url = '${Network.host}/api/v2/plays';
@@ -179,10 +187,9 @@ class AudioPlayer with ChangeNotifier {
       'song_id': currentSongId,
       'duration': playback.toString().substring(0, 8)
     };
-    final res = await http.post(url,
-        headers: Network.headers(token: authToken),
+    await http.post(url,
+        headers: Network.headers(token: _authToken),
         body: json.encode(playData));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
   }
 
   void _handleSongLoadError(String message) {
@@ -251,12 +258,16 @@ class AudioPlayer with ChangeNotifier {
     });
   }
 
+  @override
   void dispose() {
     _system.removeMediaEventListener(_mediaEventListener);
+    _system.stopBackgroundDisplay();
     clear();
     if (_player != null) {
+      _player.pause();
       _player.dispose();
     }
+    super.dispose();
   }
 
   bool isSourcedFrom(String source) => source == _source;

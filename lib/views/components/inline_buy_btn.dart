@@ -20,7 +20,6 @@ class InlineBuyBtn extends StatefulWidget {
 
 class _InlineBuyBtnState extends State<InlineBuyBtn> {
   final String _productKey = 'lloud.likes_refill.10_for_5';
-  Future<Product> _product;
 
   _InlineBuyBtnState();
 
@@ -46,7 +45,6 @@ class _InlineBuyBtnState extends State<InlineBuyBtn> {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);
       if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
         print("User cancelled");
-        // TODO: Post activity
       } else if (errorCode == PurchasesErrorCode.purchaseNotAllowedError) {
         print("User not allowed to purchase");
       }
@@ -93,7 +91,7 @@ class _InlineBuyBtnState extends State<InlineBuyBtn> {
           );
         });
 
-    Timer timer = new Timer(new Duration(milliseconds: 1500), () {
+    Timer(new Duration(milliseconds: 1500), () {
       Navigator.of(context).pop();
     });
   }

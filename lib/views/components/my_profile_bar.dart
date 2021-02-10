@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lloud_mobile/views/components/display_name.dart';
 import 'package:lloud_mobile/views/components/my_avatar.dart';
-import 'package:lloud_mobile/views/components/user_avatar.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/routes.dart';

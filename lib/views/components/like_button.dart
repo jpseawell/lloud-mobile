@@ -207,7 +207,7 @@ class _LikeButtonState extends State<LikeButton> {
           );
         });
 
-    Timer timer = new Timer(new Duration(milliseconds: 1000), () {
+    Timer(new Duration(milliseconds: 1000), () {
       Navigator.of(context).pop();
     });
   }
@@ -234,7 +234,7 @@ class _LikeButtonState extends State<LikeButton> {
           );
         });
 
-    Timer timer = new Timer(new Duration(milliseconds: 1000), () {
+    Timer(new Duration(milliseconds: 1000), () {
       Navigator.of(context).pop();
     });
   }

@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart' hide Notification;
 import 'package:http/http.dart' as http;
-import 'package:lloud_mobile/providers/auth.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/services/error_reporting.dart';
 import 'package:lloud_mobile/util/ws_client.dart';
 import 'package:lloud_mobile/models/notification.dart';
@@ -14,6 +14,7 @@ class Notifications with ChangeNotifier {
   String authToken;
   int userId;
   WebSocketChannel _channel;
+  WsClient _wsClient;
   List<Notification> _notifications = [];
   bool _hasUnread = false;
 
@@ -59,25 +60,31 @@ class Notifications with ChangeNotifier {
   Future<void> markAsSeen(Notification notification) async {
     final url =
         '${Network.host}/api/v2/user/$userId/notifications/${notification.id}/seen';
-    final res = await http.post(url,
+    await http.post(url,
         headers: Network.headers(token: authToken), body: json.encode({}));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
   }
 
   void listenForUnreadNotifications() {
-    final wsClient =
+    _wsClient =
         new WsClient(url: '${Network.wsHost}/adonis-ws/', authToken: authToken);
-    _channel = wsClient.connect();
-    wsClient.join('notifications:$userId');
+    _channel = _wsClient.connect();
+    _wsClient.join('notifications:$userId');
 
     _channel.stream.listen((event) {
-      wsClient.handleEvent(event);
+      _wsClient.handleEvent(event);
       _parseAndSetUnreadNotifications(event);
     }, onDone: () {
       listenForUnreadNotifications();
     }, onError: (err, stack) {
       ErrorReportingService.report(err, stackTrace: stack);
     });
+  }
+
+  @override
+  void dispose() {
+    _wsClient.die();
+    _channel.sink.close();
+    super.dispose();
   }
 
   void _parseAndSetUnreadNotifications(event) {

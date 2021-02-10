@@ -123,7 +123,7 @@ class PortfolioItemWidget extends StatelessWidget {
             ),
           ),
           Text(
-            "${portfolioItem.points_earned}",
+            "${portfolioItem.pointsEarned}",
             style: TextStyle(
               fontSize: 20,
               color: (isPlayingThisSong) ? LloudTheme.white : LloudTheme.black,

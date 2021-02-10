@@ -99,7 +99,6 @@ class SearchResult extends StatelessWidget {
     );
   }
 
-  // TODO: DRY this up with the one in showcase.dart
   Future<void> _handleSongNameTap(BuildContext context, int songId) async {
     final url = '${Network.host}/api/v2/songs/$songId';
     final token = Provider.of<Auth>(context, listen: false).token;

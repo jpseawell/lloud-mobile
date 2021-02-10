@@ -71,10 +71,9 @@ class Apn with ChangeNotifier {
     if (_sent) return;
 
     final url = '${Network.host}/api/v2/user/$userId/apn-tokens';
-    final res = await http.post(url,
+    await http.post(url,
         headers: Network.headers(token: authToken),
         body: json.encode({'token': token}));
-    Map<String, dynamic> decodedRes = json.decode(res.body);
 
     _sent = true;
   }

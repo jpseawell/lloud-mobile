@@ -23,7 +23,6 @@ class Auth with ChangeNotifier {
   User get user => _user;
   Account get account => _account;
 
-  // TODO: Test this logic!
   String get token {
     if (_expiryDate != null &&
         _expiryDate.isAfter(DateTime.now()) &&

@@ -1,17 +1,11 @@
-import 'dart:convert';
 import 'dart:ui';
 
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-import 'package:lloud_mobile/providers/audio_player.dart';
-import 'package:lloud_mobile/providers/auth.dart';
-import 'package:lloud_mobile/util/network.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/models/showcase_item.dart';
-import 'package:lloud_mobile/models/song.dart';
 import 'package:lloud_mobile/providers/showcase.dart' as ShowcaseProvider;
 import 'package:lloud_mobile/routes.dart';
 import 'package:lloud_mobile/views/components/loading_screen.dart';

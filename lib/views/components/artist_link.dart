@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/routes.dart';
 
 class ArtistLink extends StatelessWidget {
