@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +8,28 @@ import 'package:lloud_mobile/routes.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/providers/notifications.dart';
 
-class NotificationsIcon extends StatelessWidget {
+class NotificationsIcon extends StatefulWidget {
+  @override
+  _NotificationsIconState createState() => _NotificationsIconState();
+}
+
+class _NotificationsIconState extends State<NotificationsIcon> {
+  Timer _timer;
+
+  @override
+  void initState() {
+    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+      Provider.of<Notifications>(context, listen: false).checkAndSetUnread();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(

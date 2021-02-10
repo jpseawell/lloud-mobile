@@ -117,15 +117,9 @@ class _MyAppState extends State<MyApp> {
             }),
         ChangeNotifierProxyProvider<Auth, Notifications>(
             create: null,
-            update: (context, auth, notifications) {
-              if (notifications == null) {
-                final notifs = Notifications(auth.token, auth.userId);
-                notifs.listenForUnreadNotifications();
-                return notifs;
-              }
-
-              return notifications.update(auth);
-            }),
+            update: (context, auth, notifications) => notifications == null
+                ? Notifications(auth.token, auth.userId)
+                : notifications.update(auth)),
         ChangeNotifierProxyProvider<Auth, AudioPlayer>(
             create: null,
             update: (context, auth, audio) {
