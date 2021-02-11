@@ -41,10 +41,12 @@ class Ad extends StatelessWidget {
                 child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(LloudTheme.red),
             )),
-            error: Text(
-              'FAILED',
-              style: TextStyle(color: LloudTheme.white),
-            ),
+            error: Center(
+                child: Icon(
+              Icons.broken_image_outlined,
+              size: 128,
+              color: LloudTheme.white.withOpacity(.05),
+            )),
             type: NativeAdmobType.full,
             options: _options,
           ),
