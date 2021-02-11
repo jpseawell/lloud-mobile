@@ -22,7 +22,7 @@ class AudioPlayer with ChangeNotifier {
   String _source;
   bool _isLoading = false;
   bool _isPlaying = false;
-  double _durationSeconds;
+  double _durationSeconds = 0;
   double _positionSeconds = 0;
 
   AudioPlayer(this._authToken);
