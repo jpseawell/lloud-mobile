@@ -11,7 +11,6 @@ class AdFeedItem implements FeedItem {
   AdFeedItem(this.adUnitID, this.controller);
 
   Widget build(BuildContext context) {
-    controller.reloadAd(forceRefresh: true, numberAds: 1);
     return Ad(
       adUnitID: adUnitID,
       controller: controller,

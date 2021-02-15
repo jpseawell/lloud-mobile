@@ -132,6 +132,11 @@ class _SongsPageState extends State<SongsPage> {
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
+                  if (index > 0 && index % ((_adInterval - 1) * 2) == 0) {
+                    _nativeAdController.reloadAd(
+                        forceRefresh: true, numberAds: 1);
+                  }
+
                   return _items[index].build(context);
                 }, childCount: _items.length)),
                 if (_isFetching)

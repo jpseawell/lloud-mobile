@@ -11,19 +11,26 @@ class Ad extends StatelessWidget {
   Ad({this.adUnitID, this.controller});
 
   final NativeAdmobOptions _options = NativeAdmobOptions(
+      showMediaContent: true,
+      bodyTextStyle: NativeTextStyle(isVisible: false),
       adLabelTextStyle: NativeTextStyle(
           backgroundColor: LloudTheme.whiteDark.withOpacity(.4)),
       headlineTextStyle: NativeTextStyle(color: LloudTheme.white),
-      advertiserTextStyle: NativeTextStyle(color: LloudTheme.white2),
+      advertiserTextStyle:
+          NativeTextStyle(color: LloudTheme.white2.withOpacity(.8)),
+      ratingColor: LloudTheme.red,
       storeTextStyle: NativeTextStyle(color: LloudTheme.white2),
-      priceTextStyle: NativeTextStyle(color: LloudTheme.white2),
+      priceTextStyle: NativeTextStyle(
+          fontSize: 16,
+          color: LloudTheme.white2,
+          backgroundColor: LloudTheme.red.withOpacity(.5)),
       callToActionStyle: NativeTextStyle(
           color: LloudTheme.white, backgroundColor: LloudTheme.red));
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 480,
+      height: 320,
       padding: EdgeInsets.only(left: 4, top: 4, right: 4),
       child: Card(
         color: LloudTheme.black,
