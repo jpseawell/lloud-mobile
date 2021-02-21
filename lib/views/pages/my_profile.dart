@@ -15,14 +15,21 @@ import 'package:lloud_mobile/views/components/portfolio_header.dart';
 import 'package:lloud_mobile/views/components/portfolio_item_widget.dart';
 
 class MyProfilePage extends StatefulWidget {
+  final ScrollController scrollController;
+
+  MyProfilePage(this.scrollController);
+
   @override
-  _MyProfilePageState createState() => _MyProfilePageState();
+  _MyProfilePageState createState() =>
+      _MyProfilePageState(this.scrollController);
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
   final String _sourceKey = 'my_profile';
+  final ScrollController _scrollController;
 
-  ScrollController _scrollController;
+  _MyProfilePageState(this._scrollController);
+
   bool _isFetching = true;
   int _currentPage = 1;
   List<PortfolioItem> _likes = [];
@@ -30,7 +37,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   @override
   void initState() {
     refresh().then((_) => loadSongsIntoAudioPlayer());
-    _scrollController = ScrollController();
+
     _scrollController.addListener(shouldFetch);
     super.initState();
   }
@@ -38,7 +45,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
   @override
   void dispose() {
     _scrollController.removeListener(shouldFetch);
-    _scrollController.dispose();
     super.dispose();
   }
 

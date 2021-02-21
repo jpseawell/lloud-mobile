@@ -31,19 +31,34 @@ class NavPage extends StatefulWidget {
 }
 
 class _NavPageState extends State<NavPage> {
-  int pageIndex;
+  final ScrollController _homeController = ScrollController();
+  final ScrollController _storeController = ScrollController();
+  final ScrollController _myProfileController = ScrollController();
+
   _NavPageState(this.pageIndex);
 
-  final List<Widget> _pages = [
-    SongsPage(),
-    ExplorePage(),
-    StorePage(),
-    MyProfilePage()
-  ];
+  List<Widget> _pages;
+  List<ScrollController> _controllers;
+
+  int pageIndex;
   int _selectedPageIndex = 0;
 
   @override
   void initState() {
+    _pages = [
+      SongsPage(_homeController),
+      ExplorePage(),
+      StorePage(_storeController),
+      MyProfilePage(_myProfileController)
+    ];
+
+    _controllers = [
+      _homeController,
+      null,
+      _storeController,
+      _myProfileController
+    ];
+
     if (pageIndex != null) {
       _selectedPageIndex = pageIndex;
     }
@@ -54,10 +69,28 @@ class _NavPageState extends State<NavPage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _homeController.dispose();
+    _storeController.dispose();
+    _myProfileController.dispose();
+    super.dispose();
+  }
+
   void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-    });
+    final controller = _controllers[index];
+
+    if (controller != null && _selectedPageIndex == index) {
+      controller.animateTo(
+        0.0,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    } else {
+      setState(() {
+        _selectedPageIndex = index;
+      });
+    }
   }
 
   @override

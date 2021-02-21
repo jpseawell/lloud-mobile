@@ -7,11 +7,19 @@ import 'package:lloud_mobile/views/components/h1.dart';
 import 'package:lloud_mobile/views/components/store_item_widget.dart';
 
 class StorePage extends StatefulWidget {
+  final ScrollController scrollController;
+
+  StorePage(this.scrollController);
+
   @override
-  _StorePageState createState() => _StorePageState();
+  _StorePageState createState() => _StorePageState(this.scrollController);
 }
 
 class _StorePageState extends State<StorePage> {
+  final ScrollController _scrollController;
+
+  _StorePageState(this._scrollController);
+
   Future<void> _storeItems;
 
   @override
@@ -28,6 +36,7 @@ class _StorePageState extends State<StorePage> {
       backgroundColor: LloudTheme.white2,
       body: SafeArea(
         child: ListView(
+          controller: _scrollController,
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
             H1('Shop'),

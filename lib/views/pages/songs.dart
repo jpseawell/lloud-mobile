@@ -13,17 +13,22 @@ import 'package:lloud_mobile/providers/audio_player.dart';
 import 'package:lloud_mobile/config/lloud_theme.dart';
 
 class SongsPage extends StatefulWidget {
+  final ScrollController scrollController;
+
+  SongsPage(this.scrollController);
+
   @override
-  _SongsPageState createState() => _SongsPageState();
+  _SongsPageState createState() => _SongsPageState(this.scrollController);
 }
 
 class _SongsPageState extends State<SongsPage> {
   final String _sourceKey = 'songs';
+  final ScrollController _scrollController;
 
-  ScrollController _scrollController;
+  _SongsPageState(this._scrollController);
+
   bool _isFetching = true;
   int _currentPage = 1;
-  int _adInterval = 5;
   List<FeedItem> _items = [];
   List<Song> _songs = [];
 
@@ -31,7 +36,6 @@ class _SongsPageState extends State<SongsPage> {
   void initState() {
     refresh().then((_) => loadSongsIntoAudioPlayer());
 
-    _scrollController = ScrollController();
     _scrollController.addListener(shouldFetch);
     super.initState();
   }
@@ -39,7 +43,6 @@ class _SongsPageState extends State<SongsPage> {
   @override
   void dispose() {
     _scrollController.removeListener(shouldFetch);
-    _scrollController.dispose();
     super.dispose();
   }
 
