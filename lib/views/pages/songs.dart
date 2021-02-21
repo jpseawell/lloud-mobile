@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_native_admob/native_admob_controller.dart';
 
-import 'package:lloud_mobile/models/ad_feed_item.dart';
 import 'package:lloud_mobile/models/song_feed_item.dart';
 import 'package:lloud_mobile/providers/auth.dart';
 import 'package:lloud_mobile/services/error_reporting.dart';
@@ -20,10 +18,6 @@ class SongsPage extends StatefulWidget {
 }
 
 class _SongsPageState extends State<SongsPage> {
-  static const _adUnitID = "ca-app-pub-8808594525825009/9468137197";
-  // static const _adUnitID = "ca-app-pub-3940256099942544/3986624511"; // TEST
-  final _nativeAdController = NativeAdmobController();
-
   final String _sourceKey = 'songs';
 
   ScrollController _scrollController;
@@ -44,7 +38,6 @@ class _SongsPageState extends State<SongsPage> {
 
   @override
   void dispose() {
-    _nativeAdController.dispose();
     _scrollController.removeListener(shouldFetch);
     _scrollController.dispose();
     super.dispose();
@@ -83,10 +76,6 @@ class _SongsPageState extends State<SongsPage> {
     List<FeedItem> items = [..._items];
     List<Song> songs = [..._songs];
     for (var i = 0; i < fetchedSongs.length; i++) {
-      if (i > 0 && i % (_adInterval - 1) == 0) {
-        items.add(AdFeedItem(_adUnitID, _nativeAdController));
-      }
-
       items.add(SongFeedItem(fetchedSongs[i], handlePlay));
       songs.add(fetchedSongs[i]);
     }
@@ -132,11 +121,6 @@ class _SongsPageState extends State<SongsPage> {
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
-                  if (index > 0 && index % ((_adInterval - 1) * 2) == 0) {
-                    _nativeAdController.reloadAd(
-                        forceRefresh: true, numberAds: 1);
-                  }
-
                   return _items[index].build(context);
                 }, childCount: _items.length)),
                 if (_isFetching)
