@@ -112,7 +112,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
         child: Stack(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              // padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              padding: EdgeInsets.fromLTRB(8, 16, 8, 0),
               child: CustomScrollView(controller: _scrollController, slivers: [
                 SliverList(
                     delegate: SliverChildListDelegate([

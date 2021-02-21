@@ -117,6 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.miniStartFloat,
       floatingActionButton: HomeButton(isDark: true),
       body: SafeArea(
+        bottom: false,
         child: Stack(
           children: [
             Container(

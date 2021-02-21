@@ -80,6 +80,7 @@ class _ArtistPageState extends State<ArtistPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.miniStartFloat,
       floatingActionButton: HomeButton(),
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
