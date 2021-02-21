@@ -28,13 +28,14 @@ class _SongsPageState extends State<SongsPage> {
   _SongsPageState(this._scrollController);
 
   bool _isFetching = true;
+  bool _isRefreshing = false;
   int _currentPage = 1;
   List<FeedItem> _items = [];
   List<Song> _songs = [];
 
   @override
   void initState() {
-    refresh().then((_) => loadSongsIntoAudioPlayer());
+    clearAndFetch().then((_) => loadSongsIntoAudioPlayer());
 
     _scrollController.addListener(shouldFetch);
     super.initState();
@@ -91,13 +92,23 @@ class _SongsPageState extends State<SongsPage> {
     });
   }
 
-  Future<void> refresh() async {
+  Future<void> clearAndFetch() async {
     setState(() {
       _currentPage = 1;
       _items = [];
       _songs = [];
     });
     await fetchItems();
+  }
+
+  Future<void> refresh() async {
+    setState(() {
+      _isRefreshing = true;
+    });
+    await clearAndFetch();
+    setState(() {
+      _isRefreshing = false;
+    });
   }
 
   Future<void> handlePlay(Song song) async {
@@ -114,6 +125,7 @@ class _SongsPageState extends State<SongsPage> {
         backgroundColor: LloudTheme.blackLight,
         body: SafeArea(
           child: RefreshIndicator(
+            strokeWidth: 2,
             onRefresh: refresh,
             color: LloudTheme.red,
             backgroundColor: LloudTheme.blackLight,
@@ -126,13 +138,14 @@ class _SongsPageState extends State<SongsPage> {
                         (BuildContext context, int index) {
                   return _items[index].build(context);
                 }, childCount: _items.length)),
-                if (_isFetching)
+                if (_isFetching && !_isRefreshing)
                   SliverList(
                       delegate: SliverChildListDelegate([
                     Container(
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(vertical: 16),
                       child: CircularProgressIndicator(
+                        strokeWidth: 2,
                         valueColor:
                             AlwaysStoppedAnimation<Color>(LloudTheme.red),
                       ),
