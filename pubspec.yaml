@@ -27,7 +27,7 @@ dependencies:
   flutter_launcher_icons: ^0.7.5
   url_launcher: ^5.4.11
   provider: ^4.3.2+1
-  flutter_svg: ^0.18.1
+  flutter_svg: ^0.19.3
   image_picker: ^0.6.7+10
   carousel_slider: ^2.3.1
   web_socket_channel: ^1.1.0
