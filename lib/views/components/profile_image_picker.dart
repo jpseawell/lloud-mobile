@@ -76,91 +76,91 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
   void showMenuDialog(BuildContext context) {
     showDialog(
         context: context,
-        child: LloudDialog(
-          content: Consumer<Auth>(
-            builder: (context, auth, _) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Row(children: <Widget>[
-                    Expanded(
-                        child: FlatButton(
-                      child: Text(
-                        "Remove Current Photo",
-                        style: TextStyle(fontSize: 16),
+        builder: (_) => LloudDialog(
+              content: Consumer<Auth>(
+                builder: (context, auth, _) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Row(children: <Widget>[
+                        Expanded(
+                            child: FlatButton(
+                          child: Text(
+                            "Remove Current Photo",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          textColor: LloudTheme.red,
+                          onPressed: () async {
+                            ImageFile img =
+                                await auth.user.fetchProfileImg(auth.token);
+                            if (img != null) {
+                              await destroyImage(auth.user, img);
+                            }
+                            Navigator.of(context).pop();
+                          },
+                        )),
+                      ]),
+                      Divider(
+                        height: 1,
                       ),
-                      textColor: LloudTheme.red,
-                      onPressed: () async {
-                        ImageFile img =
-                            await auth.user.fetchProfileImg(auth.token);
-                        if (img != null) {
-                          await destroyImage(auth.user, img);
-                        }
-                        Navigator.of(context).pop();
-                      },
-                    )),
-                  ]),
-                  Divider(
-                    height: 1,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: FlatButton(
-                        child: Text(
-                          "Take Photo",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        textColor: LloudTheme.black,
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-                          await uploadImage(
-                              auth.user,
-                              await picker.getImage(
-                                  source: ImageSource.camera));
-                        },
-                      ))
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                              child: FlatButton(
+                            child: Text(
+                              "Take Photo",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            textColor: LloudTheme.black,
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await uploadImage(
+                                  auth.user,
+                                  await picker.getImage(
+                                      source: ImageSource.camera));
+                            },
+                          ))
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                              child: FlatButton(
+                            child: Text(
+                              "Choose From Library",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            textColor: LloudTheme.black,
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await uploadImage(
+                                  auth.user,
+                                  await picker.getImage(
+                                      source: ImageSource.gallery));
+                            },
+                          ))
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                              child: FlatButton(
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            textColor: LloudTheme.black,
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ))
+                        ],
+                      ),
                     ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: FlatButton(
-                        child: Text(
-                          "Choose From Library",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        textColor: LloudTheme.black,
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-                          await uploadImage(
-                              auth.user,
-                              await picker.getImage(
-                                  source: ImageSource.gallery));
-                        },
-                      ))
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: FlatButton(
-                        child: Text(
-                          "Cancel",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        textColor: LloudTheme.black,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ))
-                    ],
-                  ),
-                ],
-              );
-            },
-          ),
-        ));
+                  );
+                },
+              ),
+            ));
   }
 
   @override
