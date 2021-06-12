@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 import 'package:lloud_mobile/views/pages/forgot_password_page.dart';
 import 'package:lloud_mobile/providers/likes.dart';
@@ -33,6 +35,7 @@ import 'package:lloud_mobile/views/pages/nav.dart';
 import 'package:lloud_mobile/routes.dart';
 
 Future<void> main() async {
+  await DotEnv.load();
   await SentryFlutter.init(
     (options) {
       options.dsn =
@@ -48,21 +51,30 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<void> initPaymentPlatform() async {
-    await Purchases.setDebugLogsEnabled(true);
-    await Purchases.setup("XstlTtxLyLvhognmeAZyaVDIDSLQCFMy");
-  }
+  Mixpanel mixpanel;
 
   @override
   void initState() {
     super.initState();
     initPaymentPlatform();
+    initMixpanel();
+  }
+
+  Future<void> initPaymentPlatform() async {
+    await Purchases.setDebugLogsEnabled(true);
+    await Purchases.setup("XstlTtxLyLvhognmeAZyaVDIDSLQCFMy");
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("cc4cb3ec1599dda8601c9b61a95f1710",
+        optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider(create: (_) => mixpanel),
         ChangeNotifierProvider(create: (_) => Loading()),
         ChangeNotifierProvider(create: (_) => Auth()),
         ChangeNotifierProxyProvider<Auth, StoreItems>(

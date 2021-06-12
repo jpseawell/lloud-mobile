@@ -45,7 +45,6 @@ class Search with ChangeNotifier {
     _users = [];
     _songs = [];
     notifyListeners();
-    print('cleared');
   }
 
   Search(this.authToken);

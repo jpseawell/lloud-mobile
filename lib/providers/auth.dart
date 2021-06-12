@@ -38,7 +38,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<User> _fetchMe(String authToken) async {
-    const url = '${Network.host}/api/v2/me';
+    final url = '${Network.host}/api/v2/me';
     final res = await http.get(url, headers: Network.headers(token: authToken));
     Map<String, dynamic> decodedRes = json.decode(res.body);
 
@@ -74,7 +74,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<Account> _fetchMyAccount(String authToken) async {
-    const url = '${Network.host}/api/v2/accounts/me';
+    final url = '${Network.host}/api/v2/accounts/me';
     final res = await http.get(url, headers: Network.headers(token: authToken));
     Map<String, dynamic> decodedRes = json.decode(res.body);
 

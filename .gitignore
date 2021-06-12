@@ -8,6 +8,7 @@
 .buildlog/
 .history
 .svn/
+.env*
 
 # IntelliJ related
 *.iml
@@ -30,6 +31,7 @@
 .pub/
 /build/
 **/ios/Flutter/.last_build_id
+ios/build/
 
 # Web related
 lib/generated_plugin_registrant.dart

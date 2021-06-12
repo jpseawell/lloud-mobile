@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/providers/loading.dart';
@@ -90,6 +91,15 @@ class _NavPageState extends State<NavPage> {
       setState(() {
         _selectedPageIndex = index;
       });
+    }
+
+    _trackPageViews(index);
+  }
+
+  void _trackPageViews(int pageIndex) {
+    if (pageIndex == 3) {
+      Provider.of<Mixpanel>(context, listen: false)
+          .track('Navigated to Account Page');
     }
   }
 

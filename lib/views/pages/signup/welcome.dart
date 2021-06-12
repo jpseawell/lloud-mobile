@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lloud_mobile/routes.dart';
@@ -33,6 +34,9 @@ class _WelcomePageState extends State<WelcomePage> {
                         throw Exception('User authentication failed.');
                       }
 
+                      Provider.of<Mixpanel>(context, listen: false).track(
+                          'Authenticate',
+                          properties: {'Type': 'Sign Up'});
                       return Navigator.pushReplacementNamed(ctx, Routes.songs);
                     } catch (err) {
                       Scaffold.of(snackCtx).showSnackBar(SnackBar(

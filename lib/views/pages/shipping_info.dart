@@ -34,7 +34,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
       isLoading = true;
     });
 
-    const url = '${Network.host}/api/v2/states';
+    final url = '${Network.host}/api/v2/states';
     final res = await http.get(url, headers: Network.headers(token: token));
 
     if (res.statusCode != 200) throw Exception('Could not fetch states.');

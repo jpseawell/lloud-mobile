@@ -6,6 +6,7 @@ import 'package:lloud_mobile/config/lloud_theme.dart';
 import 'package:lloud_mobile/views/templates/signup.dart';
 import 'package:lloud_mobile/views/components/links/signup_flow_link.dart';
 import 'package:lloud_mobile/views/components/buttons/signup_flow_btn.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -24,6 +25,8 @@ class _LoginPageState extends State<LoginPage> {
           .login({'email': email.text, 'password': password.text});
       if (!authProvider.isAuth) throw Exception('User authentication failed.');
 
+      Provider.of<Mixpanel>(context, listen: false)
+          .track('Authenticate', properties: {'Type': 'Login'});
       return Navigator.pushReplacementNamed(context, Routes.songs);
     } catch (e) {
       Scaffold.of(context).showSnackBar(SnackBar(

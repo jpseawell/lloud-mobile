@@ -83,6 +83,12 @@ PODS:
     - GoogleUtilities/Logger
   - image_picker (0.0.1):
     - Flutter
+  - Mixpanel-swift (2.8.3):
+    - Mixpanel-swift/Complete (= 2.8.3)
+  - Mixpanel-swift/Complete (2.8.3)
+  - mixpanel_flutter (1.1.0):
+    - Flutter
+    - Mixpanel-swift (= 2.8.3)
   - nanopb (1.30906.0):
     - nanopb/decode (= 1.30906.0)
     - nanopb/encode (= 1.30906.0)
@@ -121,6 +127,7 @@ DEPENDENCIES:
   - flutter_native_admob (from `.symlinks/plugins/flutter_native_admob/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
+  - mixpanel_flutter (from `.symlinks/plugins/mixpanel_flutter/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
@@ -140,6 +147,7 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUserMessagingPlatform
     - GoogleUtilities
+    - Mixpanel-swift
     - nanopb
     - PromisesObjC
     - Protobuf
@@ -166,6 +174,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
+  mixpanel_flutter:
+    :path: ".symlinks/plugins/mixpanel_flutter/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   purchases_flutter:
@@ -197,6 +207,8 @@ SPEC CHECKSUMS:
   GoogleUserMessagingPlatform: b168e8c46cd8f92aa3e34b584c4ca78a411ce367
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
+  Mixpanel-swift: 947354668bf7dcaff5aaf9c64232fb5bea6ff0c7
+  mixpanel_flutter: 2b151def495bd86f2a6cbd83e58acf47a70cbb79
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -29,6 +30,8 @@ class _InlineBuyBtnState extends State<InlineBuyBtn> {
   }
 
   Future<void> _purchaseLikes(BuildContext context) async {
+    final mixpanel = Provider.of<Mixpanel>(context, listen: false);
+    mixpanel.track('Clicked Like Refill Button');
     final loadingProvider = Provider.of<Loading>(context, listen: false);
     loadingProvider.loading = true;
     try {
@@ -41,6 +44,7 @@ class _InlineBuyBtnState extends State<InlineBuyBtn> {
       await authProvider.updateAccount(account);
 
       _likesPurchasedDialog(context);
+      mixpanel.track('Purchased 10 Likes');
     } on PlatformException catch (e) {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);
       if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
