@@ -24,3 +24,5 @@ Lloud was a music streaming service designed to incentivize listeners to find an
 ## App
 
 This repo contains the code for the iOS app built using flutter.
+
+To view the repo for the back-end services please visit: [https://github.com/jpseawell/lloud](https://github.com/jpseawell/lloud)
